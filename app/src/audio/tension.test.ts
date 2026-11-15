@@ -28,6 +28,22 @@ describe("silt tension", () => {
     expect(at(2)).toBeLessThanOrEqual(1);
   });
 
+  it("measures the way to the lander in steps", () => {
+    const game = fresh();
+    const lander = find(game, game.landerId);
+    if (!lander) throw new Error("no lander");
+    const sx = lander.x + 6 < game.w ? 1 : -1;
+    const sy = lander.y + 6 < game.h ? 1 : -1;
+    const at = (dx: number, dy: number): number => {
+      game.silt.fill(0);
+      game.silt[(lander.y + dy * sy) * game.w + lander.x + dx * sx] = 2;
+      return siltTension(game);
+    };
+    // Six rows down is six steps, like six tiles along the row; six of each is nine steps.
+    expect(at(0, 6)).toBe(at(6, 0));
+    expect(at(6, 6)).toBeLessThan(at(6, 0));
+  });
+
   it("rises with coverage and is zero once the game is over", () => {
     const game = fresh();
     game.silt.fill(1);

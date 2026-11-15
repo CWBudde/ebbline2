@@ -1,7 +1,7 @@
 // Pointer, touch, wheel and keyboard input for the map.
 
 import { BUILDABLE, placeError, structureAt, type Game, type PlaceError } from "@ebbline2/engine";
-import { TILE, clamp, tileAt, zoomAt, type View } from "./camera.ts";
+import { clamp, tileAt, worldSize, zoomAt, type View } from "./camera.ts";
 import { dragPlaces } from "./place.ts";
 import { SPEEDS, type Runtime } from "./runtime.ts";
 
@@ -78,7 +78,7 @@ export class Input {
 
   private clampView(game: Game): void {
     const box = this.canvas.getBoundingClientRect();
-    clamp(this.host.view, { w: game.w * TILE, h: game.h * TILE }, { w: box.width, h: box.height });
+    clamp(this.host.view, worldSize(game.w, game.h), { w: box.width, h: box.height });
   }
 
   private setHover(rt: Runtime, p: { x: number; y: number } | undefined): void {

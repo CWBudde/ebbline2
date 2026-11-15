@@ -1,7 +1,8 @@
-// Code-drawn structures, the stand-in wherever the generated sprites are missing: one flat vector style, on a box of ±1 per tile half-width.
+// Code-drawn structures, the stand-in wherever the generated sprites are missing: one flat vector style on
+// hexagonal base plates, measured in half tiles (a tile's sides lie ±1 from its centre).
 
 import { Graphics } from "pixi.js";
-import type { Kind } from "@ebbline2/engine";
+import { CORNER, CORNERS, DIRECTIONS, type Kind } from "@ebbline2/engine";
 
 const PLATE = 0x14222a;
 const RIM = 0x33505c;
@@ -39,23 +40,48 @@ function ngon(g: Graphics, sides: number, radius: number, turn = 0): Graphics {
   return g.poly(points);
 }
 
+/** A pointy-top hexagon of the given corner radius, the shape of a tile. */
+function hex(g: Graphics, radius: number): Graphics {
+  return ngon(g, 6, radius, Math.PI / 6);
+}
+
+/**
+ * The outline of a tile and the six around it, `scale` times its true size, in half tiles of `u` pixels: the
+ * three outer corners of each outer tile in turn.
+ */
+function flower(g: Graphics, u: number, scale: number): Graphics {
+  const points: number[] = [];
+  for (let d = 0; d < DIRECTIONS; d++) {
+    const a = (d * Math.PI) / 3;
+    for (const k of [d + 5, d, d + 1]) {
+      const corner = CORNERS[k % DIRECTIONS];
+      if (!corner) continue;
+      points.push((Math.cos(a) + corner.x) * 2 * u * scale, (Math.sin(a) + corner.y) * 2 * u * scale);
+    }
+  }
+  return g.poly(points);
+}
+
 /** Draws a structure centred on the origin; `u` is half a tile in pixels. */
 export function drawStructure(kind: Kind, u: number): Graphics {
   const g = new Graphics();
   const c = ACCENT[kind];
   const line = Math.max(1.5, u * 0.14);
+  // A tile's corners lie 2 CORNER half tiles out; the plate leaves a narrow margin inside them.
+  const tile = 2 * CORNER * u;
   const plate = (): void => {
-    g.roundRect(-u * 0.9, -u * 0.9, u * 1.8, u * 1.8, u * 0.3)
+    hex(g, tile * 0.92)
       .fill(PLATE)
       .stroke({ width: line * 0.7, color: RIM });
   };
   switch (kind) {
     case "lander":
-      g.roundRect(-u * 2.8, -u * 2.8, u * 5.6, u * 5.6, u * 1.1)
+      flower(g, u, 0.96)
         .fill(PLATE)
         .stroke({ width: line * 1.4, color: RIM });
-      for (const [sx, sy] of [[-1, -1], [1, -1], [-1, 1], [1, 1]] as const) {
-        g.circle(sx * u * 2, sy * u * 2, u * 0.4).fill(RIM);
+      for (let d = 0; d < DIRECTIONS; d++) {
+        const a = (d * Math.PI) / 3;
+        g.circle(Math.cos(a) * u * 2, Math.sin(a) * u * 2, u * 0.32).fill(RIM);
       }
       ngon(g, 6, u * 1.7, Math.PI / 6).fill(0x0c171c).stroke({ width: line * 1.4, color: c });
       g.circle(0, 0, u * 0.7).fill(c);
@@ -65,7 +91,7 @@ export function drawStructure(kind: Kind, u: number): Graphics {
       g.circle(0, 0, u * 0.22).fill(c);
       break;
     case "trunk":
-      ngon(g, 6, u * 0.9).fill(PLATE).stroke({ width: line, color: c });
+      hex(g, tile * 0.88).fill(PLATE).stroke({ width: line, color: c });
       g.circle(0, 0, u * 0.45).stroke({ width: line, color: c });
       g.circle(0, 0, u * 0.15).fill(c);
       break;

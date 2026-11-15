@@ -4,6 +4,7 @@ import { signal, type Signal } from "@preact/signals";
 import {
   TICK_HZ,
   apply,
+  centre,
   seconds,
   step,
   type Command,
@@ -18,7 +19,7 @@ export type Tool =
   | { kind: "build"; structure: Kind }
   | { kind: "grade"; height: number };
 
-/** A short-lived visual effect, in tile coordinates. */
+/** A short-lived visual effect, at positions in tile units (see the engine's centre()); radius in tiles. */
 export interface Fx {
   kind: "beam" | "ring" | "flash";
   x: number;
@@ -100,40 +101,50 @@ export class Runtime {
     this.fx.push({ x2: 0, y2: 0, radius: 1, color: 0xffffff, age: 0, life: 300, ...fx });
   }
 
+  /** An effect on a tile, placed at the tile's centre. */
+  private sparkAt(x: number, y: number, fx: Partial<Fx> & Pick<Fx, "kind">): void {
+    const c = centre(x, y);
+    this.spark({ ...fx, x: c.x, y: c.y });
+  }
+
   private handle(events: Event[]): void {
     for (const e of events) {
       switch (e.kind) {
         case "lance": {
           const s = this.game.structures.find((o) => o.id === e.id);
-          if (s) this.spark({ kind: "beam", x: s.x, y: s.y, x2: e.x, y2: e.y, color: 0xffa25c, life: 140 });
+          if (s) {
+            const end = centre(e.x, e.y);
+            this.sparkAt(s.x, s.y, { kind: "beam", x2: end.x, y2: end.y, color: 0xffa25c, life: 140 });
+          }
           break;
         }
         case "intercept": {
           const s = this.game.structures.find((o) => o.id === e.id);
-          if (s) this.spark({ kind: "beam", x: s.x, y: s.y, x2: e.x, y2: e.y, color: 0xfff27a, life: 160 });
+          // Where the glob was hit is already a position, not a tile.
+          if (s) this.sparkAt(s.x, s.y, { kind: "beam", x2: e.x, y2: e.y, color: 0xfff27a, life: 160 });
           if (e.kill) this.spark({ kind: "ring", x: e.x, y: e.y, radius: 1.5, color: 0xfff27a, life: 400 });
           break;
         }
         case "impact":
-          this.spark({ kind: "ring", x: e.x, y: e.y, radius: e.radius + 0.5, color: 0xffa25c, life: 450 });
-          this.spark({ kind: "flash", x: e.x, y: e.y, radius: e.radius, color: 0xffd9a0, life: 180 });
+          this.sparkAt(e.x, e.y, { kind: "ring", radius: e.radius + 0.5, color: 0xffa25c, life: 450 });
+          this.sparkAt(e.x, e.y, { kind: "flash", radius: e.radius, color: 0xffd9a0, life: 180 });
           break;
         case "destroyed":
-          this.spark({ kind: "ring", x: e.x, y: e.y, radius: 2, color: 0xff5470, life: 600 });
-          this.spark({ kind: "flash", x: e.x, y: e.y, radius: 1.2, color: 0xff5470, life: 250 });
+          this.sparkAt(e.x, e.y, { kind: "ring", radius: 2, color: 0xff5470, life: 600 });
+          this.sparkAt(e.x, e.y, { kind: "flash", radius: 1.2, color: 0xff5470, life: 250 });
           break;
         case "built":
         case "placed":
           break;
         case "pulse":
-          this.spark({ kind: "ring", x: e.x, y: e.y, radius: 1.6, color: 0xff3fa4, life: 700 });
+          this.sparkAt(e.x, e.y, { kind: "ring", radius: 1.6, color: 0xff3fa4, life: 700 });
           break;
         case "burst":
         case "splash":
-          this.spark({ kind: "ring", x: e.x, y: e.y, radius: 3, color: 0xff3fa4, life: 700 });
+          this.sparkAt(e.x, e.y, { kind: "ring", radius: 3, color: 0xff3fa4, life: 700 });
           break;
         case "capped":
-          this.spark({ kind: "ring", x: e.x, y: e.y, radius: 5, color: 0xffffff, life: 1200 });
+          this.sparkAt(e.x, e.y, { kind: "ring", radius: 5, color: 0xffffff, life: 1200 });
           break;
         case "graded":
           this.regraded.push(e.tile);

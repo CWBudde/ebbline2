@@ -24,10 +24,8 @@ async function besideLander(page: Page, dx: number): Promise<{ x: number; y: num
     const g = c?.runtime.value?.game;
     const lander = g?.structures.find((s) => s.kind === "lander");
     if (!c || !lander) throw new Error("no game");
-    return {
-      x: ((lander.x + offset + 0.5) * 24 - c.view.x) * c.view.zoom,
-      y: ((lander.y + 0.5) * 24 - c.view.y) * c.view.zoom,
-    };
+    // The app's own tile-to-screen mapping, so the test follows the map's geometry.
+    return c.tileOnScreen(lander.x + offset, lander.y);
   }, dx);
 }
 

@@ -21,7 +21,7 @@ import {
 } from "@ebbline2/engine";
 import { Sound } from "./audio.ts";
 import { siltTension } from "./audio/tension.ts";
-import { TILE, centreOn, clamp, type View } from "./camera.ts";
+import { TILE, centreOn, clamp, tileToWorld, toScreen, worldSize, type View } from "./camera.ts";
 import { placeErrorText, setLanguage, t } from "./i18n/index.ts";
 import { Input } from "./input.ts";
 import { drawStructure } from "./render/art.ts";
@@ -218,8 +218,10 @@ export class Controller {
     const screen = { w: this.app.screen.width, h: this.app.screen.height };
     // Show roughly thirty tiles across, less on a narrow screen.
     this.view.zoom = Math.max(0.6, Math.min(1.6, screen.w / (30 * TILE)));
-    centreOn(this.view, screen, ((lander?.x ?? game.w / 2) + 0.5) * TILE, ((lander?.y ?? game.h / 2) + 0.5) * TILE);
-    clamp(this.view, { w: game.w * TILE, h: game.h * TILE }, screen);
+    const world = worldSize(game.w, game.h);
+    const focus = lander ? tileToWorld(lander.x, lander.y) : { x: world.w / 2, y: world.h / 2 };
+    centreOn(this.view, screen, focus.x, focus.y);
+    clamp(this.view, world, screen);
     this.sinceSave = 0;
     this.newBest.value = false;
     this.overlay.value = "none";
@@ -333,13 +335,19 @@ export class Controller {
     this.sound.apply(settings);
   }
 
-  /** Centres the map view on a tile. */
-  lookAt(x: number, y: number): void {
+  /** Centres the map view on a point in world pixels. */
+  lookAt(wx: number, wy: number): void {
     const rt = this.runtime.value;
     if (!rt) return;
     const screen = { w: this.app.screen.width, h: this.app.screen.height };
-    centreOn(this.view, screen, (x + 0.5) * TILE, (y + 0.5) * TILE);
-    clamp(this.view, { w: rt.game.w * TILE, h: rt.game.h * TILE }, screen);
+    centreOn(this.view, screen, wx, wy);
+    clamp(this.view, worldSize(rt.game.w, rt.game.h), screen);
+  }
+
+  /** Where the centre of a tile is on the screen, in CSS pixels from the canvas's top-left; for the tests. */
+  tileOnScreen(x: number, y: number): { x: number; y: number } {
+    const p = tileToWorld(x, y);
+    return toScreen(this.view, p.x, p.y);
   }
 
   screenSize(): { w: number; h: number } {

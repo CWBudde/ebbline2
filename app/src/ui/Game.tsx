@@ -1,15 +1,16 @@
 // Everything drawn over the map while a game runs.
 
-import { useEffect, useRef, useState } from "preact/hooks";
+import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 import {
   BUILDABLE,
   KINDS,
   TICK_HZ,
   find,
+  footprint,
   type Kind,
   type Structure,
 } from "@ebbline2/engine";
-import { tileAt } from "../camera.ts";
+import { TILE, worldSize, worldToTile } from "../camera.ts";
 import type { Controller } from "../controller.ts";
 import { groundColor } from "../render/terrain.ts";
 import { SPEEDS, type Hud, type Runtime } from "../runtime.ts";
@@ -286,50 +287,74 @@ function Info({ c, rt }: { c: Controller; rt: Runtime; hud: Hud }) {
   );
 }
 
+/** Which tile each minimap pixel shows, or -1 off the map; `res` is minimap pixels per tile. */
+function minimapLayout(w: number, h: number, res: number): { width: number; height: number; tiles: Int32Array } {
+  const world = worldSize(w, h);
+  const width = Math.ceil((world.w / TILE) * res);
+  const height = Math.ceil((world.h / TILE) * res);
+  const tiles = new Int32Array(width * height);
+  for (let py = 0; py < height; py++) {
+    for (let px = 0; px < width; px++) {
+      const t = worldToTile(((px + 0.5) * TILE) / res, ((py + 0.5) * TILE) / res);
+      tiles[py * width + px] = t.x >= 0 && t.y >= 0 && t.x < w && t.y < h ? t.y * w + t.x : -1;
+    }
+  }
+  return { width, height, tiles };
+}
+
 function Minimap({ c, rt }: { c: Controller; rt: Runtime }) {
   const ref = useRef<HTMLCanvasElement>(null);
   const hud = rt.hud.value;
   const game = rt.game;
+  // CSS pixels per tile; the canvas has twice as many, so the hexagons and their row shift still show.
   const scale = Math.max(1, Math.floor(160 / game.w));
+  const res = scale * 2;
+  const layout = useMemo(() => minimapLayout(game.w, game.h, res), [game, res]);
+  const colours = useMemo(() => new Uint32Array(game.w * game.h), [game]);
   useEffect(() => {
     const ctx = ref.current?.getContext("2d");
     if (!ctx) return;
-    const image = ctx.createImageData(game.w, game.h);
-    for (let i = 0; i < game.height.length; i++) {
+    // One colour per tile as little-endian RGBA, then one look-up per pixel.
+    const rgba = (r: number, g: number, b: number): number => ((255 << 24) | (b << 16) | (g << 8) | r) >>> 0;
+    for (let i = 0; i < colours.length; i++) {
       const depth = game.silt[i] ?? 0;
       const h = game.height[i] ?? -1;
       const [r, g, b] = depth >= 0.05 ? [255, 63, 164] : h < 0 ? [10, 16, 19] : groundColor(h);
-      image.data.set([r, g, b, 255], i * 4);
+      colours[i] = rgba(r, g, b);
     }
+    const structure = rgba(95, 227, 255);
     for (const s of game.structures) {
-      const half = (KINDS[s.kind].size - 1) / 2;
-      for (let dy = -half; dy <= half; dy++) {
-        for (let dx = -half; dx <= half; dx++) {
-          image.data.set([95, 227, 255, 255], ((s.y + dy) * game.w + s.x + dx) * 4);
-        }
-      }
+      for (const i of footprint(game, s.kind, s.x, s.y)) colours[i] = structure;
+    }
+    const image = ctx.createImageData(layout.width, layout.height);
+    const pixels = new Uint32Array(image.data.buffer);
+    for (let p = 0; p < pixels.length; p++) {
+      const tile = layout.tiles[p] ?? -1;
+      pixels[p] = tile < 0 ? 0 : (colours[tile] ?? 0);
     }
     ctx.putImageData(image, 0, 0);
+    // The minimap is the world scaled down, so the view's rectangle maps straight across.
     const size = c.screenSize();
-    const a = tileAt(c.view, 0, 0);
-    const b = tileAt(c.view, size.w, size.h);
+    const k = res / TILE;
     ctx.strokeStyle = "#ffffff";
-    ctx.lineWidth = 1;
-    ctx.strokeRect(a.x + 0.5, a.y + 0.5, b.x - a.x, b.y - a.y);
-  }, [hud, game, c]);
+    ctx.lineWidth = 2;
+    ctx.strokeRect(c.view.x * k, c.view.y * k, (size.w / c.view.zoom) * k, (size.h / c.view.zoom) * k);
+  }, [hud, game, c, layout, colours, res]);
   const jump = (e: PointerEvent): void => {
     if (e.buttons === 0 && e.type !== "pointerdown") return;
     const box = (e.currentTarget as HTMLCanvasElement).getBoundingClientRect();
-    c.lookAt(((e.clientX - box.left) / box.width) * game.w, ((e.clientY - box.top) / box.height) * game.h);
+    const px = ((e.clientX - box.left) / box.width) * layout.width;
+    const py = ((e.clientY - box.top) / box.height) * layout.height;
+    c.lookAt((px * TILE) / res, (py * TILE) / res);
   };
   return (
     <figure class="minimap-frame">
       <canvas
         ref={ref}
         class="minimap"
-        width={game.w}
-        height={game.h}
-        style={{ width: `${game.w * scale}px`, height: `${game.h * scale}px` }}
+        width={layout.width}
+        height={layout.height}
+        style={{ width: `${String(layout.width / 2)}px`, height: `${String(layout.height / 2)}px`, imageRendering: "auto" }}
         aria-label={t("hud.map")}
         onPointerDown={jump}
         onPointerMove={jump}
