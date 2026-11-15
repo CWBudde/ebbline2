@@ -15,3 +15,21 @@ export {
   type Introduced,
   type MapSize,
 } from "./levels.ts";
+export {
+  CORNER,
+  CORNERS,
+  DIRECTIONS,
+  ROW,
+  centre,
+  disc,
+  distance,
+  extent,
+  neighbour,
+  neighbourIndices,
+  neighbours,
+  span,
+  tileAtPoint,
+  within,
+  type Point,
+  type Tile,
+} from "./hex.ts";
