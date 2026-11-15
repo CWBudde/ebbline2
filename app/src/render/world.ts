@@ -469,11 +469,20 @@ export class Renderer {
       if (def.range > 0) this.range(over, game, hover.x, hover.y, def.range, def.minRange, ACCENT[tool.structure]);
       if (tool.structure === "pylon" && error === null) {
         // What a pylon here would collect from: the free tiles around it on its own level.
-        for (const i of harvestPreview(game, hover.x, hover.y)) {
+        const tiles = harvestPreview(game, hover.x, hover.y);
+        for (const i of tiles) {
           const t = tileOf(game.w, i);
           over.poly(hexPoints(t.x, t.y));
         }
-        over.fill({ color: COLORS.harvest, alpha: 0.3 });
+        if (tiles.length > 0) {
+          // Hatched like the area of a pylon that is placed but not built.
+          over.fill({ color: COLORS.harvest, alpha: 0.1 });
+          for (const i of tiles) {
+            const t = tileOf(game.w, i);
+            for (const [x1, y1, x2, y2] of hatch(t.x, t.y, TILE / 3)) over.moveTo(x1, y1).lineTo(x2, y2);
+          }
+          over.stroke({ width: 1.5, color: COLORS.harvest, alpha: 0.4 });
+        }
       }
     } else if (hover && tool.kind === "grade") {
       over.poly(hexPoints(hover.x, hover.y)).stroke({ width: 2, color: COLORS.utility });
