@@ -41,10 +41,10 @@ interface Patterns {
 const PATTERNS = new WeakMap<HTMLCanvasElement, Patterns>();
 
 const STOPS: readonly (readonly [number, number, number, number])[] = [
-  [0, 0x13, 0x22, 0x2b],
-  [3, 0x2a, 0x47, 0x49],
-  [6, 0x5a, 0x78, 0x61],
-  [9, 0xb9, 0xc0, 0x96],
+  [0, 0x1c, 0x16, 0x11],
+  [3, 0x3d, 0x2c, 0x20],
+  [6, 0x7a, 0x5a, 0x3c],
+  [9, 0xc9, 0xa8, 0x78],
 ];
 
 /** The colour of a terrain height as [r, g, b]. */
@@ -217,7 +217,7 @@ function paint(ctx: CanvasRenderingContext2D, game: Game, patterns: Patterns, ti
       const grain = (((x * 73856093) ^ (y * 19349663)) >>> 0) % 7 - 3;
       ctx.fillStyle = `rgb(${String(r + grain)},${String(g + grain)},${String(b + grain)})`;
     } else {
-      ctx.fillStyle = patterns.rock ? "#121b20" : "#0a1013";
+      ctx.fillStyle = patterns.rock ? "#1b1917" : "#0f0e0d";
     }
     ctx.beginPath();
     hexPath(ctx, c.x, c.y, 0.5);

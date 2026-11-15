@@ -319,7 +319,7 @@ function Minimap({ c, rt }: { c: Controller; rt: Runtime }) {
     for (let i = 0; i < colours.length; i++) {
       const depth = game.silt[i] ?? 0;
       const h = game.height[i] ?? -1;
-      const [r, g, b] = depth >= 0.05 ? [255, 63, 164] : h < 0 ? [10, 16, 19] : groundColor(h);
+      const [r, g, b] = depth >= 0.05 ? [255, 63, 164] : h < 0 ? [15, 14, 13] : groundColor(h);
       colours[i] = rgba(r, g, b);
     }
     const structure = rgba(95, 227, 255);
