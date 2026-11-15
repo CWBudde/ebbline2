@@ -6,6 +6,7 @@ import {
   KINDS,
   ROW,
   globAt,
+  harvestPending,
   harvestPreview,
   linksAt,
   placeError,
@@ -69,6 +70,7 @@ export class Renderer {
   /** The tiles the pylons collect energy from, shaded green. Under the silt, which hides what it drowns. */
   private readonly harvest = new Graphics();
   private harvestRev = -1;
+  private harvestKey = "";
   private readonly under = new Graphics();
   private readonly sprites = new Container();
   private readonly ghost = new Sprite();
@@ -154,6 +156,7 @@ export class Renderer {
     this.paintedTick = -1;
     this.harvest.clear();
     this.harvestRev = -1;
+    this.harvestKey = "";
     if (!game) return;
     this.groundCanvas = bakeTerrain(game, this.materials);
     this.ground.texture.destroy(true);
@@ -487,8 +490,14 @@ export class Renderer {
 
   /** Shades the tiles the pylons collect energy from; redrawn only when the engine says they changed. */
   private drawHarvest(game: Game): void {
-    if (game.harvestRev === this.harvestRev) return;
+    // Pylons that do not gather yet change the picture too, without the engine's area changing.
+    let key = "";
+    for (const s of game.structures) {
+      if (s.kind === "pylon" && !(s.built && s.active && Number.isFinite(s.dist))) key += `${String(s.id)};`;
+    }
+    if (game.harvestRev === this.harvestRev && key === this.harvestKey) return;
     this.harvestRev = game.harvestRev;
+    this.harvestKey = key;
     const claimed = game.harvest;
     const g = this.harvest.clear();
     const inSet = (x: number, y: number): boolean =>
@@ -500,10 +509,18 @@ export class Renderer {
       members.push(t);
       g.poly(hexPoints(t.x, t.y));
     }
-    if (members.length === 0) return;
-    g.fill({ color: COLORS.harvest, alpha: 0.22 });
-    for (const loop of outline(members, inSet)) g.poly(loop);
-    g.stroke({ width: 1.5, color: COLORS.harvest, alpha: 0.45 });
+    if (members.length > 0) {
+      g.fill({ color: COLORS.harvest, alpha: 0.22 });
+      for (const loop of outline(members, inSet)) g.poly(loop);
+      g.stroke({ width: 1.5, color: COLORS.harvest, alpha: 0.45 });
+    }
+    // What the pylons still under construction are going to collect from, much fainter.
+    const pending = key === "" ? [] : harvestPending(game);
+    for (const i of pending) {
+      const t = tileOf(game.w, i);
+      g.poly(hexPoints(t.x, t.y));
+    }
+    if (pending.length > 0) g.fill({ color: COLORS.harvest, alpha: 0.08 });
   }
 
   /** The tiles within `range` steps of a tile, tinted and outlined; tiles closer than `min` are outlined inside. */

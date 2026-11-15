@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { apply } from "./commands.ts";
-import { HARVEST_RANGE, HARVEST_RATE, harvestIncome, harvestPreview } from "./harvest.ts";
+import { HARVEST_RANGE, HARVEST_RATE, harvestIncome, harvestPending, harvestPreview } from "./harvest.ts";
 import { distance, tileOf, within } from "./hex.ts";
 import { load, save } from "./save.ts";
 import { ROCK, TICK_HZ, type Event, type Game } from "./state.ts";
@@ -173,6 +173,22 @@ describe("harvest", () => {
     expect(claimed(game)).toHaveLength(FULL);
     apply(game, { kind: "toggle", id: on.id });
     expect(claimed(game)).toHaveLength(0);
+  });
+
+  it("projects the area of a pylon that is placed but not built yet, without what is already claimed", () => {
+    const game = field();
+    const l = lander(game);
+    expect(harvestPending(game)).toHaveLength(0);
+    build(game, "pylon", l.x + 5, l.y);
+    run(game, 1);
+    const waiting = place(game, "pylon", l.x + 8, l.y, []);
+    expect(waiting).toBeDefined();
+    const pending = harvestPending(game);
+    // The two discs overlap; the built pylon keeps the shared tiles.
+    expect(pending.length).toBeGreaterThan(0);
+    expect(pending.length).toBeLessThan(FULL);
+    for (const i of pending) expect(game.harvest[i]).toBe(0);
+    expect(claimed(game)).toHaveLength(FULL);
   });
 
   it("follows the terrain when a grader changes it", () => {

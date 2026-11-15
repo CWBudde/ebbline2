@@ -70,6 +70,23 @@ export function harvestPreview(game: Game, x: number, y: number): number[] {
   return claimable(game, x, y, game.harvest);
 }
 
+/**
+ * Tile indices the pylons that do not gather yet (still being built, switched off or cut off) would claim once
+ * they do, earliest placed first. For showing the area a pylon under construction is going to have.
+ */
+export function harvestPending(game: Game): number[] {
+  const taken = game.harvest.slice();
+  const tiles: number[] = [];
+  const waiting = game.structures.filter((s) => s.kind === "pylon" && !harvests(s)).sort((a, b) => a.id - b.id);
+  for (const s of waiting) {
+    for (const i of claimable(game, s.x, s.y, taken)) {
+      taken[i] = 1;
+      tiles.push(i);
+    }
+  }
+  return tiles;
+}
+
 /** Energy per second the claimed tiles yield right now; silt standing on a tile stops its yield. */
 export function harvestIncome(game: Game): number {
   let dry = 0;
