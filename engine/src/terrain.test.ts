@@ -50,7 +50,8 @@ describe("terrain", () => {
         if (d <= 5) close += 1;
       }
       expect(lodes).toBe(level.lodes);
-      expect(close).toBeGreaterThanOrEqual(2);
+      // Two lodes within reach of the lander, when the level has two.
+      expect(close).toBeGreaterThanOrEqual(Math.min(2, level.lodes));
       for (const h of game.height) {
         expect(h).toBeGreaterThanOrEqual(ROCK);
         expect(h).toBeLessThanOrEqual(MAX_HEIGHT);

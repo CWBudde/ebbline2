@@ -7,7 +7,8 @@ import { generate } from "./terrain.ts";
 import { think } from "./testing/bot.ts";
 import { type Game, type LevelDef } from "./state.ts";
 
-const level = CAMPAIGN[4] as LevelDef;
+// The first mission with spitters, so they are part of the saved state.
+const level = CAMPAIGN.find((l) => l.spitters.count > 0) as LevelDef;
 
 function advance(game: Game, ticks: number): void {
   for (let n = 0; n < ticks; n++) {

@@ -38,8 +38,6 @@ export interface KindDef {
   /** Working radius in steps; 0 if none. */
   readonly range: number;
   readonly minRange: number;
-  /** Footprint edge length in square tiles. Left over from the square map; the engine reads `radius` instead. */
-  readonly size: 1 | 3;
   /** Footprint: the structure covers every tile within this many steps of its centre tile. */
   readonly radius: 0 | 1;
   readonly blurb: string;
@@ -52,7 +50,6 @@ export const KINDS: Readonly<Record<Kind, KindDef>> = {
     store: 0,
     range: 0,
     minRange: 0,
-    size: 3,
     radius: 1,
     blurb: "Root of the grid. Lose it and the mission is over.",
   },
@@ -62,7 +59,6 @@ export const KINDS: Readonly<Record<Kind, KindDef>> = {
     store: 0,
     range: 0,
     minRange: 0,
-    size: 1,
     radius: 0,
     blurb: "Extends the grid by six tiles.",
   },
@@ -72,7 +68,6 @@ export const KINDS: Readonly<Record<Kind, KindDef>> = {
     store: 0,
     range: 0,
     minRange: 0,
-    size: 1,
     radius: 0,
     blurb: "Links to other trunks over fourteen tiles and doubles packet speed.",
   },
@@ -82,7 +77,6 @@ export const KINDS: Readonly<Record<Kind, KindDef>> = {
     store: 0,
     range: 0,
     minRange: 0,
-    size: 1,
     radius: 0,
     blurb: "Draws steady energy from a lode. Only fits on a lode.",
   },
@@ -92,7 +86,6 @@ export const KINDS: Readonly<Record<Kind, KindDef>> = {
     store: 0,
     range: 0,
     minRange: 0,
-    size: 1,
     radius: 0,
     blurb: "Stores thirty more energy.",
   },
@@ -102,7 +95,6 @@ export const KINDS: Readonly<Record<Kind, KindDef>> = {
     store: 0,
     range: 2,
     minRange: 0,
-    size: 1,
     radius: 0,
     blurb: "Skims shallow silt nearby and turns it into a little energy.",
   },
@@ -112,7 +104,6 @@ export const KINDS: Readonly<Record<Kind, KindDef>> = {
     store: 4,
     range: 7,
     minRange: 0,
-    size: 1,
     radius: 0,
     blurb: "Burns silt off one tile at a time. Cannot aim uphill.",
   },
@@ -122,7 +113,6 @@ export const KINDS: Readonly<Record<Kind, KindDef>> = {
     store: 6,
     range: 11,
     minRange: 3,
-    size: 1,
     radius: 0,
     blurb: "Lobs a slow charge at the deepest silt in range.",
   },
@@ -132,7 +122,6 @@ export const KINDS: Readonly<Record<Kind, KindDef>> = {
     store: 8,
     range: 4,
     minRange: 0,
-    size: 1,
     radius: 0,
     blurb: "Projects a field that silt must climb like a two-step wall.",
   },
@@ -142,7 +131,6 @@ export const KINDS: Readonly<Record<Kind, KindDef>> = {
     store: 6,
     range: 9,
     minRange: 0,
-    size: 1,
     radius: 0,
     blurb: "Shoots down globs in flight.",
   },
@@ -152,7 +140,6 @@ export const KINDS: Readonly<Record<Kind, KindDef>> = {
     store: 6,
     range: 8,
     minRange: 0,
-    size: 1,
     radius: 0,
     blurb: "Raises or lowers marked ground, one step at a time.",
   },
@@ -162,7 +149,6 @@ export const KINDS: Readonly<Record<Kind, KindDef>> = {
     store: 0,
     range: 0,
     minRange: 0,
-    size: 1,
     radius: 0,
     blurb: "Clamps a dry vent while it is built, then seals it for good.",
   },

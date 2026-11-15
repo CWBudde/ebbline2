@@ -3,10 +3,13 @@
 import { apply, type Command } from "../commands.ts";
 import { linkLength } from "../grid.ts";
 import { centre, distance, span, tileAtPoint, tileOf, within, type Tile } from "../hex.ts";
+import { LANDER_INCOME, TAP_INCOME } from "../packets.ts";
 import { densest } from "../spitters.ts";
 import { step } from "../step.ts";
 import { placeError } from "../structures.ts";
+import { LANCE, LOBBER } from "../weapons.ts";
 import {
+  CAP_DRY,
   DRY,
   KINDS,
   LINK_RANGE,
@@ -16,27 +19,41 @@ import {
   type Structure,
 } from "../state.ts";
 
+/** Energy per second a lance or lobber burns while it fires without pause. */
+const LANCE_UPKEEP = (LANCE.cost * TICK_HZ) / LANCE.every;
+const LOBBER_UPKEEP = (LOBBER.cost * TICK_HZ) / LOBBER.every;
+
+/** Turns off the straight line, in radians, that a pylon walk tries in this order. */
+const DETOURS = [0, 0.5, -0.5, 1, -1, 1.5, -1.5];
+
 /** Steps between two tiles. */
 function steps(a: Tile, b: Tile): number {
   return distance(a.x, a.y, b.x, b.y);
 }
 
-/** The tile within `radius` steps of `near`, closest to it, where the structure fits and joins the grid. */
+/**
+ * The tile within `radius` steps of `near`, closest to it, where the structure fits, joins the grid and is not
+ * next to silt: a structure starts at no health, so the first film that reaches it would take it at once.
+ * Equally near tiles go to the higher ground, which floods last and lets a lance aim further.
+ */
 function spot(
   game: Game,
   kind: Kind,
   near: Tile,
   radius: number,
-  ok: (p: Tile) => boolean = () => true,
 ): Tile | undefined {
   let best: Tile | undefined;
   let bestD = Infinity;
-  within(game.w, game.h, near.x, near.y, radius, (_i, _steps, x, y) => {
+  let bestH = -Infinity;
+  within(game.w, game.h, near.x, near.y, radius, (i, _steps, x, y) => {
     const d = span(near.x, near.y, x, y);
-    if (d >= bestD || placeError(game, kind, x, y) !== null) return;
-    if (!reaches(game, kind, x, y) || !ok({ x, y })) return;
+    const h = game.height[i] ?? 0;
+    if (d > bestD + 1e-9 || (d > bestD - 1e-9 && h <= bestH)) return;
+    if (placeError(game, kind, x, y) !== null || !reaches(game, kind, x, y)) return;
+    if (wetNear(game, { x, y }, 1)) return;
     best = { x, y };
     bestD = d;
+    bestH = h;
   });
   return best;
 }
@@ -58,6 +75,15 @@ function wetNear(game: Game, p: Tile, radius: number): boolean {
     if ((game.silt[i] ?? 0) >= DRY) wet = true;
   });
   return wet;
+}
+
+/** Whether every tile within `radius` steps of p holds less silt than `depth`. */
+function shallowAround(game: Game, p: Tile, radius: number, depth: number): boolean {
+  let shallow = true;
+  within(game.w, game.h, p.x, p.y, radius, (i) => {
+    if ((game.silt[i] ?? 0) >= depth) shallow = false;
+  });
+  return shallow;
 }
 
 /** The tile `by` tile units from `from` on the straight line toward `to`; a negative `by` goes away from it. */
@@ -93,6 +119,9 @@ export function think(game: Game): Command[] {
     }
     return best;
   };
+  // What the weapons burn when they fire without pause, against what the lander and taps bring in.
+  const income = LANDER_INCOME + all.filter((s) => s.kind === "tap" && s.built).length * TAP_INCOME;
+  const upkeep = count("lance") * LANCE_UPKEEP + count("lobber") * LOBBER_UPKEEP;
   const backlog = all.filter(
     (s) => !s.built && s.kind !== "cap" && Number.isFinite(s.dist),
   ).length;
@@ -105,19 +134,34 @@ export function think(game: Game): Command[] {
     return [{ kind: "dismantle", id: stranded.id }];
   }
 
-  // 1. Cap any vent that has run dry.
+  // 1. Cap any vent that has run dry, once the pool around it is gone too: a vent that is dry only between
+  // pulses sits in a pool that flows straight back over the unfinished cap.
   for (const vent of game.vents) {
     if (
       !vent.capped &&
       placeError(game, "cap", vent.x, vent.y) === null &&
-      reaches(game, "cap", vent.x, vent.y)
+      reaches(game, "cap", vent.x, vent.y) &&
+      shallowAround(game, vent, 2, CAP_DRY / 2)
     ) {
       return order("cap", vent);
     }
   }
+  // 2. Emergencies come before saving up: placing costs nothing, and silt that lands by the lander, from a glob
+  // or a flood, wears everything there down and eats the energy in repairs, so waiting only makes it worse.
+  const home = all.find((s) => s.kind === "lander");
+  const hub = allowed("interceptor") && game.spitters.length > 0 ? densest(game) : undefined;
+  const cover = hub ? near("interceptor", hub, 6) : 2;
+  if (hub && cover === 0 && backlog < 3) {
+    const p = spot(game, "interceptor", hub, 6);
+    if (p) return order("interceptor", p);
+  }
+  if (home && wetNear(game, home, 3) && near("lance", home, 6) < 2 && backlog < 3) {
+    const p = spot(game, "lance", home, 6);
+    if (p) return order("lance", p);
+  }
   if (backlog >= 3 || game.energy < 3) return [];
 
-  // 2. Tap every lode the grid reaches; walk pylons to the nearest dry one.
+  // 3. Tap every lode the grid reaches; walk pylons to the nearest dry one.
   const lodes: Tile[] = [];
   for (let i = 0; i < game.lode.length; i++) {
     if (game.lode[i] === 1 && game.occ[i] === 0) lodes.push(tileOf(game.w, i));
@@ -125,7 +169,8 @@ export function think(game: Game): Command[] {
   for (const lode of lodes) {
     if (
       placeError(game, "tap", lode.x, lode.y) === null &&
-      reaches(game, "tap", lode.x, lode.y)
+      reaches(game, "tap", lode.x, lode.y) &&
+      !wetNear(game, lode, 1)
     ) {
       return order("tap", lode);
     }
@@ -135,7 +180,15 @@ export function think(game: Game): Command[] {
     if (!from) return undefined;
     const gap = steps(from, goal);
     const reach = Math.min(LINK_RANGE - 1, Math.max(1, gap - LINK_RANGE + 1));
-    return spot(game, "pylon", toward(from, goal, reach), 2, (p) => !wetNear(game, p, 1));
+    // Straight on if the ground allows, else swing ever wider round silt and rock.
+    const a = centre(from.x, from.y);
+    const b = centre(goal.x, goal.y);
+    const angle = Math.atan2(b.y - a.y, b.x - a.x);
+    for (const swing of DETOURS) {
+      const p = spot(game, "pylon", heading(from, angle + swing, reach), 2);
+      if (p) return p;
+    }
+    return undefined;
   };
   lodes.sort((a, b) => steps(a, closest(a) ?? a) - steps(b, closest(b) ?? b));
   const lode = lodes.find((p) => !wetNear(game, p, 2));
@@ -151,23 +204,13 @@ export function think(game: Game): Command[] {
     if (p) return order("cell", p);
   }
 
-  // 3. Cover the densest cluster against globs.
-  if (
-    allowed("interceptor") &&
-    game.spitters.length > 0 &&
-    count("interceptor") < 10 &&
-    game.energy >= 12
-  ) {
-    const hub = densest(game);
-    const p =
-      hub && near("interceptor", hub, 6) < 2
-        ? spot(game, "interceptor", hub, 4)
-        : undefined;
+  // 4. Cover the densest cluster against globs with a second interceptor.
+  if (hub && count("interceptor") < 10 && cover < 2 && game.energy >= 12) {
+    const p = spot(game, "interceptor", hub, 6);
     if (p) return order("interceptor", p);
   }
 
-  // 4. With nothing to cap, ring the lander with weapons instead.
-  const home = all.find((s) => s.kind === "lander");
+  // 5. With nothing to cap, ring the lander with weapons instead.
   if (game.level.objective.kind === "survive" && home) {
     if (game.energy < 12) return [];
     const ring = 3 + Math.floor(game.tick / (40 * TICK_HZ));
@@ -184,7 +227,7 @@ export function think(game: Game): Command[] {
     return [];
   }
 
-  // 5. Push toward the nearest open vent.
+  // 6. Push toward the nearest open vent.
   const vents = game.vents.filter((v) => !v.capped);
   vents.sort((a, b) => steps(a, closest(a) ?? a) - steps(b, closest(b) ?? b));
   const vent = vents[0];
@@ -198,11 +241,15 @@ export function think(game: Game): Command[] {
     const flush = game.energy >= game.capacity * 0.8;
     const wave = flush ? 99 : 4 + Math.floor(game.tick / (90 * TICK_HZ));
     if (near("lance", front, 6) < wave) {
-      const p = spot(game, "lance", aim, 4);
+      const p = spot(game, "lance", aim, 6);
       if (p) return order("lance", p);
     }
-    if (allowed("lobber") && near("lobber", front, 6) < Math.min(wave, near("lance", front, 6)) / 2) {
-      const p = spot(game, "lobber", toward(front, vent, -1), 4);
+    if (
+      allowed("lobber") &&
+      near("lobber", front, 6) < Math.min(wave, near("lance", front, 6)) / 2 &&
+      upkeep + LOBBER_UPKEEP <= income
+    ) {
+      const p = spot(game, "lobber", toward(front, vent, -1), 6);
       if (p) return order("lobber", p);
     }
   }
