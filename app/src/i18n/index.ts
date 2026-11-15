@@ -15,11 +15,13 @@ import { nl, nlContent } from "./nl.ts";
 import { pl, plContent } from "./pl.ts";
 import { pt, ptContent } from "./pt.ts";
 import { ru, ruContent } from "./ru.ts";
+import { th, thContent } from "./th.ts";
+import { tr, trContent } from "./tr.ts";
 import { zh, zhContent } from "./zh.ts";
 
 export type { Content, Key, LevelText } from "./en.ts";
 
-export type Lang = "en" | "de" | "fr" | "es" | "it" | "pt" | "nl" | "pl" | "ru" | "zh" | "ja";
+export type Lang = "en" | "de" | "fr" | "es" | "it" | "pt" | "nl" | "pl" | "ru" | "tr" | "zh" | "ja" | "th";
 export type LangSetting = "auto" | Lang;
 
 /** The choices of the language setting, with each language named in itself. */
@@ -33,12 +35,14 @@ export const LANGUAGES: readonly { readonly id: Lang; readonly name: string }[] 
   { id: "nl", name: "Nederlands" },
   { id: "pl", name: "Polski" },
   { id: "ru", name: "Русский" },
+  { id: "tr", name: "Türkçe" },
   { id: "zh", name: "简体中文" },
   { id: "ja", name: "日本語" },
+  { id: "th", name: "ไทย" },
 ];
 
 export const TEXT: Readonly<Record<Lang, Readonly<Record<Key, string>>>> = {
-  en, de, fr, es, it, pt, nl, pl, ru, zh, ja,
+  en, de, fr, es, it, pt, nl, pl, ru, tr, zh, ja, th,
 };
 /** English content is the engine's own text. */
 export const CONTENT: Readonly<Partial<Record<Lang, Content>>> = {
@@ -50,8 +54,10 @@ export const CONTENT: Readonly<Partial<Record<Lang, Content>>> = {
   nl: nlContent,
   pl: plContent,
   ru: ruContent,
+  tr: trContent,
   zh: zhContent,
   ja: jaContent,
+  th: thContent,
 };
 
 /** The active language. Set it through `setLanguage`. */

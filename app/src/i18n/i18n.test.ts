@@ -136,6 +136,8 @@ describe("language", () => {
     expect(detect("auto", ["pt-BR"])).toBe("pt");
     expect(detect("auto", ["zh-CN", "en"])).toBe("zh");
     expect(detect("auto", ["ko", "ja-JP"])).toBe("ja");
+    expect(detect("auto", ["tr-TR", "en"])).toBe("tr");
+    expect(detect("auto", ["th-TH"])).toBe("th");
     expect(detect("auto", [])).toBe("en");
     expect(detect("auto", ["DE"])).toBe("de");
     // "den" is not German: only the primary subtag counts.
@@ -178,6 +180,11 @@ describe("language", () => {
     lang.value = "ru";
     expect(num(12345)).toBe("12\u00a0345");
     lang.value = "ja";
+    expect(num(12345)).toBe("12,345");
+    lang.value = "tr";
+    expect(num(12345)).toBe("12.345");
+    expect(num(0.5, 1)).toBe("0,5");
+    lang.value = "th";
     expect(num(12345)).toBe("12,345");
   });
 });

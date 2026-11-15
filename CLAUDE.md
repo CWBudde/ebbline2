@@ -92,12 +92,12 @@ Vite, PixiJS for the map canvas, Preact with signals for the DOM UI on top of it
 
 ### Text and languages
 
-`app/src/i18n/en.ts` defines the interface keys; the ten other language files are typed against them, so a
+`app/src/i18n/en.ts` defines the interface keys; the twelve other language files are typed against them, so a
 missing key fails the typecheck. The English names and descriptions of structures and the names, briefs and
 hints of levels are not in `en.ts`: they live with the data in the engine (`KINDS`, `CAMPAIGN`), and each other
 language translates them by id in its `Content` table. `i18n.test.ts` checks that every language has all keys,
 the same placeholders and markup, and text for every level, hint, structure kind and placement error. Any new
-or changed player-facing text therefore has to be done in all eleven languages in the same change.
+or changed player-facing text therefore has to be done in all thirteen languages in the same change.
 
 ### Adding a structure kind
 
