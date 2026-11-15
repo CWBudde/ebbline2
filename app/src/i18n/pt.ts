@@ -86,7 +86,7 @@ export const pt: Record<Key, string> = {
   "help.keys.zoom.does": "Zoom",
   "help.keys.pan": "W A S D, setas",
   "help.keys.pan.does": "Move o mapa",
-  "help.keys.slots": "1 a 0, -",
+  "help.keys.slots": "1 a 0, -, =",
   "help.keys.slots.does": "Escolhe uma estrutura da barra de construção",
   "help.keys.mark": "G",
   "help.keys.mark.does": "Marca terreno para as niveladoras",
@@ -115,6 +115,7 @@ export const pt: Record<Key, string> = {
   "build.mark.cost": "terreno",
   "build.mark.title": "Marcar terreno para as niveladoras elevarem ou rebaixarem",
   "key.slot11": "-",
+  "key.slot12": "=",
   "key.delete": "Del",
 
   "status.offGrid": "Fora da rede: precisa de uma estrutura a até seis casas",
@@ -181,6 +182,8 @@ export const pt: Record<Key, string> = {
     "Ela funciona sem energia, mas rende pouco, e lodo na própria casa a desgasta: mantenha uma lança por perto.",
   "tip.trunk":
     "A ligação rápida de quatorze casas precisa de um tronco em cada ponta; com todo o resto um tronco se liga como uma torre, a até seis casas.",
+  "tip.booster":
+    "Ele só acelera os pacotes que repassa, não os que o constroem ou reparam. Coloque-o cedo numa linha longa: quanto antes um pacote é acelerado, mais tempo ele corre mais rápido.",
   "tip.interceptor":
     "Ele alcança nove casas e gasta uma de energia por tiro, três tiros por bolota: coloque-o onde suas estruturas estão mais próximas.",
   "tip.baffle":
@@ -235,6 +238,10 @@ export const ptContent: Content = {
       name: "Tronco",
       blurb: "Liga-se a outros troncos a até quatorze casas e dobra a velocidade dos pacotes.",
     },
+    booster: {
+      name: "Acelerador",
+      blurb: "Repassa pacotes como uma torre, e cada pacote que passa por ele segue depois um quinto mais rápido. Aceleradores se somam, mas o mesmo acelerador nunca acelera um pacote duas vezes.",
+    },
     tap: { name: "Extrator", blurb: "Tira energia constante de um veio. Só cabe num veio." },
     cell: { name: "Bateria", blurb: "Armazena trinta de energia a mais." },
     pump: {
@@ -288,6 +295,7 @@ export const ptContent: Content = {
       brief: "Três fendas em três direções, a mais próxima a vinte e nove casas. Os troncos levam pacotes rápido por grandes distâncias.",
       hints: [
         "Os troncos se ligam entre si a catorze casas e dobram a velocidade dos pacotes.",
+        "Um acelerador repassa como uma torre e deixa cada pacote que passa por ele um quinto mais rápido. Os pacotes seguem o caminho mais rápido, então alguns aceleradores ao longo de uma linha longa atraem o tráfego e o fazem chegar antes.",
       ],
     },
     c5: {

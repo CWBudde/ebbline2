@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "preact/hooks";
 import type { ComponentChildren } from "preact";
 import { BUILDABLE, CAMPAIGN, KINDS, skirmish, type Difficulty, type MapSize } from "@ebbline2/engine";
 import type { Controller, Screen } from "../controller.ts";
-import { TITLE_ART_URL, illustrationUrl } from "../render/assets.ts";
+import { TITLE_ART_URL, TITLE_LAYER_URLS, illustrationUrl, spriteUrl } from "../render/assets.ts";
 import { startTitleScene } from "../render/titleScene.ts";
 import {
   LANGUAGES,
@@ -124,7 +124,7 @@ function TitleScene({ still }: { still: boolean }) {
   const [live, setLive] = useState(false);
   useEffect(() => {
     if (!scene.current) return undefined;
-    return startTitleScene(scene.current, TITLE_ART_URL, { still, onReady: () => { setLive(true); } });
+    return startTitleScene(scene.current, TITLE_LAYER_URLS, { still, onReady: () => { setLive(true); } });
   }, [still]);
   return <canvas ref={scene} class={live ? "backdrop scene live" : "backdrop scene"} aria-hidden="true" />;
 }
@@ -308,7 +308,8 @@ export function Help() {
         <h3>{t("help.structures.title")}</h3>
         <dl class="roster">
           {BUILDABLE.map((kind) => {
-            const picture = illustrationUrl(kind);
+            // A kind without an illustration shows its map sprite instead.
+            const picture = illustrationUrl(kind) ?? spriteUrl(kind);
             return (
               <div key={kind}>
                 {picture !== undefined && (

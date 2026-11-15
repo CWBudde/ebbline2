@@ -5,6 +5,7 @@ import { dragPlaces, spacing } from "./place.ts";
 describe("drag placement", () => {
   it("spaces connectors so that a dragged row still links up", () => {
     expect(spacing("pylon")).toBeLessThanOrEqual(LINK_RANGE);
+    expect(spacing("booster")).toBeLessThanOrEqual(LINK_RANGE);
     expect(spacing("trunk")).toBeLessThanOrEqual(TRUNK_RANGE);
   });
 

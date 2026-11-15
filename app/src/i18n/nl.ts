@@ -83,7 +83,7 @@ export const nl: Record<Key, string> = {
   "help.keys.zoom.does": "Zoomen",
   "help.keys.pan": "W A S D, pijltjes",
   "help.keys.pan.does": "Kaart verschuiven",
-  "help.keys.slots": "1 t/m 0, -",
+  "help.keys.slots": "1 t/m 0, -, =",
   "help.keys.slots.does": "Gebouw uit de bouwbalk kiezen",
   "help.keys.mark": "G",
   "help.keys.mark.does": "Grond markeren voor egaliseerders",
@@ -111,6 +111,7 @@ export const nl: Record<Key, string> = {
   "build.mark.cost": "grond",
   "build.mark.title": "Grond markeren die egaliseerders moeten ophogen of afgraven",
   "key.slot11": "-",
+  "key.slot12": "=",
   "key.delete": "Del",
 
   "status.offGrid": "Niet op het net: heeft een gebouw binnen zes vakken nodig",
@@ -176,6 +177,8 @@ export const nl: Record<Key, string> = {
     "Hij draait zonder energie maar levert weinig op, en slib op zijn eigen vak tast hem aan: houd een lans in de buurt.",
   "tip.trunk":
     "De snelle verbinding over veertien vakken heeft aan beide kanten een hoofdlijn nodig; met al het andere verbindt een hoofdlijn zich als een pyloon, binnen zes vakken.",
+  "tip.booster":
+    "Hij versnelt alleen de pakketten die hij doorgeeft, niet die waarmee hij wordt gebouwd of gerepareerd. Zet hem vroeg op een lange lijn: hoe eerder een pakket wordt versneld, hoe langer het sneller reist.",
   "tip.interceptor":
     "Hij reikt negen vakken en gebruikt één energie per schot, drie schoten per klodder: zet hem waar je gebouwen het dichtst opeen staan.",
   "tip.baffle":
@@ -230,6 +233,10 @@ export const nlContent: Content = {
       name: "Hoofdlijn",
       blurb: "Verbindt zich over veertien vakken met andere hoofdlijnen en verdubbelt de snelheid van pakketten.",
     },
+    booster: {
+      name: "Versneller",
+      blurb: "Geeft pakketten door zoals een pyloon, en elk pakket dat erlangs komt gaat daarna een vijfde sneller. Versnellers stapelen, maar dezelfde versneller versnelt een pakket nooit twee keer.",
+    },
     tap: { name: "Tap", blurb: "Tapt gestaag energie uit een ader. Past alleen op een ader." },
     cell: { name: "Accu", blurb: "Slaat dertig energie extra op." },
     pump: {
@@ -283,6 +290,7 @@ export const nlContent: Content = {
       brief: "Drie bronnen in drie richtingen, de dichtstbijzijnde negenentwintig vakken weg. Hoofdlijnen brengen pakketten snel over grote afstanden.",
       hints: [
         "Hoofdlijnen verbinden zich onderling over veertien vakken en verdubbelen de pakketsnelheid.",
+        "Een versneller geeft door zoals een pyloon en maakt elk pakket dat erlangs komt een vijfde sneller. Pakketten nemen de snelste weg, dus een paar versnellers langs een lange lijn trekken het verkeer aan en brengen het eerder op bestemming.",
       ],
     },
     c5: {

@@ -15,6 +15,17 @@ import {
  */
 export const PACKET_SPEED = 0.3;
 
+/** Factor on a packet's speed for each booster that relays it; boosts from different boosters multiply. */
+export const BOOST = 1.2;
+
+/**
+ * Whether a structure speeds up the packets it relays: a booster that is built, switched on and
+ * connected to the lander.
+ */
+export function boosts(s: Structure): boolean {
+  return s.kind === "booster" && s.built && s.active && Number.isFinite(s.dist);
+}
+
 export function isTrunkLink(a: Structure, b: Structure): boolean {
   return a.kind === "trunk" && b.kind === "trunk";
 }
@@ -53,6 +64,10 @@ export function reaches(game: Game, kind: Structure["kind"], x: number, y: numbe
 /**
  * Recomputes every structure's distance and parent toward the lander, and the link list.
  * Every built structure relays packets onward; an unfinished one can only be the end of a route.
+ *
+ * The distance is the time a packet takes: a link costs its length, half on a trunk link, divided by
+ * the boost a packet has picked up from the boosters on the way there. So routes bend through
+ * boosters where that is quicker, and run as before where there are none.
  */
 export function rebuild(game: Game): void {
   const nodes = game.structures;
@@ -60,6 +75,8 @@ export function rebuild(game: Game): void {
     s.dist = s.id === game.landerId ? 0 : Infinity;
     s.parent = 0;
   }
+  // The boost a packet carries when it leaves each settled relay, by id. The lander's parent is 0.
+  const pace = new Map<number, number>();
   const open = new Set(nodes);
   for (;;) {
     let u: Structure | undefined;
@@ -69,10 +86,12 @@ export function rebuild(game: Game): void {
     if (!u || !Number.isFinite(u.dist)) break;
     open.delete(u);
     if (!u.built) continue;
+    const boost = (pace.get(u.parent) ?? 1) * (boosts(u) ? BOOST : 1);
+    pace.set(u.id, boost);
     for (const v of open) {
       const length = linkLength(u, v);
       if (length === 0) continue;
-      const cost = u.dist + (isTrunkLink(u, v) ? length / 2 : length);
+      const cost = u.dist + (isTrunkLink(u, v) ? length / 2 : length) / boost;
       if (cost < v.dist) {
         v.dist = cost;
         v.parent = u.id;

@@ -8,7 +8,7 @@ describe("briefingPlan", () => {
       ["pylon", "lance", "cap"],
       ["tap", "cell"],
       ["lobber"],
-      ["trunk"],
+      ["trunk", "booster"],
       ["pump"],
       ["survive", "baffle", "grader"],
       ["spitter", "interceptor"],

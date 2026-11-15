@@ -81,7 +81,7 @@ export const zh: Record<Key, string> = {
   "help.keys.zoom.does": "缩放",
   "help.keys.pan": "W A S D、方向键",
   "help.keys.pan.does": "移动地图",
-  "help.keys.slots": "1–0、-",
+  "help.keys.slots": "1–0、-、=",
   "help.keys.slots.does": "从建造栏选择建筑",
   "help.keys.mark": "G",
   "help.keys.mark.does": "为平地机标记地面",
@@ -109,6 +109,7 @@ export const zh: Record<Key, string> = {
   "build.mark.cost": "地面",
   "build.mark.title": "标记要让平地机抬高或降低的地面",
   "key.slot11": "-",
+  "key.slot12": "=",
   "key.delete": "Del",
 
   "status.offGrid": "未接入电网：六格内需要一座建筑",
@@ -164,6 +165,8 @@ export const zh: Record<Key, string> = {
   "tip.lobber": "只攻击积水般的深泥，不打薄层，且三格内不开火：放在前线后方，浅处交给灼枪。",
   "tip.pump": "无需能量即可运行，但收益不高，而且自身格子上的淤泥会侵蚀它：附近放一把灼枪。",
   "tip.trunk": "十四格的快速连接两端都需要干线塔；与其他建筑相连时，它和电塔一样，范围六格。",
+  "tip.booster":
+    "它只加速由它转发的能量包，不加速用来建造或修复它的能量包。把它建在长线路的前段：能量包越早被加速，以更快速度行进的距离就越长。",
   "tip.interceptor": "射程九格，每发消耗一点能量，每个泥团需三发：放在建筑最密集的地方。",
   "tip.baffle": "屏障场覆盖周围四格，屏障一旦断能便立刻消失，所以要保护为它供能的线路。",
   "tip.grader": "每改变一级高度需要一秒半，建筑下方无法平整：在淤泥到来之前标好你的堤坝。",
@@ -207,6 +210,10 @@ export const zhContent: Content = {
     lander: { name: "着陆舱", blurb: "电网的起点。一旦被毁，任务结束。" },
     pylon: { name: "电塔", blurb: "将电网扩展六格，并从它所在高度上看得到的平地收集少量能量。" },
     trunk: { name: "干线塔", blurb: "与十四格内的其他干线塔相连，使能量包速度翻倍。" },
+    booster: {
+      name: "加速器",
+      blurb: "像电塔一样中继能量包，经它转发的能量包此后速度变为 1.2 倍（提高五分之一）。多个加速器效果叠加，但同一个加速器绝不会对同一能量包加速两次。",
+    },
     tap: { name: "汲取器", blurb: "从矿脉中持续汲取能量。只能放在矿脉上。" },
     cell: { name: "储能器", blurb: "额外储存三十点能量。" },
     pump: { name: "抽泥泵", blurb: "抽取附近的浅层淤泥，转化为少量能量。" },
@@ -248,6 +255,7 @@ export const zhContent: Content = {
       brief: "三个喷口分在三个方向，最近的在二十九格外。干线塔能让能量包快速跨越长距离。",
       hints: [
         "干线塔之间可相隔十四格相连，并使能量包速度翻倍。",
+        "加速器像电塔一样中继，并使经它转发的每个能量包提速五分之一。能量包总走最快的路线，所以在长线路上建几座加速器，能把流量吸引过来并更快送达。",
       ],
     },
     c5: {

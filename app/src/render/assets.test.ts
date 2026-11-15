@@ -5,6 +5,7 @@ import { BUILDABLE } from "@ebbline2/engine";
 import {
   ART_URL,
   TITLE_ART_URL,
+  TITLE_LAYER_URLS,
   illustrationUrl,
   parseAtlas,
   spriteUrl,
@@ -13,7 +14,10 @@ import {
 } from "./assets.ts";
 
 const ART = fileURLToPath(new URL("../../public/art/", import.meta.url));
-const KINDS: readonly SpriteKind[] = ["lander", ...BUILDABLE, "vent", "spitter", "lode"];
+/** Kinds with no generated art yet: the map, the build bar and the briefing show their code drawing. */
+const DRAWN_ONLY: readonly SpriteKind[] = ["booster"];
+const ALL: readonly SpriteKind[] = ["lander", ...BUILDABLE, "vent", "spitter", "lode"];
+const KINDS = ALL.filter((kind) => !DRAWN_ONLY.includes(kind));
 /** The file behind an art URL. */
 const file = (url: string): string => ART + url.slice(ART_URL.length);
 
@@ -23,11 +27,13 @@ describe("installed art", () => {
       const url = illustrationUrl(kind);
       if (url !== undefined) expect(existsSync(file(url)), url).toBe(true);
     }
-    for (const kind of [...BUILDABLE, "spitter"] as const) expect(illustrationUrl(kind)).toBeDefined();
+    for (const kind of [...BUILDABLE, "spitter"] as const) {
+      if (!DRAWN_ONLY.includes(kind)) expect(illustrationUrl(kind), kind).toBeDefined();
+    }
   });
 
-  it("has the title art", () => {
-    expect(existsSync(file(TITLE_ART_URL))).toBe(true);
+  it("has the title art and its layers", () => {
+    for (const url of [TITLE_ART_URL, ...Object.values(TITLE_LAYER_URLS)]) expect(existsSync(file(url)), url).toBe(true);
   });
 
   it("has an atlas frame inside the sheet for every map piece", () => {

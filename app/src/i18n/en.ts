@@ -67,7 +67,7 @@ export const en = {
   "help.keys.zoom.does": "Zoom",
   "help.keys.pan": "W A S D, arrows",
   "help.keys.pan.does": "Move the map",
-  "help.keys.slots": "1 to 0, −",
+  "help.keys.slots": "1 to 0, −, =",
   "help.keys.slots.does": "Pick a structure from the build bar",
   "help.keys.mark": "G",
   "help.keys.mark.does": "Mark ground for Graders",
@@ -96,6 +96,8 @@ export const en = {
   "build.mark.title": "Mark ground for Graders to raise or lower",
   /** The key right of 0, which picks the eleventh slot. */
   "key.slot11": "−",
+  /** The key right of that, which picks the twelfth slot. */
+  "key.slot12": "=",
   "key.delete": "Del",
 
   "status.offGrid": "Off the grid: needs a structure within six tiles",
@@ -160,6 +162,8 @@ export const en = {
     "It runs without energy but earns little, and silt on its own tile wears it down: keep a Lance close by.",
   "tip.trunk":
     "The fast fourteen-tile link needs a Trunk at both ends; to anything else a Trunk links like a Pylon, within six tiles.",
+  "tip.booster":
+    "It speeds up only the packets it passes on, not the ones that build or repair it. Put it early on a long line: the sooner a packet is boosted, the longer it runs faster.",
   "tip.interceptor":
     "It reaches nine tiles and spends one energy per shot, three shots per glob: place it where your structures stand closest together.",
   "tip.baffle":

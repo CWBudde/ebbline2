@@ -83,7 +83,7 @@ export const de: Record<Key, string> = {
   "help.keys.zoom.does": "Zoomen",
   "help.keys.pan": "W A S D, Pfeiltasten",
   "help.keys.pan.does": "Karte verschieben",
-  "help.keys.slots": "1 bis 0, ß",
+  "help.keys.slots": "1 bis 0, ß, ´",
   "help.keys.slots.does": "Gebäude aus der Bauleiste wählen",
   "help.keys.mark": "G",
   "help.keys.mark.does": "Boden für Planierer markieren",
@@ -112,6 +112,7 @@ export const de: Record<Key, string> = {
   "build.mark.cost": "Boden",
   "build.mark.title": "Boden markieren, den Planierer heben oder senken sollen",
   "key.slot11": "ß",
+  "key.slot12": "´",
   "key.delete": "Entf",
 
   "status.offGrid": "Nicht am Netz: braucht ein Gebäude in höchstens sechs Feldern Entfernung",
@@ -178,6 +179,8 @@ export const de: Record<Key, string> = {
     "Sie läuft ohne Energie, bringt aber wenig ein, und Schlick auf ihrem eigenen Feld zersetzt sie: Stell eine Lanze in die Nähe.",
   "tip.trunk":
     "Die schnelle Verbindung über vierzehn Felder braucht an beiden Enden eine Trasse; mit allem anderen verbindet sie sich wie ein Pylon, über höchstens sechs Felder.",
+  "tip.booster":
+    "Er beschleunigt nur die Pakete, die er weitergibt, nicht die, die ihn bauen oder reparieren. Setz ihn früh an eine lange Leitung: Je eher ein Paket beschleunigt wird, desto länger läuft es schneller.",
   "tip.interceptor":
     "Er reicht neun Felder weit und braucht pro Schuss eine Einheit Energie, drei Schüsse pro Klumpen: Stell ihn dorthin, wo deine Gebäude am dichtesten stehen.",
   "tip.baffle":
@@ -232,6 +235,10 @@ export const deContent: Content = {
       name: "Trasse",
       blurb: "Verbindet sich über vierzehn Felder mit anderen Trassen und verdoppelt das Tempo der Pakete.",
     },
+    booster: {
+      name: "Beschleuniger",
+      blurb: "Leitet Pakete wie ein Pylon weiter, und jedes Paket, das ihn passiert, ist danach ein Fünftel schneller. Beschleuniger wirken zusammen, aber derselbe beschleunigt ein Paket nur einmal.",
+    },
     tap: { name: "Zapfer", blurb: "Zieht stetig Energie aus einer Ader. Passt nur auf eine Ader." },
     cell: { name: "Speicher", blurb: "Fasst dreißig Energie zusätzlich." },
     pump: {
@@ -285,6 +292,7 @@ export const deContent: Content = {
       brief: "Drei Schlote in drei Richtungen, der nächste neunundzwanzig Felder entfernt. Trassen bringen Pakete schnell über große Lücken.",
       hints: [
         "Trassen verbinden sich untereinander über vierzehn Felder und verdoppeln das Tempo der Pakete.",
+        "Ein Beschleuniger leitet Pakete wie ein Pylon weiter und macht jedes, das ihn passiert, um ein Fünftel schneller. Pakete nehmen den schnellsten Weg, also ziehen ein paar Beschleuniger entlang einer langen Leitung den Verkehr an und bringen ihn früher ans Ziel.",
       ],
     },
     c5: {

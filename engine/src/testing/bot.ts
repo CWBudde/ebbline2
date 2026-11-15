@@ -4,6 +4,10 @@
 // What it does, in order of urgency: give up cut-off structures, cap vents as soon as they can take a cap, shoot
 // down globs and guard the lander, tap lodes, put pylons on flats for their harvest, then push toward the nearest
 // open vent with lances sited on high ground that overlooks the silt, backed by lobbers on deep pools.
+//
+// When it only has to hold out, it digs in instead: graders raise a ring of ground round the lander to the top
+// height, lances and lobbers stand inside it or on its crest, and pumps on the crest skim the silt that rises
+// against it for energy.
 
 import { apply, type Command } from "../commands.ts";
 import { linkLength } from "../grid.ts";
@@ -19,6 +23,7 @@ import {
   DRY,
   KINDS,
   LINK_RANGE,
+  MAX_HEIGHT,
   ROCK,
   TICK_HZ,
   type Game,
@@ -35,6 +40,18 @@ const DETOURS = [0, 0.5, -0.5, 1, -1, 1.5, -1.5];
 
 /** A pylon put down only for its harvest has to claim at least this many tiles to pay for itself soon. */
 const HARVEST_WORTH = 12;
+
+/**
+ * Steps from the lander to the dike it raises when it only has to hold out: far enough out that the taps, cells
+ * and weapons next to the lander fit inside.
+ */
+const DIKE = 5;
+
+/** Graders that raise the dike. */
+const GRADERS = 2;
+
+/** A pump on the dike's crest has to have at least this many wet tiles in reach to be worth its cost. */
+const PUMP_WET = 5;
 
 /** Steps between two tiles. */
 function steps(a: Tile, b: Tile): number {
@@ -56,8 +73,12 @@ function wetNear(game: Game, p: Tile, radius: number): boolean {
   return wet;
 }
 
-/** Whether a structure of this kind can go here now, on the grid and clear of silt. */
+/**
+ * Whether a structure of this kind can go here now, on the grid and clear of silt. Ground marked for grading stays
+ * free: a grader cannot raise a tile that something stands on.
+ */
 function fits(game: Game, kind: Kind, p: Tile): boolean {
+  if ((game.mark[p.y * game.w + p.x] ?? -1) >= 0) return false;
   return placeError(game, kind, p.x, p.y) === null && reaches(game, kind, p.x, p.y) && !wetNear(game, p, 1);
 }
 
@@ -140,6 +161,39 @@ function heading(from: Tile, angle: number, by: number): Tile {
   return tileAtPoint(a.x + Math.cos(angle) * by, a.y + Math.sin(angle) * by);
 }
 
+/**
+ * Indices of the tiles of the dike round the lander: every tile DIKE steps from it that is not rock. Silt can only
+ * get from beyond the ring to the lander across one of them, so with all of them raised the ring holds silt back
+ * until it rises above their top.
+ */
+function dike(game: Game, home: Tile): number[] {
+  const ring: number[] = [];
+  within(game.w, game.h, home.x, home.y, DIKE, (i, d) => {
+    if (d === DIKE && game.height[i] !== ROCK) ring.push(i);
+  });
+  return ring;
+}
+
+/** The finished crest tile for a pump that reaches the most wet tiles, if one reaches enough of them. */
+function crestPump(game: Game, ring: readonly number[]): Tile | undefined {
+  let best: Tile | undefined;
+  let bestWet = PUMP_WET - 1;
+  for (const i of ring) {
+    const p = tileOf(game.w, i);
+    if ((game.height[i] ?? 0) < MAX_HEIGHT || (game.silt[i] ?? 0) >= DRY) continue;
+    if (placeError(game, "pump", p.x, p.y) !== null || !reaches(game, "pump", p.x, p.y)) continue;
+    let wet = 0;
+    within(game.w, game.h, p.x, p.y, KINDS.pump.range, (j) => {
+      if ((game.silt[j] ?? 0) >= DRY) wet += 1;
+    });
+    if (wet > bestWet) {
+      best = p;
+      bestWet = wet;
+    }
+  }
+  return best;
+}
+
 function order(structure: Kind, p: Tile): Command[] {
   return [{ kind: "place", structure, x: p.x, y: p.y }];
 }
@@ -187,6 +241,14 @@ export function think(game: Game): Command[] {
   // 2. Emergencies come before saving up: placing costs nothing, and silt that lands by the lander, from a glob
   // or a flood, wears everything there down and eats the energy in repairs, so waiting only makes it worse.
   const home = all.find((s) => s.kind === "lander");
+  // Holding out, the bot digs in behind a dike, where it can raise one.
+  const ring = home && game.level.objective.kind === "survive" && allowed("grader") ? dike(game, home) : undefined;
+  /** Whether a weapon here stands safe: anywhere without a dike, else inside it or on its finished crest. */
+  const behind = (q: Tile): boolean => {
+    if (!ring || !home) return true;
+    const d = steps(q, home);
+    return d < DIKE || (d === DIKE && (game.height[q.y * game.w + q.x] ?? 0) >= MAX_HEIGHT);
+  };
   const hub = allowed("interceptor") && game.spitters.length > 0 ? densest(game) : undefined;
   const cover = hub ? near("interceptor", hub, 6) : 2;
   if (hub && cover === 0 && backlog < 3) {
@@ -194,10 +256,24 @@ export function think(game: Game): Command[] {
     if (p) return order("interceptor", p);
   }
   if (home && wetNear(game, home, 4) && near("lance", home, 6) < 3 && backlog < 3) {
-    const p = site(game, "lance", home, 6, (q) => overlook(game, q) - steps(q, home));
+    const p = site(game, "lance", home, 6, (q) => (behind(q) ? overlook(game, q) - steps(q, home) : -Infinity));
     if (p) return order("lance", p);
   }
+  // Marking the dike costs nothing, so it comes first; the graders go back once it stands to its full height.
+  const low = ring?.filter((i) => (game.height[i] ?? 0) < MAX_HEIGHT) ?? [];
+  if (ring) {
+    const unmarked = low.filter((i) => (game.mark[i] ?? -1) < 0 && game.occ[i] === 0);
+    if (unmarked.length > 0) return [{ kind: "mark", tiles: unmarked, height: MAX_HEIGHT }];
+    const grader = all.find((s) => s.kind === "grader");
+    if (low.length === 0 && grader) return [{ kind: "dismantle", id: grader.id }];
+  }
   if (backlog >= 3 || game.energy < 3) return [];
+
+  // Graders stand well inside the dike, by the lander, where they reach all of it.
+  if (home && low.length > 0 && count("grader") < GRADERS && game.energy >= KINDS.grader.cost && backlog === 0) {
+    const p = site(game, "grader", home, DIKE - 2, (q, i) => -steps(q, home) * 0.1 + (game.height[i] ?? 0) * 0.01);
+    if (p) return order("grader", p);
+  }
 
   // 3. Tap every lode the grid reaches; walk pylons to the nearest dry one.
   const lodes: Tile[] = [];
@@ -277,15 +353,23 @@ export function think(game: Game): Command[] {
   // that is no threat yet.
   if (game.level.objective.kind === "survive" && home) {
     if (game.energy < 12) return [];
+    // Silt rising against the dike feeds pumps on its crest, which pay for the lances once the lodes outside drown.
+    const pump = ring && allowed("pump") ? crestPump(game, ring) : undefined;
+    if (pump) return order("pump", pump);
     // Posts spread round the lander at golden-angle steps, so the ring closes evenly as it grows.
-    const ring = 3 + Math.floor(game.tick / (40 * TICK_HZ));
+    const posts = 3 + Math.floor(game.tick / (40 * TICK_HZ));
     const post = heading(home, count("lance") * 2.4, 4);
-    if (count("lance") < ring * 2) {
-      const p = spot(game, "lance", post, 3);
+    if (count("lance") < posts * 2) {
+      // Behind a dike, lances go wherever they overlook the most silt; its crest overlooks everything.
+      const p = ring
+        ? site(game, "lance", home, DIKE, (q) => (behind(q) ? overlook(game, q) : -Infinity))
+        : spot(game, "lance", post, 3);
       if (p) return order("lance", p);
     }
-    if (allowed("lobber") && count("lobber") < ring) {
-      const p = spot(game, "lobber", post, 3);
+    if (allowed("lobber") && count("lobber") < posts) {
+      const p = ring
+        ? site(game, "lobber", post, 3, (q) => (steps(q, home) < DIKE ? -span(post.x, post.y, q.x, q.y) : -Infinity))
+        : spot(game, "lobber", post, 3);
       if (p) return order("lobber", p);
     }
     return [];

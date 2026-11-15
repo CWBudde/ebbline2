@@ -1,39 +1,48 @@
-// The living title backdrop: the key art drawn through a depth map, so the ledge with the lander
-// shifts more than the silt plain and the sky drifts the other way as the pointer moves, and the
-// grid lights on the pylons flicker. Falls back to nothing (the plain <img> stays) without WebGL.
+// The living title backdrop: three painted layers drawn over each other, each shifted by its own
+// depth as the pointer moves, so the ledge with the lander slides over the rock islands and those
+// over the silt sea, and the grid lights on the pylons flicker. Falls back to nothing (the plain
+// <img> of the flat picture stays) without WebGL or when a layer fails to load.
+//
+// The background layer holds only sky and sea. It is read in one place, `backdrop()` in the fragment
+// shader, so a generated sea or a prerendered loop can take its place without touching the rest.
 
-/** The key art's own size; every position below is in its pixels. */
+/** The size of the whole picture; every position below is in its pixels. */
 export const ART_W = 1920;
 export const ART_H = 1080;
 
 /** How far content at full depth moves, as a fraction of the picture, at the pointer's extreme. */
-const SHIFT = 0.012;
+const SHIFT = 0.02;
 /** The depth that stays put; nearer moves with the pointer shift, farther against it. */
 const PIVOT = 0.35;
 /** Shows slightly less than the whole picture so the shifted edges never run out of art. */
 const ZOOM = 0.968;
 
-type Pt = readonly [number, number];
+/**
+ * A cut-out layer: a band of the picture's rows. Its file is twice as tall as the band, the colour
+ * over the matte in the upper half and the alpha as grey in the lower half.
+ */
+export interface Band {
+  /** First row of the band in the picture, and the row after its last. */
+  readonly top: number;
+  readonly bottom: number;
+  /** 0 is the far sea, 1 the near ledge. */
+  readonly depth: number;
+}
 
-/** The near ledge from the bottom-left rocks to the right edge, the lander on it. */
-const LEDGE: readonly Pt[] = [
-  [560, 1080], [700, 1040], [750, 1010], [800, 962], [900, 942], [1000, 930], [1080, 918],
-  [1180, 880], [1250, 852], [1320, 842], [1440, 836], [1462, 842], [1468, 742], [1498, 708],
-  [1576, 700], [1580, 672], [1622, 672], [1626, 690], [1668, 690], [1674, 668], [1706, 668],
-  [1710, 622], [1724, 622], [1726, 690], [1798, 704], [1816, 746], [1822, 800], [1920, 772],
-  [1920, 1080],
-];
-/** The dark rocks in the bottom-left corner. */
-const CORNER: readonly Pt[] = [[0, 975], [120, 962], [250, 985], [320, 1080], [0, 1080]];
-/** The big rock island on the left of the plain. */
-const ISLAND: readonly Pt[] = [
-  [0, 735], [120, 700], [260, 680], [420, 662], [480, 660], [600, 720], [700, 760], [860, 800],
-  [700, 830], [460, 850], [240, 880], [0, 900],
-];
-/** The pylon poles: tip and foot. */
-const POLES: readonly (readonly [number, number, number])[] = [
-  [840, 896, 975], [970, 876, 955], [1098, 842, 925], [1337, 778, 870],
-];
+/** The sky and the silt sea: the whole picture, opaque. */
+export const BACKGROUND_DEPTH = 0;
+/** The rock islands in the sea. */
+export const MID: Band = { top: 500, bottom: 920, depth: 0.45 };
+/** The near ledge with the lander and the pylons. */
+export const FOREGROUND: Band = { top: 560, bottom: 1080, depth: 1 };
+/** The colour the layer files have under their transparent pixels. */
+const MATTE = [0x1a, 0x12, 0x10] as const;
+
+export interface LayerUrls {
+  readonly background: string;
+  readonly mid: string;
+  readonly foreground: string;
+}
 
 export type LightKind = "pylon" | "beacon" | "core";
 export interface Light {
@@ -44,12 +53,12 @@ export interface Light {
 
 /** The lights of the picture, painted bright; the shader dims and brightens them. */
 export const LIGHTS: readonly Light[] = [
-  { x: 840, y: 903, kind: "pylon" },
-  { x: 970, y: 883, kind: "pylon" },
-  { x: 1098, y: 850, kind: "pylon" },
-  { x: 1337, y: 786, kind: "pylon" },
-  { x: 1717, y: 627, kind: "beacon" },
-  { x: 1682, y: 820, kind: "core" },
+  { x: 719, y: 916, kind: "pylon" },
+  { x: 887, y: 843, kind: "pylon" },
+  { x: 1066, y: 780, kind: "pylon" },
+  { x: 1243, y: 725, kind: "pylon" },
+  { x: 1738, y: 585, kind: "beacon" },
+  { x: 1610, y: 655, kind: "core" },
 ];
 
 /** Per-light flicker state; `glitchAt`/`glitchEnd` bracket a bout of stutter. */
@@ -91,47 +100,6 @@ export function lightLevel(light: Light, index: number, t: number, f: Flicker, r
   return Math.min(1.15, Math.max(0, level));
 }
 
-function path(ctx: CanvasRenderingContext2D, points: readonly Pt[], k: number): void {
-  ctx.beginPath();
-  points.forEach(([x, y], i) => {
-    if (i === 0) ctx.moveTo(x * k, y * k);
-    else ctx.lineTo(x * k, y * k);
-  });
-  ctx.closePath();
-  ctx.fill();
-}
-
-/** Paints the depth map, near white, far black, at a quarter of the art's size. */
-function depthMap(): HTMLCanvasElement {
-  const k = 0.25;
-  const canvas = document.createElement("canvas");
-  canvas.width = ART_W * k;
-  canvas.height = ART_H * k;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return canvas;
-  const horizon = 0.53;
-  const plain = ctx.createLinearGradient(0, 0, 0, canvas.height);
-  plain.addColorStop(0, "rgb(0,0,0)");
-  plain.addColorStop(horizon, "rgb(10,10,10)");
-  plain.addColorStop(1, "rgb(130,130,130)");
-  ctx.fillStyle = plain;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  const blur = (px: number): void => {
-    if ("filter" in ctx) ctx.filter = px > 0 ? `blur(${px}px)` : "none";
-  };
-  blur(6);
-  ctx.fillStyle = "rgb(105,105,105)";
-  path(ctx, ISLAND, k);
-  blur(2.5);
-  ctx.fillStyle = "rgb(255,255,255)";
-  path(ctx, LEDGE, k);
-  path(ctx, CORNER, k);
-  blur(1);
-  for (const [x, top, foot] of POLES) ctx.fillRect((x - 11) * k, (top - 6) * k, 22 * k, (foot - top + 6) * k);
-  blur(0);
-  return canvas;
-}
-
 const VERTEX = `
 attribute vec2 corner;
 varying vec2 uv;
@@ -140,34 +108,69 @@ void main() {
   gl_Position = vec4(corner, 0.0, 1.0);
 }`;
 
+const glsl = (n: number): string => n.toFixed(5);
+const band = (b: Band): string => `vec2(${glsl(b.top / ART_H)}, ${glsl((b.bottom - b.top) / ART_H)})`;
+
 const FRAGMENT = `
 precision mediump float;
-uniform sampler2D art;
-uniform sampler2D depth;
+uniform sampler2D background;
+uniform sampler2D mid;
+uniform sampler2D foreground;
 uniform vec2 shift;
 uniform vec4 lights[${LIGHTS.length}];
 uniform vec3 tints[${LIGHTS.length}];
 varying vec2 uv;
-const float ZOOM = ${ZOOM.toFixed(4)};
-const float PIVOT = ${PIVOT.toFixed(4)};
-const float ASPECT = ${(ART_W / ART_H).toFixed(4)};
+const float ZOOM = ${glsl(ZOOM)};
+const float PIVOT = ${glsl(PIVOT)};
+const float ASPECT = ${glsl(ART_W / ART_H)};
+const vec3 MATTE = vec3(${MATTE.map((v) => glsl(v / 255)).join(", ")});
+
+// The sky and the sea at a point of the picture. The one place that reads the background.
+vec3 backdrop(vec2 p) {
+  return texture2D(background, p).rgb;
+}
+
+// Lays a cut-out layer over what is below it. The layer's colour sits on the matte, so taking the
+// matte's share out again leaves the layer's own, premultiplied colour.
+vec3 over(vec3 below, vec3 colour, float alpha) {
+  return colour + (below - MATTE) * (1.0 - alpha);
+}
+
+// The alpha of a cut-out layer at a point of the picture; 0 outside its band.
+float cover(sampler2D layer, vec2 p, vec2 rows, out vec2 at) {
+  float v = (p.y - rows.x) / rows.y;
+  // Keeps the lookups a texel away from the seam between the two halves of the file.
+  at = vec2(p.x, 0.5 * clamp(v, 0.004, 0.996));
+  if (v <= 0.0 || v >= 1.0) return 0.0;
+  return smoothstep(0.03, 0.97, texture2D(layer, at + vec2(0.0, 0.5)).g);
+}
+
 void main() {
   vec2 base = 0.5 + (uv - 0.5) * ZOOM;
-  // Two steps toward the depth at the displaced point keep near edges from smearing.
-  vec2 p = base + shift * (texture2D(depth, base).r - PIVOT);
-  p = base + shift * (texture2D(depth, p).r - PIVOT);
-  vec3 c = texture2D(art, p).rgb;
+  vec2 at;
+  vec3 c = backdrop(base + shift * (${glsl(BACKGROUND_DEPTH)} - PIVOT));
+
+  vec2 pm = base + shift * (${glsl(MID.depth)} - PIVOT);
+  float am = cover(mid, pm, ${band(MID)}, at);
+  c = mix(c, over(c, texture2D(mid, at).rgb, am), step(0.001, am));
+
+  // The lights are painted on the foreground, so they move with it.
+  vec2 pf = base + shift * (${glsl(FOREGROUND.depth)} - PIVOT);
+  float af = cover(foreground, pf, ${band(FOREGROUND)}, at);
+  vec3 near = texture2D(foreground, at).rgb;
+  vec3 glow = vec3(0.0);
   for (int i = 0; i < ${LIGHTS.length}; i++) {
-    vec2 d = (p - lights[i].xy) * vec2(ASPECT, 1.0);
+    vec2 d = (pf - lights[i].xy) * vec2(ASPECT, 1.0);
     float r2 = dot(d, d);
     float level = lights[i].z;
     float core = exp(-r2 / (lights[i].w * lights[i].w));
     float halo = exp(-r2 / (lights[i].w * lights[i].w * 16.0));
     // Dim the painted light when the level drops, then add its glow back on top.
-    c *= mix(1.0, 0.35 + 0.65 * min(level, 1.0), core);
-    c += tints[i] * (core * 0.55 * level + halo * 0.22 * level * level);
+    near *= mix(1.0, 0.35 + 0.65 * min(level, 1.0), core);
+    glow += tints[i] * (core * 0.55 * level + halo * 0.22 * level * level);
   }
-  gl_FragColor = vec4(c, 1.0);
+  c = mix(c, over(c, near, af), step(0.001, af));
+  gl_FragColor = vec4(c + glow, 1.0);
 }`;
 
 function compile(gl: WebGLRenderingContext, type: number, source: string): WebGLShader | null {
@@ -200,8 +203,22 @@ export interface SceneOptions {
   readonly onReady?: () => void;
 }
 
+function loadImage(url: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.decoding = "async";
+    image.onload = (): void => {
+      resolve(image);
+    };
+    image.onerror = (): void => {
+      reject(new Error(`no image at ${url}`));
+    };
+    image.src = url;
+  });
+}
+
 /** Starts the scene on a canvas; returns the function that stops it. */
-export function startTitleScene(canvas: HTMLCanvasElement, artUrl: string, options: SceneOptions): () => void {
+export function startTitleScene(canvas: HTMLCanvasElement, urls: LayerUrls, options: SceneOptions): () => void {
   const gl = canvas.getContext("webgl", { alpha: false, antialias: false, preserveDrawingBuffer: false });
   if (!gl) return () => undefined;
   const vs = compile(gl, gl.VERTEX_SHADER, VERTEX);
@@ -223,14 +240,15 @@ export function startTitleScene(canvas: HTMLCanvasElement, artUrl: string, optio
   const shiftAt = gl.getUniformLocation(program, "shift");
   const lightsAt = gl.getUniformLocation(program, "lights");
   const tintsAt = gl.getUniformLocation(program, "tints");
-  gl.uniform1i(gl.getUniformLocation(program, "art"), 0);
-  gl.uniform1i(gl.getUniformLocation(program, "depth"), 1);
+  gl.uniform1i(gl.getUniformLocation(program, "background"), 0);
+  gl.uniform1i(gl.getUniformLocation(program, "mid"), 1);
+  gl.uniform1i(gl.getUniformLocation(program, "foreground"), 2);
   const tint: Record<LightKind, readonly number[]> = {
     pylon: [0.35, 0.9, 1.0],
     beacon: [0.45, 0.95, 1.0],
     core: [0.2, 0.75, 0.9],
   };
-  const radius: Record<LightKind, number> = { pylon: 0.0075, beacon: 0.006, core: 0.02 };
+  const radius: Record<LightKind, number> = { pylon: 0.0085, beacon: 0.007, core: 0.02 };
   gl.uniform3fv(tintsAt, LIGHTS.flatMap((l) => tint[l.kind]));
   const lights = new Float32Array(LIGHTS.length * 4);
   LIGHTS.forEach((l, i) => {
@@ -292,16 +310,18 @@ export function startTitleScene(canvas: HTMLCanvasElement, artUrl: string, optio
     target.y = 0;
   };
 
-  const image = new Image();
-  image.decoding = "async";
-  image.onload = (): void => {
-    if (stopped) return;
-    texture(gl, 0, image);
-    texture(gl, 1, depthMap());
-    resize();
-    frame = requestAnimationFrame(draw);
-  };
-  image.src = artUrl;
+  // The scene starts only with all three layers; with one missing, the flat picture stays.
+  void Promise.all([urls.background, urls.mid, urls.foreground].map(loadImage)).then(
+    (images) => {
+      if (stopped) return;
+      images.forEach((image, unit) => {
+        texture(gl, unit, image);
+      });
+      resize();
+      frame = requestAnimationFrame(draw);
+    },
+    () => undefined,
+  );
 
   window.addEventListener("resize", resize);
   if (!options.still) {

@@ -19,9 +19,10 @@ import { ILLUSTRATION_BACKGROUND, illustrationUrl } from "../render/assets.ts";
 import { Briefing } from "./Briefing.tsx";
 import { BackButton, Cost, Help, Icon, SettingsForm, Sheet } from "./Shell.tsx";
 
-/** The key shown on a build slot; the eleventh is named by the language's keyboard. */
+/** The key shown on a build slot; the eleventh and twelfth are named by the language's keyboard. */
 function slotLabel(slot: number): string {
-  return slot < 10 ? String((slot + 1) % 10) : t("key.slot11");
+  if (slot < 10) return String((slot + 1) % 10);
+  return slot === 10 ? t("key.slot11") : t("key.slot12");
 }
 
 function TopBar({ c, rt }: { c: Controller; rt: Runtime }) {

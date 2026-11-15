@@ -1,0 +1,18 @@
+import { chromium } from "@playwright/test";
+const out = process.argv[2];
+const browser = await chromium.launch({ args: ["--use-gl=swiftshader", "--enable-unsafe-swiftshader"] });
+const page = await browser.newPage({ viewport: { width: 1600, height: 900 } });
+const logs = [];
+page.on("console", (m) => logs.push(m.type() + ": " + m.text()));
+await page.goto("http://localhost:5199/");
+await page.waitForSelector("body[data-ready=true]");
+await page.waitForTimeout(2500);
+console.log("live:", await page.locator("canvas.scene.live").count());
+await page.mouse.move(100, 450);
+await page.waitForTimeout(2500);
+await page.screenshot({ path: out + "-left.png" });
+await page.mouse.move(1500, 450);
+await page.waitForTimeout(2500);
+await page.screenshot({ path: out + "-right.png" });
+console.log(logs.join("\n"));
+await browser.close();

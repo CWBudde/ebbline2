@@ -11,6 +11,7 @@ const EVERYTHING: readonly Kind[] = [
   "cell",
   "lobber",
   "trunk",
+  "booster",
   "pump",
   "baffle",
   "grader",
@@ -108,9 +109,12 @@ export const CAMPAIGN: readonly LevelDef[] = [
     spitters: NO_SPITTERS,
     lodes: 8,
     ground: "sand",
-    allowed: upTo("trunk"),
+    allowed: upTo("booster"),
     objective: { kind: "cap" },
-    hints: ["Trunks link to each other over fourteen tiles and double packet speed."],
+    hints: [
+      "Trunks link to each other over fourteen tiles and double packet speed.",
+      "A Booster relays like a Pylon and speeds up every packet it passes on by a fifth. Packets take the quickest way, so a few Boosters along a long line draw the traffic and get it there sooner.",
+    ],
   },
   {
     // A high mesa with lowlands on every side; the third lode lies far out across them.
@@ -130,13 +134,15 @@ export const CAMPAIGN: readonly LevelDef[] = [
   },
   {
     // Low ground on the bank of a river valley that runs north to south, with heights to the east. The nearest
-    // vent lies in the valley right below the lander; it gives half as much as the others.
+    // vent lies in the valley right below the lander; it gives half as much as the others. Long before the ten
+    // minutes are up the silt stands higher than the lander all round, so holding out takes a dike: the scripted
+    // player raises one with graders and runs pumps on its crest.
     id: "c6",
     name: "Floodplain",
     brief: "You came down low, on the bank of a river valley, with four vents around you and one of them close. Hold out for ten minutes.",
     seed: 6078,
     size: 56,
-    vents: { count: 4, period: 60, amount: 16.5, ramp: 0.2, near: 10, each: [{ amount: 0.5 }] },
+    vents: { count: 4, period: 60, amount: 25, ramp: 0.2, near: 10, each: [{ amount: 0.5 }] },
     spitters: NO_SPITTERS,
     lodes: 6,
     lowStart: true,

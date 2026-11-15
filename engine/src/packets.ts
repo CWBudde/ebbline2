@@ -1,6 +1,6 @@
 // Energy: income, and the packets that carry it from the lander to whatever asks for it.
 
-import { PACKET_SPEED } from "./grid.ts";
+import { BOOST, PACKET_SPEED, boosts } from "./grid.ts";
 import { harvestIncome } from "./harvest.ts";
 import { span, tileOf } from "./hex.ts";
 import { complete } from "./structures.ts";
@@ -96,6 +96,8 @@ function dispatch(game: Game): void {
       tiles: path.map((p) => tileIndex(game, p.x, p.y)),
       seg: 0,
       t: 0,
+      boost: 1,
+      boosters: [],
     });
     spend(game, 1);
     game.cursor = (game.cursor + k + 1) % n;
@@ -136,18 +138,25 @@ function move(game: Game, events: Event[]): void {
     const fast =
       find(game, p.ids[p.seg] ?? 0)?.kind === "trunk" &&
       find(game, p.ids[p.seg + 1] ?? 0)?.kind === "trunk";
-    p.t += (PACKET_SPEED * (fast ? 2 : 1)) / Math.max(length, 0.01);
+    // At most one node per tick however fast: the step below never carries the overshoot on.
+    p.t += (PACKET_SPEED * (fast ? 2 : 1) * p.boost) / Math.max(length, 0.01);
     if (p.t < 1) {
       kept.push(p);
       continue;
     }
     p.seg += 1;
     p.t = 0;
-    if (game.occ[b] !== p.ids[p.seg]) {
+    const node = find(game, p.ids[p.seg] ?? 0);
+    if (!node || game.occ[b] !== node.id) {
       drop(game, p);
     } else if (p.seg === p.ids.length - 1) {
       deliver(game, p, events);
-    } else if (find(game, p.ids[p.seg] ?? 0)?.built) {
+    } else if (node.built) {
+      // A booster speeds up the packets it relays, each one once; the packet's destination does not.
+      if (boosts(node) && !p.boosters.includes(node.id)) {
+        p.boost *= BOOST;
+        p.boosters.push(node.id);
+      }
       kept.push(p);
     } else {
       drop(game, p);

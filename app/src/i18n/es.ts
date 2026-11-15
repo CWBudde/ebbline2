@@ -84,7 +84,7 @@ export const es: Record<Key, string> = {
   "help.keys.zoom.does": "Zoom",
   "help.keys.pan": "W A S D, flechas",
   "help.keys.pan.does": "Mover el mapa",
-  "help.keys.slots": "1 a 0, '",
+  "help.keys.slots": "1 a 0, ', ¡",
   "help.keys.slots.does": "Elegir una estructura de la barra de construcción",
   "help.keys.mark": "G",
   "help.keys.mark.does": "Marcar terreno para las Niveladoras",
@@ -113,6 +113,7 @@ export const es: Record<Key, string> = {
   "build.mark.cost": "terreno",
   "build.mark.title": "Marcar terreno para que las Niveladoras lo suban o lo bajen",
   "key.slot11": "'",
+  "key.slot12": "¡",
   "key.delete": "Supr",
 
   "status.offGrid": "Fuera de la red: necesita una estructura a seis casillas como máximo",
@@ -179,6 +180,8 @@ export const es: Record<Key, string> = {
     "Funciona sin energía pero rinde poco, y el limo sobre su propia casilla la desgasta: ten una Lanza cerca.",
   "tip.trunk":
     "El enlace rápido de catorce casillas necesita una Troncal en cada extremo; con todo lo demás, una Troncal se enlaza como un Pilón, a seis casillas como máximo.",
+  "tip.booster":
+    "Solo acelera los paquetes que reenvía, no los que lo construyen o lo reparan. Ponlo pronto en una línea larga: cuanto antes se acelera un paquete, más tiempo corre más rápido.",
   "tip.interceptor":
     "Alcanza nueve casillas y gasta una de energía por disparo, tres disparos por pegote: ponlo donde tus estructuras estén más juntas.",
   "tip.baffle":
@@ -233,6 +236,10 @@ export const esContent: Content = {
       name: "Troncal",
       blurb: "Se enlaza con otras Troncales a catorce casillas y duplica la velocidad de los paquetes.",
     },
+    booster: {
+      name: "Acelerador",
+      blurb: "Retransmite paquetes como un Pilón, y cada paquete que pasa por él viaja después un quinto más rápido. Los Aceleradores se acumulan, pero el mismo Acelerador nunca acelera un paquete dos veces.",
+    },
     tap: { name: "Extractor", blurb: "Extrae energía constante de una veta. Solo cabe en una veta." },
     cell: { name: "Batería", blurb: "Almacena treinta de energía más." },
     pump: {
@@ -286,6 +293,7 @@ export const esContent: Content = {
       brief: "Tres fumarolas en tres direcciones, la más cercana a veintinueve casillas. Las Troncales llevan los paquetes rápido por grandes distancias.",
       hints: [
         "Las Troncales se enlazan entre sí a catorce casillas y duplican la velocidad de los paquetes.",
+        "Un Acelerador retransmite como un Pilón y hace cada paquete que pasa por él un quinto más rápido. Los paquetes toman el camino más rápido, así que unos cuantos Aceleradores a lo largo de una línea larga atraen el tráfico y lo hacen llegar antes.",
       ],
     },
     c5: {

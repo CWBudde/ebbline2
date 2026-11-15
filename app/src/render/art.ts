@@ -21,6 +21,7 @@ export const ACCENT: Record<Kind, number> = {
   lander: COLORS.grid,
   pylon: COLORS.grid,
   trunk: COLORS.grid,
+  booster: COLORS.grid,
   tap: COLORS.economy,
   cell: COLORS.economy,
   pump: COLORS.economy,
@@ -95,6 +96,16 @@ export function drawStructure(kind: Kind, u: number): Graphics {
       hex(g, tile * 0.88).fill(PLATE).stroke({ width: line, color: c });
       g.circle(0, 0, u * 0.45).stroke({ width: line, color: c });
       g.circle(0, 0, u * 0.15).fill(c);
+      break;
+    case "booster":
+      // A small hexagon, point to the side, with two chevrons pointing the way the packets speed off.
+      ngon(g, 6, u * 0.85).fill(PLATE).stroke({ width: line, color: c });
+      for (const dx of [-0.38, 0.08]) {
+        g.moveTo((dx - 0.12) * u, -u * 0.38)
+          .lineTo((dx + 0.26) * u, 0)
+          .lineTo((dx - 0.12) * u, u * 0.38)
+          .stroke({ width: line * 1.2, color: dx < 0 ? c : 0xfff27a, cap: "round", join: "round" });
+      }
       break;
     case "tap":
       plate();

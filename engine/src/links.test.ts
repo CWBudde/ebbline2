@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { apply } from "./commands.ts";
-import { linksAt, rebuild } from "./grid.ts";
+import { BOOST, linksAt, rebuild } from "./grid.ts";
 import { BUILDABLE, KINDS, type Game, type Kind, type Structure } from "./state.ts";
 import { addVent, build, flat, lander, run } from "./testing/fixtures.ts";
 
@@ -113,7 +113,8 @@ describe("relaying", () => {
       const relay = build(game, kind, l.x + 5, l.y);
       const target = drop(game, "lance", l.x + 10, l.y);
       expect(target.parent).toBe(relay.id);
-      expect(target.dist).toBe(10);
+      // Past a booster, packets run a fifth faster, so the far leg takes less time.
+      expect(target.dist).toBe(kind === "booster" ? 5 + 5 / BOOST : 10);
     });
   }
 

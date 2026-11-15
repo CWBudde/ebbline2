@@ -4,7 +4,7 @@ import { distance, type Kind } from "@ebbline2/engine";
 
 /** How far apart a drag spaces structures of a kind, in steps. */
 export function spacing(kind: Kind): number {
-  if (kind === "pylon") return 5;
+  if (kind === "pylon" || kind === "booster") return 5;
   if (kind === "trunk") return 13;
   return 1;
 }

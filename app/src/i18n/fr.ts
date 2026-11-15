@@ -84,7 +84,7 @@ export const fr: Record<Key, string> = {
   "help.keys.zoom.does": "Zoomer",
   "help.keys.pan": "Z Q S D, flèches",
   "help.keys.pan.does": "Déplacer la carte",
-  "help.keys.slots": "1 à 0, )",
+  "help.keys.slots": "1 à 0, ), =",
   "help.keys.slots.does": "Choisir un bâtiment dans la barre de construction",
   "help.keys.mark": "G",
   "help.keys.mark.does": "Marquer le terrain pour les Niveleuses",
@@ -113,6 +113,7 @@ export const fr: Record<Key, string> = {
   "build.mark.cost": "terrain",
   "build.mark.title": "Marquer le terrain que les Niveleuses doivent élever ou abaisser",
   "key.slot11": ")",
+  "key.slot12": "=",
   "key.delete": "Suppr",
 
   "status.offGrid": "Hors réseau : il faut un bâtiment à six cases au plus",
@@ -179,6 +180,8 @@ export const fr: Record<Key, string> = {
     "Elle fonctionne sans énergie mais rapporte peu, et la vase sur sa propre case la ronge : garde une Lance à proximité.",
   "tip.trunk":
     "La liaison rapide sur quatorze cases exige une Artère à chaque bout ; avec tout le reste, une Artère se relie comme un Pylône, à six cases au plus.",
+  "tip.booster":
+    "Il n'accélère que les paquets qu'il transmet, pas ceux qui servent à le construire ou à le réparer. Place-le tôt sur une longue ligne : plus un paquet est accéléré tôt, plus longtemps il file vite.",
   "tip.interceptor":
     "Il porte à neuf cases et dépense une énergie par tir, trois tirs par boule : place-le là où tes bâtiments sont le plus serrés.",
   "tip.baffle":
@@ -233,6 +236,10 @@ export const frContent: Content = {
       name: "Artère",
       blurb: "Se relie aux autres Artères sur quatorze cases et double la vitesse des paquets.",
     },
+    booster: {
+      name: "Accélérateur",
+      blurb: "Relaie les paquets comme un Pylône, et chaque paquet qui le traverse va ensuite un cinquième plus vite. Les Accélérateurs se cumulent, mais un même Accélérateur n'accélère jamais deux fois le même paquet.",
+    },
     tap: { name: "Extracteur", blurb: "Tire une énergie régulière d'un filon. Ne va que sur un filon." },
     cell: { name: "Batterie", blurb: "Stocke trente énergie de plus." },
     pump: {
@@ -286,6 +293,7 @@ export const frContent: Content = {
       brief: "Trois évents dans trois directions, le plus proche à vingt-neuf cases. Les Artères portent les paquets vite par-dessus les grands vides.",
       hints: [
         "Les Artères se relient entre elles sur quatorze cases et doublent la vitesse des paquets.",
+        "Un Accélérateur relaie comme un Pylône et rend chaque paquet qui le traverse un cinquième plus rapide. Les paquets prennent le chemin le plus rapide, donc quelques Accélérateurs le long d'une longue ligne attirent le trafic et l'amènent plus tôt à destination.",
       ],
     },
     c5: {

@@ -2,6 +2,7 @@
 
 import { CanvasSource, Container, Graphics, Sprite, Texture, type Application } from "pixi.js";
 import {
+  BOOST,
   BUILDABLE,
   KINDS,
   ROW,
@@ -400,9 +401,25 @@ export class Renderer {
       // Straight from one structure's centre to the next.
       const a = at(game, p.tiles[p.seg] ?? 0);
       const b = at(game, p.tiles[p.seg + 1] ?? p.tiles[p.seg] ?? 0);
-      over
-        .circle(a.x + (b.x - a.x) * p.t, a.y + (b.y - a.y) * p.t, 3.2)
-        .fill(p.kind === "build" ? 0xe9fbff : COLORS.economy);
+      const x = a.x + (b.x - a.x) * p.t;
+      const y = a.y + (b.y - a.y) * p.t;
+      const color = p.kind === "build" ? 0xe9fbff : COLORS.economy;
+      if (p.boost > 1) {
+        // A boosted packet draws a short tail and a faint glow, growing with its boost up to three boosters.
+        const strength = Math.min(1, Math.log(p.boost) / Math.log(BOOST ** 3));
+        const length = Math.hypot(b.x - a.x, b.y - a.y);
+        const tail = Math.min(TILE * (0.4 + 0.8 * strength), length * p.t);
+        if (tail > 0.5) {
+          const ux = (b.x - a.x) / length;
+          const uy = (b.y - a.y) / length;
+          over
+            .moveTo(x - ux * tail, y - uy * tail)
+            .lineTo(x, y)
+            .stroke({ width: 2.2, color, alpha: 0.25 + 0.25 * strength, cap: "round" });
+        }
+        over.circle(x, y, 3.2 + 1.6 * strength).fill({ color, alpha: 0.2 + 0.15 * strength });
+      }
+      over.circle(x, y, 3.2).fill(color);
     }
     for (const shell of game.shells) {
       // Shells fly like globs: straight between tile centres, so the engine's globAt places them too.

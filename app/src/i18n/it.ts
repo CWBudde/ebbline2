@@ -83,7 +83,7 @@ export const it: Record<Key, string> = {
   "help.keys.zoom.does": "Zoom",
   "help.keys.pan": "W A S D, frecce",
   "help.keys.pan.does": "Sposta la mappa",
-  "help.keys.slots": "1 a 0, '",
+  "help.keys.slots": "1 a 0, ', ì",
   "help.keys.slots.does": "Scegli una struttura dalla barra di costruzione",
   "help.keys.mark": "G",
   "help.keys.mark.does": "Segna il terreno per le livellatrici",
@@ -112,6 +112,7 @@ export const it: Record<Key, string> = {
   "build.mark.cost": "terreno",
   "build.mark.title": "Segna il terreno che le livellatrici devono alzare o abbassare",
   "key.slot11": "'",
+  "key.slot12": "ì",
   "key.delete": "Canc",
 
   "status.offGrid": "Fuori rete: serve una struttura entro sei caselle",
@@ -178,6 +179,8 @@ export const it: Record<Key, string> = {
     "Funziona senza energia ma rende poco, e la melma sulla sua casella la logora: tieni una lancia lì vicino.",
   "tip.trunk":
     "Il collegamento rapido di quattordici caselle richiede una dorsale a entrambe le estremità; con tutto il resto una dorsale si collega come un pilone, entro sei caselle.",
+  "tip.booster":
+    "Accelera solo i pacchetti che inoltra, non quelli che servono a costruirlo o ripararlo. Mettilo presto su una linea lunga: prima un pacchetto viene accelerato, più a lungo corre veloce.",
   "tip.interceptor":
     "Arriva a nove caselle e spende un'unità di energia per colpo, tre colpi per grumo: mettilo dove le tue strutture sono più fitte.",
   "tip.baffle":
@@ -232,6 +235,10 @@ export const itContent: Content = {
       name: "Dorsale",
       blurb: "Si collega ad altre dorsali entro quattordici caselle e raddoppia la velocità dei pacchetti.",
     },
+    booster: {
+      name: "Acceleratore",
+      blurb: "Ritrasmette i pacchetti come un pilone, e ogni pacchetto che lo attraversa viaggia poi un quinto più veloce. Gli acceleratori si sommano, ma lo stesso acceleratore non accelera mai due volte un pacchetto.",
+    },
     tap: { name: "Estrattore", blurb: "Estrae energia costante da un filone. Va solo su un filone." },
     cell: { name: "Cella", blurb: "Immagazzina trenta energia in più." },
     pump: {
@@ -285,6 +292,7 @@ export const itContent: Content = {
       brief: "Tre sfiati in tre direzioni, il più vicino a ventinove caselle. Le dorsali portano i pacchetti veloci sulle lunghe distanze.",
       hints: [
         "Le dorsali si collegano fra loro su quattordici caselle e raddoppiano la velocità dei pacchetti.",
+        "Un acceleratore ritrasmette come un pilone e rende ogni pacchetto che lo attraversa un quinto più veloce. I pacchetti prendono la via più rapida, quindi qualche acceleratore lungo una linea lunga attira il traffico e lo fa arrivare prima.",
       ],
     },
     c5: {

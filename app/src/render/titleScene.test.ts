@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ART_H, ART_W, LIGHTS, canvasScale, lightLevel } from "./titleScene.ts";
+import { ART_H, ART_W, BACKGROUND_DEPTH, FOREGROUND, LIGHTS, MID, canvasScale, lightLevel } from "./titleScene.ts";
 
 describe("canvasScale", () => {
   it("covers the box at the device's resolution", () => {
@@ -31,5 +31,19 @@ describe("lightLevel", () => {
       }
       if (light.kind !== "core") expect(low).toBeLessThan(0.5);
     });
+  });
+});
+
+describe("layers", () => {
+  it("keeps every light on the foreground band", () => {
+    for (const light of LIGHTS) {
+      expect(light.y).toBeGreaterThan(FOREGROUND.top);
+      expect(light.y).toBeLessThan(FOREGROUND.bottom);
+    }
+  });
+
+  it("orders the bands by depth, far to near", () => {
+    expect(BACKGROUND_DEPTH).toBeLessThan(MID.depth);
+    expect(MID.depth).toBeLessThan(FOREGROUND.depth);
   });
 });

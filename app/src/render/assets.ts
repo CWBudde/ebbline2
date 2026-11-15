@@ -13,8 +13,19 @@ export type IllustrationKind = SpriteKind;
 /** Folder of the installed art, relative to the page so the site works from any path. */
 export const ART_URL = `${import.meta.env.BASE_URL}art/`;
 
-/** Title key art, 16:9 JPEG; the upper left is kept calm for a wordmark. */
+/** Title key art as one flat picture, 16:9 JPEG; the upper left is kept calm for a wordmark. */
 export const TITLE_ART_URL = `${ART_URL}title.jpg`;
+
+/**
+ * The same picture as the layers the title scene moves against each other: the sky and sea, the rock
+ * islands, and the ledge with the lander. The two cut-outs carry their alpha in the lower half of the
+ * file (see `render/titleScene.ts`).
+ */
+export const TITLE_LAYER_URLS = {
+  background: `${ART_URL}title-bg.jpg`,
+  mid: `${ART_URL}title-mid.jpg`,
+  foreground: `${ART_URL}title-fg.jpg`,
+} as const;
 
 /** Flat background the illustrations were composited on; a card of this colour shows no box. */
 export const ILLUSTRATION_BACKGROUND = "#0b1418";

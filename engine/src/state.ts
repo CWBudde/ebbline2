@@ -19,6 +19,7 @@ export type Kind =
   | "lander"
   | "pylon"
   | "trunk"
+  | "booster"
   | "tap"
   | "cell"
   | "pump"
@@ -70,6 +71,15 @@ export const KINDS: Readonly<Record<Kind, KindDef>> = {
     minRange: 0,
     radius: 0,
     blurb: "Links to other trunks over fourteen tiles and doubles packet speed.",
+  },
+  booster: {
+    name: "Booster",
+    cost: 6,
+    store: 0,
+    range: 0,
+    minRange: 0,
+    radius: 0,
+    blurb: "Relays packets like a pylon, and every packet it passes on runs a fifth faster from then on. Boosters stack, but each one speeds a packet only once.",
   },
   tap: {
     name: "Tap",
@@ -167,6 +177,7 @@ export const BUILDABLE: readonly Kind[] = [
   "interceptor",
   "grader",
   "cap",
+  "booster",
 ];
 
 export interface Structure {
@@ -187,7 +198,7 @@ export interface Structure {
   progress: number;
   /** Tile index the structure last worked on, or -1. */
   target: number;
-  /** Grid cost to the lander; Infinity when cut off. */
+  /** Grid cost to the lander, in the time a packet takes from there; Infinity when cut off. */
   dist: number;
   /** Id of the next structure toward the lander, or 0. */
   parent: number;
@@ -255,6 +266,10 @@ export interface Packet {
   seg: number;
   /** Progress along the current segment, 0..1. */
   t: number;
+  /** Factor on the packet's speed on every link, from the boosters it has passed; 1 for none. */
+  boost: number;
+  /** Ids of the boosters that have sped the packet up, so that none does it twice. */
+  boosters: number[];
 }
 
 export type Objective =

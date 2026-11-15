@@ -12,7 +12,7 @@ describe("introduced", () => {
       ["c1", { structures: ["pylon", "lance", "cap"], ...none }],
       ["c2", { structures: ["tap", "cell"], ...none }],
       ["c3", { structures: ["lobber"], ...none }],
-      ["c4", { structures: ["trunk"], ...none }],
+      ["c4", { structures: ["trunk", "booster"], ...none }],
       ["c5", { structures: ["pump"], ...none }],
       ["c6", { structures: ["baffle", "grader"], spitters: false, survive: true }],
       ["c7", { structures: ["interceptor"], spitters: true, survive: false }],

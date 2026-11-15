@@ -84,7 +84,7 @@ export const pl: Record<Key, string> = {
   "help.keys.zoom.does": "Powiększ",
   "help.keys.pan": "W A S D, strzałki",
   "help.keys.pan.does": "Przesuń mapę",
-  "help.keys.slots": "1 do 0, -",
+  "help.keys.slots": "1 do 0, -, =",
   "help.keys.slots.does": "Wybierz budowlę z paska budowy",
   "help.keys.mark": "G",
   "help.keys.mark.does": "Oznacz teren dla równiarek",
@@ -112,6 +112,7 @@ export const pl: Record<Key, string> = {
   "build.mark.cost": "teren",
   "build.mark.title": "Oznacz teren, który równiarki mają podnieść lub obniżyć",
   "key.slot11": "-",
+  "key.slot12": "=",
   "key.delete": "Del",
 
   "status.offGrid": "Poza siecią: potrzebna budowla w odległości najwyżej sześciu pól",
@@ -177,6 +178,8 @@ export const pl: Record<Key, string> = {
     "Działa bez energii, ale zarabia niewiele, a muł na jej własnym polu ją niszczy: trzymaj w pobliżu lancę.",
   "tip.trunk":
     "Szybkie połączenie na czternaście pól wymaga magistrali na obu końcach; z resztą magistrala łączy się jak pylon, na sześć pól.",
+  "tip.booster":
+    "Przyspiesza tylko pakiety, które przekazuje dalej, a nie te, które go budują lub naprawiają. Postaw go wcześnie na długiej linii: im wcześniej pakiet zostanie przyspieszony, tym dłużej jedzie szybciej.",
   "tip.interceptor":
     "Sięga dziewięć pól i zużywa jedną energię na strzał, trzy strzały na bryłę: stawiaj go tam, gdzie budowle stoją najgęściej.",
   "tip.baffle":
@@ -231,6 +234,10 @@ export const plContent: Content = {
       name: "Magistrala",
       blurb: "Łączy się z innymi magistralami na czternaście pól i podwaja prędkość pakietów.",
     },
+    booster: {
+      name: "Przyspieszacz",
+      blurb: "Przekazuje pakiety jak pylon, a każdy pakiet, który przez niego przejdzie, porusza się odtąd o jedną piątą szybciej. Przyspieszacze się sumują, ale ten sam przyspieszacz nigdy nie przyspiesza pakietu dwa razy.",
+    },
     tap: { name: "Odwiert", blurb: "Stale czerpie energię z żyły. Pasuje tylko na żyłę." },
     cell: { name: "Ogniwo", blurb: "Mieści trzydzieści dodatkowych jednostek energii." },
     pump: {
@@ -284,6 +291,7 @@ export const plContent: Content = {
       brief: "Trzy kominy w trzech kierunkach, najbliższy dwadzieścia dziewięć pól stąd. Magistrale szybko niosą pakiety przez duże odstępy.",
       hints: [
         "Magistrale łączą się ze sobą na czternaście pól i podwajają prędkość pakietów.",
+        "Przyspieszacz przekazuje pakiety jak pylon i przyspiesza każdy z nich o jedną piątą. Pakiety wybierają najszybszą drogę, więc kilka przyspieszaczy na długiej linii ściąga ruch i szybciej dostarcza go na miejsce.",
       ],
     },
     c5: {

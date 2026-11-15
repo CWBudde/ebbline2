@@ -33,6 +33,8 @@ export function apply(game: Game, command: Command): Event[] {
       if (s && s.kind !== "lander") s.active = !s.active;
       // A switched-off pylon gives up its harvest.
       if (s?.kind === "pylon") updateHarvest(game);
+      // Routes prefer working boosters, so switching one changes them.
+      if (s?.kind === "booster") game.gridDirty = true;
       break;
     }
     case "mark": {
