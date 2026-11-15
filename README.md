@@ -31,9 +31,9 @@ that level text, placeholders and markup are complete.
 ## Art and fonts
 
 The images under `app/public/art/` (structure and feature sprites, ground materials, the title
-picture and the briefing illustrations) were generated for this project with an image model. The
-style guide and the prompt of every image are in `art/`. Each structure also has a code-drawn
-version in `app/src/render/art.ts`, which the game uses if an image fails to load.
+picture with its three layers and the briefing illustrations) were generated for this project with
+an image model. The style guide and the prompt of every image are in `art/`. Each structure also has
+a code-drawn version in `app/src/render/art.ts`, which the game uses if an image fails to load.
 
 The fonts are Big Shoulders and IBM Plex Sans, both under the SIL Open Font License 1.1, bundled
 through the `@fontsource-variable` packages and served with the game.

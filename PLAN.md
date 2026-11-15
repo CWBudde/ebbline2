@@ -13,12 +13,15 @@ on hexagonal tiles instead of squares. Ranges are counted in steps from tile to 
 - [x] Earthy brown ground.
 - [x] Hex art: structures on hexagonal plates, the seven-tile lander, vent, spitter, lode and the
       briefing illustrations (`app/public/art/`; prompts in `art/`).
+- [x] Title scene for the hex look: a shader draws the silt sea in perspective, the painted rock
+      islands stand on it, the vent smokes, and the ridge with the seven-hexagon lander is in front.
 
 ## Open
 
 - [ ] Landforms, or other ways to give missions more character.
 - [ ] More missions.
-- [ ] Title art for the hex look: it still shows the old four-legged lander and grey-teal rock.
+- [ ] Title sky: it is still the painted one (`title-bg.jpg`), with a higher horizon than the first
+      Ebbline title. The sea bands are also softer than that title's painted rivers.
 - [ ] Engine: a structure standing in silt requests a full energy packet for each tiny repair, which
       can drain 2 to 4 energy per second. Look at batching or scaling the request.
 - [ ] Balance: the scripted bot (`engine/src/testing/bot.ts`) never builds trunks, pumps, baffles or graders,

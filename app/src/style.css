@@ -435,10 +435,12 @@ kbd {
   padding-top: calc(var(--s7) + env(safe-area-inset-top));
   padding-bottom: calc(var(--s5) + env(safe-area-inset-bottom));
   overflow-y: auto;
-  /* Darkens the calm left of the picture for the text and leaves the lander clear. */
+  /* Darkens the sky behind the wordmark and tagline at the top left, and the left edge and the
+     bottom a little for the menu and the credit, so the rock on the left still reads as rock. */
   background:
-    linear-gradient(90deg, rgba(6, 12, 15, 0.94) 0, rgba(6, 12, 15, 0.8) 26%, rgba(6, 12, 15, 0) 58%),
-    linear-gradient(0deg, rgba(6, 12, 15, 0.7) 0, rgba(6, 12, 15, 0) 24%);
+    radial-gradient(ellipse 52% 48% at 0 0, rgba(6, 12, 15, 0.8) 0, rgba(6, 12, 15, 0.45) 55%, rgba(6, 12, 15, 0) 100%),
+    linear-gradient(90deg, rgba(6, 12, 15, 0.5) 0, rgba(6, 12, 15, 0.22) 24%, rgba(6, 12, 15, 0) 40%),
+    linear-gradient(0deg, rgba(6, 12, 15, 0.85) 0, rgba(6, 12, 15, 0.4) 7%, rgba(6, 12, 15, 0) 16%);
 }
 
 .title-head,
@@ -1494,13 +1496,16 @@ kbd {
     padding: var(--s2) var(--s4) var(--s2) var(--s1);
   }
 
-  /* The picture becomes a banner at the top; the menu stands on solid ground below it. */
+  /* The picture becomes a banner at the top; the menu stands on solid ground below it. The banner
+     reaches down to about where the menu (some 280px with the credit) begins, so a tall phone shows
+     no dark gap above the buttons, and never ends above 56%, so a short one keeps the lander clear. */
   .screen.title {
     padding: 0;
+    --banner: max(56%, 100% - 290px);
   }
 
   .title .backdrop {
-    height: 56%;
+    height: var(--banner);
     object-position: 100% 100%;
   }
 
@@ -1512,8 +1517,8 @@ kbd {
       180deg,
       rgba(6, 12, 15, 0.6) 0,
       rgba(6, 12, 15, 0.1) 24%,
-      rgba(6, 12, 15, 0) 36%,
-      var(--bg) 56%
+      rgba(6, 12, 15, 0) calc(var(--banner) - 28%),
+      var(--bg) var(--banner)
     );
   }
 
