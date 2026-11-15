@@ -40,20 +40,20 @@ const at = (game: Game, i: number): { x: number; y: number } => {
 };
 
 /**
- * How large an atlas sprite is drawn, in tiles across its cell. The atlas pieces are square and nearly fill
- * their cells, so a structure is shrunk until its corners stay inside its hexagon, and the lander until it
- * sits inside its flower of seven; the natural features may spill over.
+ * How large an atlas sprite is drawn, in tiles across its cell. The atlas tool fits each piece's longer side
+ * to 120 of a 128 px cell (376 of 384 for the lander). A structure is a pointy-top hexagonal plate, so its
+ * 120 px are the corner-to-corner height: 1.18 × 120/128 = 1.106 tiles of the hexagon's 1.155 (96 %), and its
+ * width (0.86 of the height) 0.95 of the tile, a margin of about 0.05 tile all round. The lander is the
+ * seven-hexagon flower, its 376 px the 3-tile width: 0.99 × 376/128 = 2.91 tiles across and 2.79 of the
+ * flower's 2.89 high, the same margin. The natural features may spill over.
  */
 const FIT: Partial<Record<SpriteKind, number>> = {
-  lander: 0.82,
-  pylon: 0.95,
-  pump: 0.9,
-  cap: 0.9,
+  lander: 0.99,
   vent: 1.5,
   spitter: 1.7,
-  lode: 1.0,
+  lode: 1.1,
 };
-const DEFAULT_FIT = 0.8;
+const DEFAULT_FIT = 1.18;
 
 /** Milliseconds between silt repaints while it shimmers. */
 const SHIMMER_MS = 80;
