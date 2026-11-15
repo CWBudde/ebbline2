@@ -114,7 +114,7 @@ export const de: Record<Key, string> = {
   "key.slot11": "ß",
   "key.delete": "Entf",
 
-  "status.offGrid": "Nicht am Netz: braucht ein Gebäude im Umkreis von sechs Feldern",
+  "status.offGrid": "Nicht am Netz: braucht ein Gebäude in höchstens sechs Feldern Entfernung",
   "status.building": "Im Bau",
   "status.off": "Abgeschaltet",
   "status.damaged": "Beschädigt, wird repariert",
@@ -134,7 +134,7 @@ export const de: Record<Key, string> = {
 
   "grade.title": "Boden markieren",
   "grade.text":
-    "Wähl eine Zielhöhe und markier dann die Felder. Ein Planierer im Umkreis von acht Feldern erledigt die Arbeit.",
+    "Wähl eine Zielhöhe und markier dann die Felder. Ein Planierer in höchstens acht Feldern Entfernung erledigt die Arbeit.",
   "grade.erase": "Löschen",
 
   "pause.title": "Pausiert",
@@ -185,7 +185,7 @@ export const de: Record<Key, string> = {
   "tip.grader":
     "Jede Höhenstufe dauert anderthalb Sekunden, und unter Gebäuden lässt sich nichts planieren: Markier deine Deiche, bevor der Schlick da ist.",
   "tip.spitter":
-    "Klumpen zielen auf das Gebäude, um das im Umkreis von fünf Feldern die meisten anderen stehen. Du weißt also, wo der nächste einschlägt: Stell dort einen Abfänger hin.",
+    "Klumpen zielen auf das Gebäude, um das in höchstens fünf Feldern Entfernung die meisten anderen stehen. Du weißt also, wo der nächste einschlägt: Stell dort einen Abfänger hin.",
   "tip.survive":
     "Steck die Energie in die Verteidigung rund um den Lander statt in die Ausdehnung: Die Schlote werden jede Minute stärker, die letzten Minuten sind die härtesten.",
 
@@ -256,80 +256,62 @@ export const deContent: Content = {
   },
   levels: {
     c1: {
-      name: "Erstes Licht",
-      brief: "Zwei träge Schlote. Zapf die Adern an, führ das Netz bergab und verschließ sie.",
+      name: "Landung",
+      brief: "Ein träger Schlot, fünfzehn Felder östlich und weit unter dir. Führ das Netz zu ihm hinunter, brenn ihn trocken und verschließ ihn.",
       hints: [
-        "Setz Zapfer auf die leuchtenden Adern beim Lander, um Energie zu gewinnen.",
         "Pylonen erweitern das Netz am günstigsten. Alles muss höchstens sechs Felder von einem fertigen Gebäude entfernt stehen.",
         "Lanzen brennen Schlick weg. Stell sie auf Anhöhen: Bergauf können sie nicht zielen.",
         "Läuft der Schlot zwischen zwei Schüben trocken, setz eine Kappe darauf und halt sie versorgt.",
+        "Der Lander liefert eine Energie pro Sekunde, und hier gibt es keine Adern. Bau nicht mehr als nötig.",
       ],
     },
     c2: {
-      name: "Reservoir",
-      brief: "Drei Schlote. Speicher sammeln Energie für den Vorstoß; Werfer erreichen tiefe Becken.",
-      hints: ["Werfer ignorieren Höhenunterschiede, treffen aber nichts, was näher als drei Felder liegt."],
+      name: "Zwei Fronten",
+      brief: "Zwei Schlote, auf entgegengesetzten Seiten deines Hügels. Zapf die Adern an und spar die Energie für die Kappen.",
+      hints: [
+        "Setz Zapfer auf die leuchtenden Adern beim Lander, um Energie zu gewinnen.",
+        "Der Vorrat fasst dreißig Energie, eine halbe Kappe. Jeder Speicher bringt dreißig dazu.",
+      ],
     },
     c3: {
-      name: "Abschöpfer",
-      brief: "Adern sind hier rar. Pumpen machen aus flachem Schlick Energie, aber nicht ohne Risiko.",
-      hints: ["Eine Pumpe erreicht nur Schlick im Umkreis von zwei Feldern, also steht sie an vorderster Front."],
+      name: "Senke",
+      brief: "Drei Schlote speien in langsamen, schweren Schüben, und das Becken darunter läuft tief voll. Werfer erreichen die tiefen Tümpel.",
+      hints: [
+        "Werfer ignorieren Höhenunterschiede, treffen aber nichts, was näher als drei Felder liegt.",
+      ],
     },
     c4: {
-      name: "Langstrecke",
-      brief: "Die Schlote liegen weit weg. Trassen bringen Pakete schnell über große Lücken.",
-      hints: ["Trassen verbinden sich untereinander über vierzehn Felder und verdoppeln das Tempo der Pakete."],
+      name: "Weites Land",
+      brief: "Drei Schlote in drei Richtungen, der nächste neunundzwanzig Felder entfernt. Trassen bringen Pakete schnell über große Lücken.",
+      hints: [
+        "Trassen verbinden sich untereinander über vierzehn Felder und verdoppeln das Tempo der Pakete.",
+      ],
     },
     c5: {
-      name: "Beschuss",
-      brief: "Ein Speier hat dich entdeckt. Achte auf die Einschlagmarkierung und schieß die Klumpen ab.",
-      hints: ["Klumpen zielen auf deine dichteste Gebäudegruppe. Abfänger brauchen drei Treffer pro Klumpen."],
+      name: "Hochebene",
+      brief: "Vier Schlote umringen deinen Tafelberg, und es gibt nur drei Adern. Pumpen schöpfen flachen Schlick ab und machen daraus Energie.",
+      hints: [
+        "Eine Pumpe erreicht nur Schlick zwei Felder weit, also muss sie am Ufer stehen, wo der Schlick auch sie erreicht.",
+      ],
     },
     c6: {
-      name: "Wellenbrecher",
-      brief: "Du sitzt unten im Becken, und die Schlote sind außer Reichweite. Halt zehn Minuten durch.",
-      hints: ["Eine versorgte Sperre zwingt den Schlick zwei Stufen höher: ein Damm quer durchs Tal."],
+      name: "Flussaue",
+      brief: "Du bist tief unten gelandet, am Ufer eines Flusstals, mit vier Schloten ringsum. Halt zehn Minuten durch.",
+      hints: [
+        "Eine versorgte Sperre zwingt den Schlick, auf jedem Feld bis vier Felder von ihr zwei Stufen mehr zu steigen.",
+        "Wähl „Markieren“, such eine Höhe aus und markier die Felder; ein Planierer höchstens acht Felder entfernt hebt oder senkt sie.",
+      ],
     },
     c7: {
-      name: "Erdarbeiten",
-      brief: "Fünf Schlote und zerklüftetes Gelände. Planierer schütten Deiche auf und graben Rampen.",
+      name: "Dauerfeuer",
+      brief: "Zwei Speier schleudern Schlick aus Nordwesten auf dein Netz. Abfänger schießen die Klumpen im Flug ab.",
       hints: [
-        "Wähl „Markieren“, such eine Höhe aus und markier die Felder; ein Planierer in Reichweite erledigt die Arbeit.",
+        "Klumpen zielen auf deine dichteste Gebäudegruppe. Ein Abfänger reicht neun Felder weit und braucht drei Treffer pro Klumpen.",
       ],
     },
     c8: {
-      name: "Ebbline",
-      brief: "Sechs Schlote, drei Speier, alles, was du hast. Wende das Blatt.",
-      hints: [],
-    },
-    c9: {
-      name: "Kreuzfeuer",
-      brief: "Drei Speier umkreisen ein kleines Becken. Verteil dich, damit dich kein einzelner Klumpen bricht.",
-      hints: ["Klumpen zielen auf deine dichteste Gebäudegruppe, ein weit verzweigtes Netz verteilt also den Schaden."],
-    },
-    c10: {
-      name: "Dürreland",
-      brief: "Wenige Adern und fünf hungrige Schlote. Jedes Paket zählt.",
-      hints: ["Wenn die Adern ausgehen, bezahlen Pumpen an der Front den Vorstoß."],
-    },
-    c11: {
-      name: "Hagelsturm",
-      brief: "Zwei Speier feuern schnell und oft. Sichere dein Netz ab, bevor du vorrückst.",
-      hints: [],
-    },
-    c12: {
-      name: "Sog",
-      brief: "Vier Schlote, ein Speier und keine Anhöhe. Halt fünfzehn Minuten durch.",
-      hints: ["Such die Täler, die zum Lander führen, und sperr jedes mit einer Sperre ab."],
-    },
-    c13: {
-      name: "Delta",
-      brief: "Fünf Schlote, verstreut über ein weites Delta. Trassen und Speicher versorgen eine lange Front.",
-      hints: [],
-    },
-    c14: {
-      name: "Springflut",
-      brief: "Die höchste Flut bisher: vier Schlote und drei Speier. Bring zu Ende, was du begonnen hast.",
+      name: "Wasserscheide",
+      brief: "Fünf Schlote und drei Speier rings um den Gipfel. Setz alles ein, was du hast.",
       hints: [],
     },
   },

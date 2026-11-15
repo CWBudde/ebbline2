@@ -259,78 +259,62 @@ export const ptContent: Content = {
   },
   levels: {
     c1: {
-      name: "Primeira luz",
-      brief: "Duas fendas lentas. Explore os veios, leve a rede morro abaixo e tampe-as.",
+      name: "Pouso",
+      brief: "Uma fenda preguiçosa, quinze casas a leste e bem abaixo de você. Leve a rede até ela, queime o lodo e tampe-a.",
       hints: [
-        "Coloque extratores nos veios brilhantes perto do módulo de pouso para gerar energia.",
-        "Torres são o jeito barato de estender a rede. Tudo precisa ficar a até seis casas de uma estrutura construída.",
-        "Lanças queimam o lodo. Coloque-as no alto: elas não miram morro acima.",
-        "Quando a fenda secar entre dois jorros, coloque uma tampa nela e mantenha-a abastecida.",
+        "As torres são o jeito barato de estender a rede. Tudo deve ficar a até seis casas de uma estrutura concluída.",
+        "As lanças queimam o lodo. Ponha-as em terreno alto: elas não miram morro acima.",
+        "Quando a fenda secar entre os pulsos, coloque uma tampa nela e mantenha-a abastecida.",
+        "O módulo de pouso gera uma energia por segundo, e aqui não há veios. Não construa mais que o necessário.",
       ],
     },
     c2: {
-      name: "Reservatório",
-      brief: "Três fendas. Baterias guardam energia para o avanço; morteiros alcançam poças fundas.",
-      hints: ["Morteiros ignoram a altura, mas não acertam nada a menos de três casas."],
+      name: "Duas frentes",
+      brief: "Duas fendas, em lados opostos da sua colina. Explore os veios por energia e guarde-a para as tampas.",
+      hints: [
+        "Coloque extratores nos veios luminosos perto do módulo de pouso para ganhar energia.",
+        "A reserva guarda trinta de energia, meia tampa. Cada bateria acrescenta mais trinta.",
+      ],
     },
     c3: {
-      name: "Escumadeiras",
-      brief: "Veios são raros aqui. Bombas transformam o lodo raso em energia, com algum risco.",
-      hints: ["Uma bomba só funciona com lodo a até duas casas, então ela vive na linha de frente."],
+      name: "Sumidouro",
+      brief: "Três fendas jorram em pulsos lentos e pesados, e a bacia lá embaixo enche fundo. Os morteiros alcançam as poças profundas.",
+      hints: [
+        "Os morteiros ignoram a altura, mas não acertam nada a menos de três casas.",
+      ],
     },
     c4: {
-      name: "Longa jornada",
-      brief: "Três fendas, todas distantes. Troncos levam pacotes rápido por longas distâncias.",
-      hints: ["Troncos se ligam entre si a até quatorze casas e dobram a velocidade dos pacotes."],
+      name: "Confins",
+      brief: "Três fendas em três direções, a mais próxima a vinte e nove casas. Os troncos levam pacotes rápido por grandes distâncias.",
+      hints: [
+        "Os troncos se ligam entre si a catorze casas e dobram a velocidade dos pacotes.",
+      ],
     },
     c5: {
-      name: "Ataque à vista",
-      brief: "Um cuspidor encontrou você. Fique de olho na marca de impacto e derrube as bolotas.",
-      hints: ["As bolotas miram seu grupo mais denso de estruturas. Interceptores precisam de três tiros por bolota."],
+      name: "Planalto",
+      brief: "Quatro fendas cercam o seu planalto, e há só três veios. As bombas sugam o lodo raso para tirar energia.",
+      hints: [
+        "Uma bomba só alcança lodo a duas casas, então ela precisa ficar na margem, onde o lodo também pode alcançá-la.",
+      ],
     },
     c6: {
-      name: "Quebra-mar",
-      brief: "Você está no fundo da bacia e as fendas estão fora de alcance. Resista por dez minutos.",
-      hints: ["Uma barreira abastecida obriga o lodo a subir dois níveis a mais: uma represa atravessando o vale."],
+      name: "Várzea",
+      brief: "Você pousou embaixo, na margem de um vale de rio, com quatro fendas ao redor. Aguente dez minutos.",
+      hints: [
+        "Uma barreira alimentada faz o lodo subir dois níveis a mais em cada casa a até quatro casas dela.",
+        "Escolha Marcar, uma altura e pinte casas; uma niveladora a até oito casas as eleva ou rebaixa.",
+      ],
     },
     c7: {
-      name: "Terraplanagem",
-      brief: "Cinco fendas e terreno acidentado. Niveladoras erguem diques e abrem rampas.",
-      hints: ["Escolha “Marcar”, uma altura e pinte as casas; uma niveladora ao alcance faz o trabalho."],
+      name: "Bombardeio",
+      brief: "Dois cuspidores lançam lodo contra a sua rede vindo do noroeste. Os interceptores derrubam as bolotas em pleno voo.",
+      hints: [
+        "As bolotas miram o seu grupo mais denso. Um interceptor alcança nove casas e precisa de três acertos por bolota.",
+      ],
     },
     c8: {
-      name: "Ebbline",
-      brief: "Seis fendas, três cuspidores, tudo o que você tem. Vire a maré.",
-      hints: [],
-    },
-    c9: {
-      name: "Fogo cruzado",
-      brief: "Três cuspidores cercam uma pequena bacia. Espalhe-se para que nenhuma bolota sozinha derrube você.",
-      hints: ["As bolotas miram seu grupo mais denso, então uma rede espalhada divide o dano."],
-    },
-    c10: {
-      name: "Terra seca",
-      brief: "Poucos veios e cinco fendas famintas. Cada pacote conta.",
-      hints: ["Quando os veios acabarem, bombas na linha de frente pagam o avanço."],
-    },
-    c11: {
-      name: "Chuva de granizo",
-      brief: "Dois cuspidores atiram rápido e sem parar. Proteja a rede antes de avançar.",
-      hints: [],
-    },
-    c12: {
-      name: "Ressaca",
-      brief: "Quatro fendas, um cuspidor e nenhum terreno alto. Resista por quinze minutos.",
-      hints: ["Encontre os vales que levam ao módulo de pouso e bloqueie cada um com uma barreira."],
-    },
-    c13: {
-      name: "Delta",
-      brief: "Cinco fendas espalhadas por um delta amplo. Troncos e baterias abastecem uma frente longa.",
-      hints: [],
-    },
-    c14: {
-      name: "Maré viva",
-      brief: "A maré mais alta até agora: quatro fendas e três cuspidores. Termine o que você começou.",
+      name: "Divisor de águas",
+      brief: "Cinco fendas e três cuspidores em volta do pico. Use tudo o que tem.",
       hints: [],
     },
   },

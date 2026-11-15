@@ -256,78 +256,62 @@ export const itContent: Content = {
   },
   levels: {
     c1: {
-      name: "Prima luce",
-      brief: "Due sfiati lenti. Sfrutta i filoni, porta la rete in discesa e tappali.",
+      name: "Atterraggio",
+      brief: "Uno sfiato svogliato, quindici caselle a est e molto più in basso. Porta la rete fin laggiù, bruciane la melma e tappalo.",
       hints: [
-        "Piazza estrattori sui filoni luminosi vicino al lander per ottenere energia.",
-        "I piloni sono il modo economico per estendere la rete. Tutto deve stare entro sei caselle da una struttura costruita.",
-        "Le lance bruciano la melma. Mettile in alto: non possono mirare verso l'alto.",
-        "Quando lo sfiato si asciuga tra un getto e l'altro, piazzaci un tappo e tienilo alimentato.",
+        "I piloni sono il modo economico per estendere la rete. Tutto deve stare entro sei caselle da una struttura completata.",
+        "Le lance bruciano la melma. Mettile in alto: non possono mirare in salita.",
+        "Quando lo sfiato si secca tra un'ondata e l'altra, piazzaci un tappo e tienilo rifornito.",
+        "Il lander produce un'energia al secondo e qui non ci sono filoni. Non costruire più del necessario.",
       ],
     },
     c2: {
-      name: "Riserva",
-      brief: "Tre sfiati. Le celle accumulano energia per l'avanzata; i mortai raggiungono le pozze profonde.",
-      hints: ["I mortai ignorano l'altezza, ma non colpiscono nulla entro tre caselle."],
+      name: "Due fronti",
+      brief: "Due sfiati, ai lati opposti della tua collina. Sfrutta i filoni per l'energia e mettila da parte per i tappi.",
+      hints: [
+        "Piazza gli estrattori sui filoni luminosi vicino al lander per guadagnare energia.",
+        "La riserva contiene trenta di energia, mezzo tappo. Ogni cella ne aggiunge altri trenta.",
+      ],
     },
     c3: {
-      name: "Schiumatori",
-      brief: "Qui i filoni scarseggiano. Le pompe trasformano la melma bassa in energia, con qualche rischio.",
-      hints: ["Una pompa lavora solo sulla melma entro due caselle, quindi vive in prima linea."],
+      name: "Pozzo",
+      brief: "Tre sfiati sgorgano a ondate lente e pesanti, e il bacino sotto si riempie in profondità. I mortai raggiungono le pozze profonde.",
+      hints: [
+        "I mortai ignorano l'altezza, ma non colpiscono nulla a meno di tre caselle.",
+      ],
     },
     c4: {
-      name: "Lunga tratta",
-      brief: "Tre sfiati, tutti lontani. Le dorsali portano i pacchetti veloci su lunghe distanze.",
-      hints: ["Le dorsali si collegano tra loro entro quattordici caselle e raddoppiano la velocità dei pacchetti."],
+      name: "Terre lontane",
+      brief: "Tre sfiati in tre direzioni, il più vicino a ventinove caselle. Le dorsali portano i pacchetti veloci sulle lunghe distanze.",
+      hints: [
+        "Le dorsali si collegano fra loro su quattordici caselle e raddoppiano la velocità dei pacchetti.",
+      ],
     },
     c5: {
-      name: "In arrivo",
-      brief: "Uno sputatore ti ha trovato. Osserva il segnale d'impatto e abbatti i grumi.",
-      hints: ["I grumi puntano al tuo gruppo di strutture più fitto. Agli intercettori servono tre colpi per grumo."],
+      name: "Altopiano",
+      brief: "Quattro sfiati circondano il tuo tavolato e i filoni sono solo tre. Le pompe raccolgono la melma bassa per ricavarne energia.",
+      hints: [
+        "Una pompa raggiunge solo la melma a due caselle, quindi deve stare sulla riva, dove anche la melma può raggiungerla.",
+      ],
     },
     c6: {
-      name: "Frangiflutti",
-      brief: "Sei giù nel bacino e gli sfiati sono fuori portata. Resisti dieci minuti.",
-      hints: ["Una barriera alimentata costringe la melma a salire due livelli in più: una diga attraverso la valle."],
+      name: "Piana alluvionale",
+      brief: "Sei atterrato in basso, sulla riva di una valle fluviale, con quattro sfiati intorno. Resisti dieci minuti.",
+      hints: [
+        "Una barriera alimentata costringe la melma a salire due livelli in più su ogni casella entro quattro caselle da essa.",
+        "Scegli Segna, un'altezza e dipingi le caselle; una livellatrice entro otto caselle le alza o le abbassa.",
+      ],
     },
     c7: {
-      name: "Movimento terra",
-      brief: "Cinque sfiati e terreno accidentato. Le livellatrici alzano argini e scavano rampe.",
-      hints: ["Scegli «Segna», un'altezza e segna le caselle; una livellatrice a portata fa il lavoro."],
+      name: "Bombardamento",
+      brief: "Due sputatori scagliano melma sulla tua rete da nord-ovest. Gli intercettori abbattono i grumi in volo.",
+      hints: [
+        "I grumi mirano al tuo gruppo più denso. Un intercettore raggiunge nove caselle e servono tre colpi per grumo.",
+      ],
     },
     c8: {
-      name: "Ebbline",
-      brief: "Sei sfiati, tre sputatori, tutto ciò che hai. Ribalta la marea.",
-      hints: [],
-    },
-    c9: {
-      name: "Fuoco incrociato",
-      brief: "Tre sputatori circondano un piccolo bacino. Sparpagliati, così nessun grumo da solo può spezzarti.",
-      hints: ["I grumi puntano al tuo gruppo più fitto, quindi una rete estesa distribuisce i danni."],
-    },
-    c10: {
-      name: "Terra arida",
-      brief: "Pochi filoni e cinque sfiati affamati. Ogni pacchetto conta.",
-      hints: ["Quando i filoni si esauriscono, le pompe in prima linea pagano l'avanzata."],
-    },
-    c11: {
-      name: "Grandinata",
-      brief: "Due sputatori sparano rapidi e spesso. Proteggi la rete prima di avanzare.",
-      hints: [],
-    },
-    c12: {
-      name: "Risacca",
-      brief: "Quattro sfiati, uno sputatore e nessuna altura. Resisti quindici minuti.",
-      hints: ["Trova le valli che portano al lander e sbarrale una per una con una barriera."],
-    },
-    c13: {
-      name: "Delta",
-      brief: "Cinque sfiati sparsi su un ampio delta. Dorsali e celle riforniscono un fronte lungo.",
-      hints: [],
-    },
-    c14: {
-      name: "Marea viva",
-      brief: "La marea più alta finora: quattro sfiati e tre sputatori. Finisci ciò che hai iniziato.",
+      name: "Spartiacque",
+      brief: "Cinque sfiati e tre sputatori tutt'intorno alla vetta. Usa tutto quello che hai.",
       hints: [],
     },
   },

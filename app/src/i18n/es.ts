@@ -257,80 +257,62 @@ export const esContent: Content = {
   },
   levels: {
     c1: {
-      name: "Primera luz",
-      brief: "Dos fumarolas perezosas. Explota las vetas, lleva la red cuesta abajo y tapónalas.",
+      name: "Aterrizaje",
+      brief: "Una fumarola perezosa, quince casillas al este y muy por debajo de ti. Baja la red hasta ella, sécala a fuego y tapónala.",
       hints: [
-        "Coloca Extractores en las vetas brillantes junto al módulo para obtener energía.",
-        "Los Pilones son la forma barata de ampliar la red. Todo debe estar a seis casillas como máximo de una estructura construida.",
-        "Las Lanzas queman el limo. Ponlas en alto: no pueden apuntar cuesta arriba.",
-        "Cuando la fumarola se seque entre dos pulsos, coloca un Tapón encima y mantenlo abastecido.",
+        "Los Pilones son la forma barata de extender la red. Todo debe estar a seis casillas como máximo de una estructura terminada.",
+        "Las Lanzas queman el limo. Ponlas en terreno alto: no pueden apuntar cuesta arriba.",
+        "Cuando la fumarola se seque entre pulsos, coloca un Tapón encima y mantenlo abastecido.",
+        "El módulo produce una energía por segundo y aquí no hay vetas. No construyas más de lo necesario.",
       ],
     },
     c2: {
-      name: "Embalse",
-      brief: "Tres fumarolas. Las Baterías guardan energía para el avance; los Morteros alcanzan charcos profundos.",
-      hints: ["Los Morteros ignoran la altura, pero no alcanzan nada a menos de tres casillas."],
+      name: "Dos frentes",
+      brief: "Dos fumarolas, a lados opuestos de tu colina. Aprovecha las vetas para sacar energía y guárdala para los Tapones.",
+      hints: [
+        "Coloca Extractores en las vetas luminosas cerca del módulo para ganar energía.",
+        "La reserva guarda treinta de energía, medio Tapón. Cada Batería añade treinta más.",
+      ],
     },
     c3: {
-      name: "Espumaderas",
-      brief: "Aquí las vetas escasean. Las Bombas convierten lo poco profundo en energía, con riesgo.",
-      hints: ["Una Bomba solo actúa sobre limo a dos casillas como máximo, así que vive en primera línea."],
+      name: "Sumidero",
+      brief: "Tres fumarolas brotan en pulsos lentos y pesados, y la cuenca de abajo se llena hondo. Los Morteros alcanzan las charcas profundas.",
+      hints: [
+        "Los Morteros ignoran la altura, pero no aciertan a nada a menos de tres casillas.",
+      ],
     },
     c4: {
-      name: "Larga distancia",
-      brief: "Tres fumarolas, todas lejos. Las Troncales llevan paquetes rápido a través de grandes huecos.",
-      hints: ["Las Troncales se enlazan entre sí a catorce casillas y duplican la velocidad de los paquetes."],
+      name: "Confines",
+      brief: "Tres fumarolas en tres direcciones, la más cercana a veintinueve casillas. Las Troncales llevan los paquetes rápido por grandes distancias.",
+      hints: [
+        "Las Troncales se enlazan entre sí a catorce casillas y duplican la velocidad de los paquetes.",
+      ],
     },
     c5: {
-      name: "Fuego entrante",
-      brief: "Un escupidor te ha encontrado. Vigila el marcador de impacto y derriba los pegotes.",
-      hints: ["Los pegotes apuntan a tu grupo más denso. Los Interceptores necesitan tres impactos por pegote."],
+      name: "Meseta",
+      brief: "Cuatro fumarolas rodean tu meseta y solo hay tres vetas. Las Bombas recogen limo somero para sacar energía.",
+      hints: [
+        "Una Bomba solo alcanza limo a dos casillas, así que debe estar en la orilla, donde el limo también puede alcanzarla.",
+      ],
     },
     c6: {
-      name: "Rompeolas",
-      brief: "Estás abajo en la cuenca y las fumarolas quedan fuera de alcance. Resiste diez minutos.",
-      hints: ["Una Barrera con energía obliga al limo a subir dos niveles más: una presa a través del valle."],
+      name: "Llanura aluvial",
+      brief: "Aterrizaste abajo, en la orilla de un valle fluvial, con cuatro fumarolas a tu alrededor. Aguanta diez minutos.",
+      hints: [
+        "Una Barrera con energía obliga al limo a subir dos niveles más en cada casilla a cuatro casillas o menos de ella.",
+        "Elige Marcar, escoge una altura y pinta casillas; una Niveladora a ocho casillas como máximo las sube o las baja.",
+      ],
     },
     c7: {
-      name: "Movimiento de tierras",
-      brief: "Cinco fumarolas y terreno accidentado. Las Niveladoras levantan diques y abren rampas.",
+      name: "Bombardeo",
+      brief: "Dos escupidores lanzan limo contra tu red desde el noroeste. Los Interceptores derriban los pegotes en pleno vuelo.",
       hints: [
-        "Elige «Marcar», escoge una altura y pinta casillas; una Niveladora a su alcance hace el trabajo.",
+        "Los pegotes apuntan a tu grupo más denso. Un Interceptor alcanza nueve casillas y necesita tres impactos por pegote.",
       ],
     },
     c8: {
-      name: "Ebbline",
-      brief: "Seis fumarolas, tres escupidores, todo lo que tienes. Cambia la marea.",
-      hints: [],
-    },
-    c9: {
-      name: "Fuego cruzado",
-      brief: "Tres escupidores rodean una cuenca pequeña. Dispérsate para que ningún pegote pueda romperte.",
-      hints: ["Los pegotes apuntan a tu grupo más denso, así que una red extensa reparte el daño."],
-    },
-    c10: {
-      name: "Tierra seca",
-      brief: "Pocas vetas y cinco fumarolas hambrientas. Que cada paquete cuente.",
-      hints: ["Cuando se agotan las vetas, las Bombas en primera línea pagan el avance."],
-    },
-    c11: {
-      name: "Granizada",
-      brief: "Dos escupidores disparan rápido y a menudo. Protege la red antes de avanzar.",
-      hints: [],
-    },
-    c12: {
-      name: "Resaca",
-      brief: "Cuatro fumarolas, un escupidor y ningún terreno alto. Resiste quince minutos.",
-      hints: ["Busca los valles que llevan al módulo y ciérralos cada uno con una Barrera."],
-    },
-    c13: {
-      name: "Delta",
-      brief: "Cinco fumarolas repartidas por un amplio delta. Troncales y Baterías abastecen un frente largo.",
-      hints: [],
-    },
-    c14: {
-      name: "Marea viva",
-      brief: "La marea más alta hasta ahora: cuatro fumarolas y tres escupidores. Termina lo que empezaste.",
+      name: "Divisoria",
+      brief: "Cinco fumarolas y tres escupidores alrededor del pico. Usa todo lo que tienes.",
       hints: [],
     },
   },

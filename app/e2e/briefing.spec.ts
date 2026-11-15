@@ -9,7 +9,7 @@ async function openFirstMission(page: Page): Promise<void> {
   await page.goto("./");
   await expect(page.locator("body[data-ready=true]")).toBeAttached();
   await page.getByRole("button", { name: "Campaign" }).click();
-  await page.getByRole("button", { name: /First Light/ }).click();
+  await page.getByRole("button", { name: /Landfall/ }).click();
 }
 
 /** Wins the first mission by sealing its vents directly, then takes "next mission" on the win screen. */
@@ -19,17 +19,17 @@ async function openSecondMission(page: Page): Promise<void> {
   await page.evaluate(() => {
     for (const vent of window.ebbline?.runtime.value?.game.vents ?? []) vent.capped = true;
   });
-  await page.getByRole("button", { name: /Next: Reservoir/ }).click();
+  await page.getByRole("button", { name: /Next: Two Fronts/ }).click();
 }
 
 test("the first mission opens on a briefing that explains the whole starting roster", async ({ page }) => {
   await openFirstMission(page);
   const briefing = page.getByTestId("briefing");
-  await expect(briefing).toContainText("Mission 1 of 14");
-  await expect(briefing.getByRole("heading", { name: "First Light" })).toBeVisible();
-  await expect(briefing.getByTestId("briefing-goal")).toHaveText("Objective Build a Cap on each of the 2 vents.");
-  await expect(briefing.locator("[data-subject]")).toHaveCount(4);
-  for (const name of ["Pylon", "Tap", "Lance", "Cap"]) {
+  await expect(briefing).toContainText("Mission 1 of 8");
+  await expect(briefing.getByRole("heading", { name: "Landfall" })).toBeVisible();
+  await expect(briefing.getByTestId("briefing-goal")).toHaveText("Objective Build a Cap on the vent.");
+  await expect(briefing.locator("[data-subject]")).toHaveCount(3);
+  for (const name of ["Pylon", "Lance", "Cap"]) {
     await expect(briefing.getByRole("heading", { name, exact: true })).toBeAttached();
   }
   await expect(page.getByTestId("deploy")).toBeFocused();
@@ -41,20 +41,20 @@ test("the first mission opens on a briefing that explains the whole starting ros
         images.map((image) => (image as HTMLImageElement).naturalWidth > 0),
       ),
     )
-    .toEqual([true, true, true, true]);
+    .toEqual([true, true, true]);
 });
 
-test("the briefing of mission 2 names Cell and Lobber and holds the game until Deploy", async ({ page }) => {
+test("the briefing of mission 2 names Tap and Cell and holds the game until Deploy", async ({ page }) => {
   await openSecondMission(page);
   const briefing = page.getByTestId("briefing");
-  await expect(briefing).toContainText("Mission 2 of 14");
-  await expect(briefing.getByRole("heading", { name: "Reservoir" })).toBeVisible();
-  await expect(briefing.getByTestId("briefing-goal")).toContainText("each of the 3 vents");
+  await expect(briefing).toContainText("Mission 2 of 8");
+  await expect(briefing.getByRole("heading", { name: "Two Fronts" })).toBeVisible();
+  await expect(briefing.getByTestId("briefing-goal")).toContainText("each of the 2 vents");
   await expect(briefing.locator("[data-subject]")).toHaveCount(2);
+  await expect(briefing.locator("[data-subject=tap]")).toContainText("Tap");
+  await expect(briefing.locator("[data-subject=tap]")).toContainText("8 energy");
   await expect(briefing.locator("[data-subject=cell]")).toContainText("Cell");
   await expect(briefing.locator("[data-subject=cell]")).toContainText("10 energy");
-  await expect(briefing.locator("[data-subject=lobber]")).toContainText("Lobber");
-  await expect(briefing.locator("[data-subject=lobber]")).toContainText("Range 11, not closer than 3");
   await expect(briefing.getByRole("heading", { name: "Pylon" })).toHaveCount(0);
 
   expect(await tick(page)).toBe(0);
@@ -79,7 +79,7 @@ test("a restart shows no briefing, and the pause menu brings it back", async ({ 
 
   await page.getByRole("button", { name: "Menu" }).click();
   await page.getByRole("button", { name: "Briefing" }).click();
-  await expect(page.getByTestId("briefing")).toContainText("Lobber");
+  await expect(page.getByTestId("briefing")).toContainText("Tap");
   const held = await tick(page);
   await page.waitForTimeout(400);
   expect(await tick(page)).toBe(held);
@@ -117,7 +117,7 @@ test("a skirmish and a resumed game have no briefing", async ({ page }) => {
   await page.getByRole("button", { name: "Menu" }).click();
   await page.getByRole("button", { name: "Save and quit" }).click();
   await page.getByRole("button", { name: /Continue/ }).click();
-  await expect(page.getByTestId("goal")).toHaveText("Vents capped 0 / 2");
+  await expect(page.getByTestId("goal")).toHaveText("Vents capped 0 / 1");
   await expect(page.getByTestId("briefing")).toHaveCount(0);
   const resumed = await tick(page);
   await expect.poll(() => tick(page)).toBeGreaterThan(resumed);

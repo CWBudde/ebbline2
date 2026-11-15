@@ -12,9 +12,9 @@ async function startFirstMission(page: Page): Promise<void> {
   await page.goto("./");
   await expect(page.locator("body[data-ready=true]")).toBeAttached();
   await page.getByRole("button", { name: "Campaign" }).click();
-  await page.getByRole("button", { name: /First Light/ }).click();
+  await page.getByRole("button", { name: /Landfall/ }).click();
   await deploy(page);
-  await expect(page.getByTestId("goal")).toHaveText("Vents capped 0 / 2");
+  await expect(page.getByTestId("goal")).toHaveText("Vents capped 0 / 1");
 }
 
 /** Screen position of the centre of the tile `dx` to the right of the lander. */
@@ -33,7 +33,7 @@ test("the title offers the campaign, and only the first mission is open", async 
   await page.goto("./");
   await expect(page.getByRole("heading", { name: "Ebbline 2" })).toBeVisible();
   await page.getByRole("button", { name: "Campaign" }).click();
-  await expect(page.getByRole("button", { name: /First Light/ })).toBeEnabled();
+  await expect(page.getByRole("button", { name: /Landfall/ })).toBeEnabled();
   await expect(page.getByRole("button", { name: /Win the mission before/ }).first()).toBeDisabled();
 });
 
@@ -73,7 +73,7 @@ test("a saved game continues from the title after a reload", async ({ page }) =>
   const saved = await page.evaluate(() => window.ebbline?.store.saved()?.seconds ?? -1);
   await page.reload();
   await page.getByRole("button", { name: /Continue/ }).click();
-  await expect(page.getByTestId("goal")).toHaveText("Vents capped 0 / 2");
+  await expect(page.getByTestId("goal")).toHaveText("Vents capped 0 / 1");
   expect(await game<number>(page, "Math.floor(g.tick / 30)")).toBeGreaterThanOrEqual(saved);
   expect(await game<string>(page, "g.level.id")).toBe("c1");
 });
@@ -88,8 +88,8 @@ test("winning shows the result, records it and opens the next mission", async ({
   await expect(page.getByTestId("end")).toContainText("new best");
   await page.getByRole("button", { name: "Main menu" }).click();
   await page.getByRole("button", { name: "Campaign" }).click();
-  await expect(page.getByRole("button", { name: /First Light/ })).toContainText("Best");
-  await expect(page.getByRole("button", { name: /Reservoir/ })).toBeEnabled();
+  await expect(page.getByRole("button", { name: /Landfall/ })).toContainText("Best");
+  await expect(page.getByRole("button", { name: /Two Fronts/ })).toBeEnabled();
 });
 
 test("a skirmish link opens the same map again", async ({ page }) => {

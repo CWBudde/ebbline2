@@ -195,7 +195,7 @@ describe("level text", () => {
 
   it("is looked up by id in German", () => {
     lang.value = "de";
-    expect(levelName(first)).toBe("Erstes Licht");
+    expect(levelName(first)).toBe("Landung");
     expect(levelBrief(first)).toBe(deContent.levels["c1"]?.brief);
     expect(levelHints(first)).toEqual(deContent.levels["c1"]?.hints);
     const level = skirmish(-7, "large", "hard");
@@ -206,8 +206,8 @@ describe("level text", () => {
 
   it("names a saved game by its id, and an old save by its stored name", () => {
     lang.value = "de";
-    expect(levelName({ id: "c2", name: "Reservoir" })).toBe("Reservoir");
-    expect(levelName({ id: "c4", name: "Long Haul" })).toBe("Langstrecke");
-    expect(levelName({ id: "", name: "Long Haul" })).toBe("Long Haul");
+    expect(levelName({ id: "c2", name: "Two Fronts" })).toBe("Zwei Fronten");
+    expect(levelName({ id: "c4", name: "Far Reaches" })).toBe("Weites Land");
+    expect(levelName({ id: "", name: "Far Reaches" })).toBe("Far Reaches");
   });
 });

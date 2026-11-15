@@ -254,80 +254,62 @@ export const nlContent: Content = {
   },
   levels: {
     c1: {
-      name: "Eerste licht",
-      brief: "Twee trage bronnen. Tap de aders af, leid het net bergaf en dop ze af.",
+      name: "Landing",
+      brief: "Eén trage bron, vijftien vakken oostwaarts en ver onder je. Leid het net naar beneden, brand de bron droog en doe er een dop op.",
       hints: [
-        "Zet taps op de gloeiende aders bij de lander om energie te winnen.",
-        "Pylonen zijn de goedkope manier om het net uit te breiden. Alles moet binnen zes vakken van een voltooid gebouw staan.",
-        "Lansen branden slib weg. Zet ze op hoge grond: bergop kunnen ze niet mikken.",
-        "Valt de bron tussen twee stoten droog, zet er dan een dop op en houd die gevoed.",
+        "Pylonen zijn de goedkope manier om het net te verlengen. Alles moet binnen zes vakken van een voltooid gebouw staan.",
+        "Lansen branden slib weg. Zet ze op hoge grond: ze kunnen niet bergop richten.",
+        "Als de bron tussen twee stoten droogvalt, zet er een dop op en houd die gevoed.",
+        "De lander maakt één energie per seconde en hier zijn geen aders. Bouw niet meer dan nodig.",
       ],
     },
     c2: {
-      name: "Reservoir",
-      brief: "Drie bronnen. Accu's sparen energie voor de opmars; werpers bereiken diepe poelen.",
-      hints: ["Werpers trekken zich niets aan van hoogte, maar raken niets dichterbij dan drie vakken."],
+      name: "Twee fronten",
+      brief: "Twee bronnen, aan weerszijden van je heuvel. Tap de aders voor energie en spaar die voor de doppen.",
+      hints: [
+        "Zet taps op de gloeiende aders bij de lander om energie te verdienen.",
+        "De voorraad houdt dertig energie vast, een halve dop. Elke accu voegt er dertig toe.",
+      ],
     },
     c3: {
-      name: "Afschuimers",
-      brief: "Aders zijn hier schaars. Pompen maken energie van ondiep slib, met enig risico.",
-      hints: ["Een pomp werkt alleen op slib binnen twee vakken, dus hij staat in de frontlinie."],
+      name: "Zinkput",
+      brief: "Drie bronnen stoten traag en zwaar, en het bekken eronder loopt diep vol. Werpers bereiken de diepe plassen.",
+      hints: [
+        "Werpers trekken zich niets aan van hoogte, maar raken niets dat dichterbij ligt dan drie vakken.",
+      ],
     },
     c4: {
-      name: "Lange adem",
-      brief: "Drie bronnen, allemaal ver weg. Hoofdlijnen brengen pakketten snel over grote afstanden.",
-      hints: ["Hoofdlijnen verbinden zich onderling over veertien vakken en verdubbelen de pakketsnelheid."],
+      name: "Verre uithoeken",
+      brief: "Drie bronnen in drie richtingen, de dichtstbijzijnde negenentwintig vakken weg. Hoofdlijnen brengen pakketten snel over grote afstanden.",
+      hints: [
+        "Hoofdlijnen verbinden zich onderling over veertien vakken en verdubbelen de pakketsnelheid.",
+      ],
     },
     c5: {
-      name: "Inslag",
-      brief: "Een spuwer heeft je gevonden. Let op de inslagmarkering en schiet de klodders neer.",
-      hints: ["Klodders mikken op je dichtste groep gebouwen. Onderscheppers hebben drie treffers per klodder nodig."],
+      name: "Hoogvlakte",
+      brief: "Vier bronnen omringen je plateau, en er zijn maar drie aders. Pompen scheppen ondiep slib af voor energie.",
+      hints: [
+        "Een pomp reikt maar twee vakken ver, dus hij moet aan de oever staan, waar het slib hem ook kan bereiken.",
+      ],
     },
     c6: {
-      name: "Golfbreker",
-      brief: "Je zit onderin het bekken en de bronnen zijn buiten bereik. Houd tien minuten vol.",
-      hints: ["Een gevoede kering laat slib twee treden extra klimmen: een dam dwars door het dal."],
+      name: "Uiterwaard",
+      brief: "Je bent laag geland, op de oever van een riviervallei, met vier bronnen om je heen. Houd tien minuten stand.",
+      hints: [
+        "Een gevoede kering laat slib op elk vak binnen vier vakken ervan twee treden extra klimmen.",
+        "Kies Markeren, een hoogte en schilder vakken; een egaliseerder binnen acht vakken verhoogt of verlaagt ze.",
+      ],
     },
     c7: {
-      name: "Grondwerk",
-      brief: "Vijf bronnen en grillig terrein. Egaliseerders werpen dijken op en graven hellingen.",
+      name: "Spervuur",
+      brief: "Twee spuwers slingeren slib vanuit het noordwesten naar je net. Onderscheppers schieten de klodders in de lucht neer.",
       hints: [
-        "Kies ‘Markeren’, kies een hoogte en schilder vakken; een egaliseerder binnen bereik doet het werk.",
+        "Klodders mikken op je dichtste cluster. Een onderschepper reikt negen vakken en heeft drie treffers per klodder nodig.",
       ],
     },
     c8: {
-      name: "Ebbline",
-      brief: "Zes bronnen, drie spuwers, alles wat je hebt. Keer het tij.",
-      hints: [],
-    },
-    c9: {
-      name: "Kruisvuur",
-      brief: "Drie spuwers omringen een klein bekken. Spreid je, zodat geen enkele klodder je kan breken.",
-      hints: ["Klodders mikken op je dichtste groep gebouwen, dus een uitgestrekt net spreidt de schade."],
-    },
-    c10: {
-      name: "Droog land",
-      brief: "Weinig aders en vijf hongerige bronnen. Laat elk pakket tellen.",
-      hints: ["Als de aders opraken, betalen pompen in de frontlinie de opmars."],
-    },
-    c11: {
-      name: "Hagelstorm",
-      brief: "Twee spuwers vuren snel en vaak. Dek je net af voordat je oprukt.",
-      hints: [],
-    },
-    c12: {
-      name: "Onderstroom",
-      brief: "Vier bronnen, een spuwer en geen hoge grond. Houd vijftien minuten vol.",
-      hints: ["Zoek de dalen die naar de lander leiden en dam ze elk af met een kering."],
-    },
-    c13: {
-      name: "Delta",
-      brief: "Vijf bronnen, verspreid over een brede delta. Hoofdlijnen en accu's bevoorraden een lang front.",
-      hints: [],
-    },
-    c14: {
-      name: "Springtij",
-      brief: "Het hoogste tij tot nu toe: vier bronnen en drie spuwers. Maak af waar je aan begon.",
+      name: "Waterscheiding",
+      brief: "Vijf bronnen en drie spuwers rondom de top. Gebruik alles wat je hebt.",
       hints: [],
     },
   },

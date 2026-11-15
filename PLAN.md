@@ -1,0 +1,28 @@
+# Ebbline 2: plan
+
+Ebbline 2 is the successor to [Ebbline](https://github.com/CWBudde/Ebbline): the same fluid-defence
+game (silt rises from vents, you build an energy grid, burn the silt back and cap every vent), played
+on hexagonal tiles instead of squares. Ranges are counted in steps from tile to touching tile.
+
+## Done
+
+- [x] Hex geometry, and the engine ported to hexagons (`engine/`).
+- [x] Hex drawing and picking in the app.
+- [x] Campaign of eight missions (`c1` to `c8`), replacing the fourteen square-grid ones; the
+      interface text of all eleven languages covers them.
+- [x] Earthy brown ground.
+- [x] Hex art: structures on hexagonal plates, the seven-tile lander, vent, spitter, lode and the
+      briefing illustrations (`app/public/art/`; prompts in `art/`).
+
+## Open
+
+- [ ] GitHub repository and Pages deployment. Only `test.yaml` exists in `.github/workflows/`; the
+      deploy workflow was removed for now.
+- [ ] Landforms, or other ways to give missions more character.
+- [ ] More missions.
+- [ ] Title art for the hex look: it still shows the old four-legged lander and grey-teal rock.
+- [ ] Engine: a structure standing in silt requests a full energy packet for each tiny repair, which
+      can drain 2 to 4 energy per second. Look at batching or scaling the request.
+- [ ] Balance: the scripted bot (`engine/src/testing/bot.ts`) never builds trunks, pumps, baffles or graders,
+      so the balance of the missions that introduce them is unproven.
+- [ ] Load time of large maps: about 430 ms for 80x80.

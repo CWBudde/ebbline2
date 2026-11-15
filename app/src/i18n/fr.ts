@@ -257,80 +257,62 @@ export const frContent: Content = {
   },
   levels: {
     c1: {
-      name: "Premières lueurs",
-      brief: "Deux évents paresseux. Exploite les filons, étends le réseau vers le bas et bouche-les.",
+      name: "Atterrissage",
+      brief: "Un évent paresseux, à quinze cases à l'est et bien en contrebas. Descends le réseau jusqu'à lui, assèche-le au feu et bouche-le.",
       hints: [
-        "Place des Extracteurs sur les filons lumineux près de l'atterrisseur pour gagner de l'énergie.",
         "Les Pylônes sont le moyen économique d'étendre le réseau. Tout doit se trouver à six cases au plus d'un bâtiment achevé.",
         "Les Lances brûlent la vase. Place-les en hauteur : elles ne peuvent pas viser vers le haut.",
         "Quand l'évent s'assèche entre deux poussées, place un Bouchon dessus et garde-le alimenté.",
+        "L'atterrisseur produit une énergie par seconde, et il n'y a pas de filons ici. Ne construis pas plus que nécessaire.",
       ],
     },
     c2: {
-      name: "Réservoir",
-      brief: "Trois évents. Les Batteries stockent l'énergie pour l'offensive ; les Mortiers atteignent les bassins profonds.",
-      hints: ["Les Mortiers ignorent la hauteur, mais ne touchent rien à moins de trois cases."],
+      name: "Deux fronts",
+      brief: "Deux évents, de part et d'autre de ta colline. Exploite les filons pour l'énergie et mets-la en réserve pour les Bouchons.",
+      hints: [
+        "Place des Extracteurs sur les filons lumineux près de l'atterrisseur pour gagner de l'énergie.",
+        "La réserve contient trente d'énergie, soit la moitié d'un Bouchon. Chaque Batterie en ajoute trente.",
+      ],
     },
     c3: {
-      name: "Écrémeurs",
-      brief: "Les filons sont rares ici. Les Pompes changent les hauts-fonds en énergie, non sans risque.",
-      hints: ["Une Pompe n'agit que sur la vase à deux cases au plus : sa place est en première ligne."],
+      name: "Gouffre",
+      brief: "Trois évents crachent par poussées lentes et lourdes, et le bassin en contrebas se remplit en profondeur. Les Mortiers atteignent les poches profondes.",
+      hints: [
+        "Les Mortiers ignorent la hauteur, mais ne touchent rien à moins de trois cases.",
+      ],
     },
     c4: {
-      name: "Longue distance",
-      brief: "Trois évents, tous lointains. Les Artères transportent vite les paquets sur de longues distances.",
-      hints: ["Les Artères se relient entre elles sur quatorze cases et doublent la vitesse des paquets."],
+      name: "Confins",
+      brief: "Trois évents dans trois directions, le plus proche à vingt-neuf cases. Les Artères portent les paquets vite par-dessus les grands vides.",
+      hints: [
+        "Les Artères se relient entre elles sur quatorze cases et doublent la vitesse des paquets.",
+      ],
     },
     c5: {
-      name: "Tirs entrants",
-      brief: "Un cracheur t'a repéré. Guette le marqueur d'impact et abats les boules.",
-      hints: ["Les boules visent ton groupe de bâtiments le plus dense. Un Intercepteur doit toucher trois fois par boule."],
+      name: "Haut plateau",
+      brief: "Quatre évents encerclent ton plateau, et il n'y a que trois filons. Les Pompes écument la vase peu profonde pour en tirer de l'énergie.",
+      hints: [
+        "Une Pompe n'atteint que la vase à deux cases, elle doit donc se tenir au bord, là où la vase peut aussi l'atteindre.",
+      ],
     },
     c6: {
-      name: "Brise-lames",
-      brief: "Tu es au fond du bassin et les évents sont hors de portée. Tiens dix minutes.",
-      hints: ["Une Barrière alimentée force la vase à monter deux niveaux de plus : un barrage en travers d'une vallée."],
+      name: "Plaine inondable",
+      brief: "Tu t'es posé en contrebas, sur la berge d'une vallée fluviale, avec quatre évents autour de toi. Tiens dix minutes.",
+      hints: [
+        "Une Barrière alimentée force la vase à gravir deux niveaux de plus sur chaque case à quatre cases ou moins d'elle.",
+        "Choisis Marquer, une hauteur, puis peins des cases ; une Niveleuse à huit cases au plus les relève ou les abaisse.",
+      ],
     },
     c7: {
-      name: "Terrassement",
-      brief: "Cinq évents et un terrain accidenté. Les Niveleuses élèvent des digues et creusent des rampes.",
+      name: "Pilonnage",
+      brief: "Deux cracheurs envoient de la vase sur ton réseau depuis le nord-ouest. Les Intercepteurs abattent les boules en plein vol.",
       hints: [
-        "Choisis « Marquer », sélectionne une hauteur et peins les cases ; une Niveleuse à portée fait le travail.",
+        "Les boules visent ta grappe la plus dense. Un Intercepteur porte à neuf cases et demande trois tirs par boule.",
       ],
     },
     c8: {
-      name: "Ebbline",
-      brief: "Six évents, trois cracheurs, tout ce que tu as. Renverse la marée.",
-      hints: [],
-    },
-    c9: {
-      name: "Feux croisés",
-      brief: "Trois cracheurs encerclent un petit bassin. Disperse-toi pour qu'aucune boule ne puisse te briser.",
-      hints: ["Les boules visent ton groupe le plus dense : un réseau étalé répartit les dégâts."],
-    },
-    c10: {
-      name: "Terre aride",
-      brief: "Peu de filons et cinq évents affamés. Chaque paquet compte.",
-      hints: ["Quand les filons s'épuisent, les Pompes en première ligne financent l'offensive."],
-    },
-    c11: {
-      name: "Grêle",
-      brief: "Deux cracheurs tirent vite et souvent. Protège le réseau avant d'avancer.",
-      hints: [],
-    },
-    c12: {
-      name: "Ressac",
-      brief: "Quatre évents, un cracheur et aucune hauteur. Tiens quinze minutes.",
-      hints: ["Trouve les vallées qui mènent à l'atterrisseur et barre chacune d'une Barrière."],
-    },
-    c13: {
-      name: "Delta",
-      brief: "Cinq évents dispersés sur un vaste delta. Artères et Batteries ravitaillent un long front.",
-      hints: [],
-    },
-    c14: {
-      name: "Grande marée",
-      brief: "La plus haute marée jusqu'ici : quatre évents et trois cracheurs. Termine ce que tu as commencé.",
+      name: "Bassin versant",
+      brief: "Cinq évents et trois cracheurs tout autour du sommet. Sers-toi de tout ce que tu as.",
       hints: [],
     },
   },

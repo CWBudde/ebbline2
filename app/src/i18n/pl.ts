@@ -114,7 +114,7 @@ export const pl: Record<Key, string> = {
   "key.slot11": "-",
   "key.delete": "Del",
 
-  "status.offGrid": "Poza siecią: potrzebna budowla w promieniu sześciu pól",
+  "status.offGrid": "Poza siecią: potrzebna budowla w odległości najwyżej sześciu pól",
   "status.building": "W budowie",
   "status.off": "Wyłączona",
   "status.damaged": "Uszkodzona, w naprawie",
@@ -133,7 +133,7 @@ export const pl: Record<Key, string> = {
   "info.hide": "Ukryj",
 
   "grade.title": "Oznacz teren",
-  "grade.text": "Wybierz docelową wysokość, potem maluj pola. Równiarka w promieniu ośmiu pól wykona pracę.",
+  "grade.text": "Wybierz docelową wysokość, potem maluj pola. Równiarka w odległości najwyżej ośmiu pól wykona pracę.",
   "grade.erase": "Wymaż",
 
   "pause.title": "Wstrzymano",
@@ -184,7 +184,7 @@ export const pl: Record<Key, string> = {
   "tip.grader":
     "Każdy stopień wysokości trwa półtorej sekundy, a pod budowlami niczego nie da się wyrównać: oznacz wały, zanim dotrze muł.",
   "tip.spitter":
-    "Bryły celują w budowlę, wokół której w promieniu pięciu pól stoi najwięcej innych, więc wiesz, gdzie spadnie następna: postaw tam przechwytywacz.",
+    "Bryły celują w budowlę, wokół której w odległości najwyżej pięciu pól stoi najwięcej innych, więc wiesz, gdzie spadnie następna: postaw tam przechwytywacz.",
   "tip.survive":
     "Wydawaj na obronę wokół lądownika, a nie na zasięg: kominy z każdą minutą są silniejsze, więc ostatnie minuty są najtrudniejsze.",
 
@@ -255,80 +255,62 @@ export const plContent: Content = {
   },
   levels: {
     c1: {
-      name: "Pierwsze światło",
-      brief: "Dwa leniwe kominy. Podłącz się do żył, poprowadź sieć w dół i zamknij je.",
+      name: "Lądowanie",
+      brief: "Jeden ospały komin, piętnaście pól na wschód i daleko w dole. Poprowadź sieć w dół, wypal go do sucha i zamknij pokrywą.",
       hints: [
-        "Stawiaj odwierty na świecących żyłach przy lądowniku, aby zdobywać energię.",
-        "Pylony to tani sposób na poszerzenie sieci. Wszystko musi stać najwyżej sześć pól od zbudowanej budowli.",
+        "Pylony to tani sposób na rozszerzenie sieci. Wszystko musi stać najwyżej sześć pól od ukończonej budowli.",
         "Lance wypalają muł. Stawiaj je na wzniesieniach: nie mogą celować pod górę.",
-        "Gdy komin wyschnie między wyrzutami, postaw na nim pokrywę i dbaj o jej zasilanie.",
+        "Gdy komin wysycha między rzutami, postaw na nim pokrywę i dbaj o jej zasilanie.",
+        "Lądownik daje jedną energię na sekundę, a żył tu nie ma. Nie buduj więcej, niż trzeba.",
       ],
     },
     c2: {
-      name: "Zbiornik",
-      brief: "Trzy kominy. Ogniwa gromadzą energię na natarcie; miotacze sięgają głębokich rozlewisk.",
-      hints: ["Miotacze ignorują wysokość, ale nie trafią niczego bliżej niż trzy pola."],
+      name: "Dwa fronty",
+      brief: "Dwa kominy, po przeciwnych stronach twojego wzgórza. Czerp z żył energię i odkładaj ją na pokrywy.",
+      hints: [
+        "Postaw odwierty na jasnych żyłach przy lądowniku, by zdobywać energię.",
+        "Zapas mieści trzydzieści energii, pół pokrywy. Każde ogniwo dodaje kolejne trzydzieści.",
+      ],
     },
     c3: {
-      name: "Zbieracze",
-      brief: "Żył jest tu mało. Pompy zamieniają płycizny w energię, ale nie bez ryzyka.",
-      hints: ["Pompa działa tylko na muł w promieniu dwóch pól, więc jej miejsce jest na linii frontu."],
+      name: "Studnia",
+      brief: "Trzy kominy tryskają wolnymi, ciężkimi rzutami, a niecka poniżej wypełnia się głęboko. Miotacze sięgają głębokich kałuż.",
+      hints: [
+        "Miotacze ignorują wysokość, ale nie trafią niczego bliżej niż trzy pola.",
+      ],
     },
     c4: {
-      name: "Daleka droga",
-      brief: "Trzy kominy, wszystkie daleko. Magistrale szybko przenoszą pakiety przez duże odległości.",
-      hints: ["Magistrale łączą się ze sobą na czternaście pól i podwajają prędkość pakietów."],
+      name: "Dalekie krańce",
+      brief: "Trzy kominy w trzech kierunkach, najbliższy dwadzieścia dziewięć pól stąd. Magistrale szybko niosą pakiety przez duże odstępy.",
+      hints: [
+        "Magistrale łączą się ze sobą na czternaście pól i podwajają prędkość pakietów.",
+      ],
     },
     c5: {
-      name: "Ostrzał",
-      brief: "Pluwacz cię wypatrzył. Uważaj na znacznik upadku i zestrzeliwuj bryły.",
-      hints: ["Bryły celują w najgęstsze skupisko budowli. Przechwytywacz potrzebuje trzech trafień na bryłę."],
+      name: "Wyżyna",
+      brief: "Cztery kominy otaczają twój płaskowyż, a żyły są tylko trzy. Pompy zbierają płytki muł na energię.",
+      hints: [
+        "Pompa sięga tylko mułu w odległości dwóch pól, więc musi stać na brzegu, gdzie muł dosięgnie też jej.",
+      ],
     },
     c6: {
-      name: "Falochron",
-      brief: "Siedzisz na dnie niecki, a kominy są poza zasięgiem. Wytrzymaj dziesięć minut.",
-      hints: ["Zasilana zapora zmusza muł do wspięcia się o dwa stopnie wyżej: to tama w poprzek doliny."],
+      name: "Równina zalewowa",
+      brief: "Lądujesz nisko, na brzegu doliny rzeki, a wokół ciebie stoją cztery kominy. Wytrzymaj dziesięć minut.",
+      hints: [
+        "Zasilana zapora każe mułowi wspinać się o dwa stopnie wyżej na każdym polu w odległości czterech pól od niej.",
+        "Wybierz Oznacz, wysokość i maluj pola; równiarka w odległości ośmiu pól je podnosi lub obniża.",
+      ],
     },
     c7: {
-      name: "Roboty ziemne",
-      brief: "Pięć kominów i poszarpany teren. Równiarki usypują wały i kopią rampy.",
+      name: "Ostrzał",
+      brief: "Dwa pluwacze ciskają muł w twoją sieć z północnego zachodu. Przechwytywacze zestrzeliwują bryły w locie.",
       hints: [
-        "Wybierz „Oznacz”, ustaw wysokość i maluj pola; równiarka w zasięgu wykona pracę.",
+        "Bryły celują w twoje najgęstsze skupisko. Przechwytywacz sięga dziewięciu pól i potrzebuje trzech trafień na bryłę.",
       ],
     },
     c8: {
-      name: "Ebbline",
-      brief: "Sześć kominów, trzy pluwacze, wszystko, co masz. Odwróć bieg wydarzeń.",
-      hints: [],
-    },
-    c9: {
-      name: "Krzyżowy ogień",
-      brief: "Trzy pluwacze otaczają małą nieckę. Rozprosz się, by żadna pojedyncza bryła cię nie złamała.",
-      hints: ["Bryły celują w najgęstsze skupisko budowli, więc rozległa sieć rozkłada obrażenia."],
-    },
-    c10: {
-      name: "Susza",
-      brief: "Mało żył i pięć wygłodniałych kominów. Licz się z każdym pakietem.",
-      hints: ["Gdy żyły się wyczerpią, natarcie opłacą pompy na linii frontu."],
-    },
-    c11: {
-      name: "Gradobicie",
-      brief: "Dwa pluwacze strzelają szybko i często. Osłoń sieć, zanim ruszysz naprzód.",
-      hints: [],
-    },
-    c12: {
-      name: "Prąd wsteczny",
-      brief: "Cztery kominy, pluwacz i żadnego wzniesienia. Wytrzymaj piętnaście minut.",
-      hints: ["Znajdź doliny prowadzące do lądownika i zagródź każdą z nich zaporą."],
-    },
-    c13: {
-      name: "Delta",
-      brief: "Pięć kominów rozsianych po szerokiej delcie. Magistrale i ogniwa zaopatrują długi front.",
-      hints: [],
-    },
-    c14: {
-      name: "Wielki przypływ",
-      brief: "Najwyższy przypływ jak dotąd: cztery kominy i trzy pluwacze. Dokończ dzieła.",
+      name: "Dział wodny",
+      brief: "Pięć kominów i trzy pluwacze dookoła szczytu. Użyj wszystkiego, co masz.",
       hints: [],
     },
   },
