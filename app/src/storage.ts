@@ -38,6 +38,7 @@ const KEYS = {
   settings: "ebbline2.settings",
   progress: "ebbline2.progress",
   save: "ebbline2.save",
+  seen: "ebbline2.seen",
 } as const;
 
 export class Store {
@@ -94,6 +95,16 @@ export class Store {
     progress[id] = seconds;
     this.write(KEYS.progress, progress);
     return true;
+  }
+
+  /** The structure kinds whose description the player has already been shown. */
+  seen(): string[] {
+    const stored = this.read(KEYS.seen);
+    return Array.isArray(stored) ? stored.filter((kind): kind is string => typeof kind === "string") : [];
+  }
+
+  setSeen(kinds: readonly string[]): void {
+    this.write(KEYS.seen, kinds);
   }
 
   saved(): SavedGame | undefined {

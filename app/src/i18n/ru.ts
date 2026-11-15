@@ -132,6 +132,7 @@ export const ru: Record<Key, string> = {
   "info.dismantle": "Разобрать",
   "info.notes": "Заметки",
   "info.hide": "Скрыть",
+  "info.details": "Подробнее",
 
   "grade.title": "Разметка грунта",
   "grade.text":

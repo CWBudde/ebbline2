@@ -51,6 +51,28 @@ test("a pylon placed by the lander gets built from the bank", async ({ page }) =
   await expect(page.locator(".info h3")).toHaveText("Pylon");
 });
 
+test("a description can be closed, and a phone shows it only once", async ({ page, isMobile }) => {
+  await startFirstMission(page);
+  const pylon = page.locator(".slot[data-kind=pylon]");
+  await pylon.click();
+  await expect(page.locator(".info .dim")).toBeVisible();
+  await page.getByRole("button", { name: "Hide" }).click();
+  await expect(page.locator(".info.closed h3")).toHaveText("Pylon");
+  await page.getByRole("button", { name: "Details" }).click();
+  await expect(page.locator(".info .dim")).toBeVisible();
+  // Putting the tool away and taking it up again: the phone has shown it once and keeps it folded.
+  await pylon.click();
+  await pylon.click();
+  await expect(page.locator(".info.closed")).toHaveCount(isMobile ? 1 : 0);
+  // The panel of a selected structure closes by dropping the selection.
+  await pylon.click();
+  const spot = await besideLander(page, 0);
+  await page.mouse.click(spot.x, spot.y);
+  await expect(page.locator(".info h3")).toHaveText("Lander");
+  await page.getByRole("button", { name: "Hide" }).click();
+  expect(await game<number>(page, "rt.selected.value")).toBe(0);
+});
+
 test("pausing holds the clock and the speed buttons change the pace", async ({ page, isMobile }) => {
   test.skip(isMobile, "keyboard only");
   await startFirstMission(page);

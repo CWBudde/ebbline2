@@ -176,6 +176,104 @@ function Gauge({ label, value, max, digits, energy }: {
   );
 }
 
+/**
+ * Whether the description of a kind is unfolded. A phone shows it the first time only: after that the
+ * panel would just cover the map. The component must be keyed so that the state belongs to one subject.
+ */
+function useFirstLook(c: Controller, kind: Kind): [boolean, (open: boolean) => void] {
+  const [open, setOpen] = useState(() => !(window.matchMedia(PHONE).matches && c.seen.value.has(kind)));
+  useEffect(() => {
+    if (open) c.markSeen(kind);
+  }, [c, kind, open]);
+  return [open, setOpen];
+}
+
+function CloseButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button class="chip info-x" aria-label={t("info.hide")} title={t("info.hide")} onClick={onClick}>
+      <Icon name="close" />
+    </button>
+  );
+}
+
+/** The structure in hand. Closed, only its name and price are left. */
+function BuildInfo({ c, kind }: { c: Controller; kind: Kind }) {
+  const [open, setOpen] = useFirstLook(c, kind);
+  const def = KINDS[kind];
+  if (!open) {
+    return (
+      <aside class="info closed">
+        <div class="info-top">
+          <h3>{kindName(kind)}</h3>
+          <Cost value={def.cost} />
+          <button class="chip" aria-expanded={false} onClick={() => { setOpen(true); }}>
+            {t("info.details")}
+          </button>
+        </div>
+      </aside>
+    );
+  }
+  return (
+    <aside class="info closable">
+      <CloseButton onClick={() => { setOpen(false); }} />
+      <div class="info-head">
+        <Thumb key={kind} c={c} kind={kind} />
+        <div>
+          <h3>{kindName(kind)}</h3>
+          <p class="info-meta">
+            <Cost value={def.cost} />
+            {def.range > 0 && (
+              <span>
+                {def.minRange > 0
+                  ? t("info.rangeMin", { range: num(def.range), min: num(def.minRange) })
+                  : t("info.range", { range: num(def.range) })}
+              </span>
+            )}
+          </p>
+        </div>
+      </div>
+      <p>{kindBlurb(kind)}</p>
+      <p class="dim">{t("info.place")}</p>
+    </aside>
+  );
+}
+
+/** The selected structure: its state and what can be done with it. Closing it drops the selection. */
+function SelectedInfo({ c, rt, selected }: { c: Controller; rt: Runtime; selected: Structure }) {
+  const [open] = useFirstLook(c, selected.kind);
+  const def = KINDS[selected.kind];
+  const state = status(selected);
+  return (
+    <aside class="info closable">
+      <CloseButton onClick={() => { rt.selected.value = 0; }} />
+      <div class="info-head">
+        <Thumb key={selected.kind} c={c} kind={selected.kind} />
+        <div>
+          <h3>{kindName(selected.kind)}</h3>
+          <p class={`status ${state.tone}`.trimEnd()}>{state.text}</p>
+        </div>
+      </div>
+      {open && <p>{kindBlurb(selected.kind)}</p>}
+      <dl class="gauges">
+        <Gauge label={t("info.health")} value={Math.ceil(selected.health)} max={def.cost} digits={0} />
+        {def.store > 0 && (
+          <Gauge label={t("info.energy")} value={selected.energy} max={def.store} digits={1} energy />
+        )}
+      </dl>
+      {selected.kind !== "lander" && (
+        <div class="actions">
+          <button class="chip" onClick={() => { rt.act({ kind: "toggle", id: selected.id }); }}>
+            {selected.active ? t("info.switchOff") : t("info.switchOn")} <kbd>X</kbd>
+          </button>
+          <button class="chip danger" onClick={() => { rt.act({ kind: "dismantle", id: selected.id }); }}>
+            {t("info.dismantle")} <kbd>{t("key.delete")}</kbd>
+          </button>
+        </div>
+      )}
+    </aside>
+  );
+}
+
 /** `hud` is passed only so that the panel refreshes with it, ten times a second. */
 function Info({ c, rt }: { c: Controller; rt: Runtime; hud: Hud }) {
   // On a phone the notes would cover the lander, and the briefing has just shown them.
@@ -183,31 +281,7 @@ function Info({ c, rt }: { c: Controller; rt: Runtime; hud: Hud }) {
   const tool = rt.tool.value;
   const level = rt.game.level;
   const selected = find(rt.game, rt.selected.value);
-  if (tool.kind === "build") {
-    const def = KINDS[tool.structure];
-    return (
-      <aside class="info">
-        <div class="info-head">
-          <Thumb key={tool.structure} c={c} kind={tool.structure} />
-          <div>
-            <h3>{kindName(tool.structure)}</h3>
-            <p class="info-meta">
-              <Cost value={def.cost} />
-              {def.range > 0 && (
-                <span>
-                  {def.minRange > 0
-                    ? t("info.rangeMin", { range: num(def.range), min: num(def.minRange) })
-                    : t("info.range", { range: num(def.range) })}
-                </span>
-              )}
-            </p>
-          </div>
-        </div>
-        <p>{kindBlurb(tool.structure)}</p>
-        <p class="dim">{t("info.place")}</p>
-      </aside>
-    );
-  }
+  if (tool.kind === "build") return <BuildInfo key={tool.structure} c={c} kind={tool.structure} />;
   if (tool.kind === "grade") {
     return (
       <aside class="info">
@@ -235,38 +309,7 @@ function Info({ c, rt }: { c: Controller; rt: Runtime; hud: Hud }) {
       </aside>
     );
   }
-  if (selected) {
-    const def = KINDS[selected.kind];
-    const state = status(selected);
-    return (
-      <aside class="info">
-        <div class="info-head">
-          <Thumb key={selected.kind} c={c} kind={selected.kind} />
-          <div>
-            <h3>{kindName(selected.kind)}</h3>
-            <p class={`status ${state.tone}`.trimEnd()}>{state.text}</p>
-          </div>
-        </div>
-        <p>{kindBlurb(selected.kind)}</p>
-        <dl class="gauges">
-          <Gauge label={t("info.health")} value={Math.ceil(selected.health)} max={def.cost} digits={0} />
-          {def.store > 0 && (
-            <Gauge label={t("info.energy")} value={selected.energy} max={def.store} digits={1} energy />
-          )}
-        </dl>
-        {selected.kind !== "lander" && (
-          <div class="actions">
-            <button class="chip" onClick={() => { rt.act({ kind: "toggle", id: selected.id }); }}>
-              {selected.active ? t("info.switchOff") : t("info.switchOn")} <kbd>X</kbd>
-            </button>
-            <button class="chip danger" onClick={() => { rt.act({ kind: "dismantle", id: selected.id }); }}>
-              {t("info.dismantle")} <kbd>{t("key.delete")}</kbd>
-            </button>
-          </div>
-        )}
-      </aside>
-    );
-  }
+  if (selected) return <SelectedInfo key={selected.id} c={c} rt={rt} selected={selected} />;
   // The level's own notes. Closed, only the title bar is left; the notes stay in the document.
   return (
     <aside class={open ? "info" : "info closed"}>

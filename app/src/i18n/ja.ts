@@ -132,6 +132,7 @@ export const ja: Record<Key, string> = {
   "info.dismantle": "解体",
   "info.notes": "ヒント",
   "info.hide": "隠す",
+  "info.details": "詳細",
 
   "grade.title": "地面をマーク",
   "grade.text": "目標の高さを選んでから、マスを塗ってください。8 マス以内のグレーダーが作業します。",

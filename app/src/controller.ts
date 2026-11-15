@@ -57,6 +57,8 @@ export class Controller {
   readonly progress = signal<Record<string, number>>(this.store.progress());
   /** The level of the stored game, if there is one. */
   readonly savedLevel = signal<{ id: string; name: string } | undefined>(this.store.saved());
+  /** The structure kinds whose description has been shown; a phone keeps those folded away. */
+  readonly seen = signal<ReadonlySet<string>>(new Set(this.store.seen()));
   /** Whether the last win beat the stored best time. */
   readonly newBest = signal(false);
   readonly icons = signal<Partial<Record<Kind, string>>>({});
@@ -325,6 +327,12 @@ export class Controller {
     const rt = this.runtime.value;
     if (!rt || rt.game.phase !== "playing") return;
     this.overlay.value = this.overlay.value === "none" ? "menu" : "none";
+  }
+
+  markSeen(kind: Kind): void {
+    if (this.seen.value.has(kind)) return;
+    this.seen.value = new Set([...this.seen.value, kind]);
+    this.store.setSeen([...this.seen.value]);
   }
 
   setSettings(settings: Settings): void {

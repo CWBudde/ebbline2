@@ -135,6 +135,7 @@ export const pt: Record<Key, string> = {
   "info.dismantle": "Desmontar",
   "info.notes": "Dicas",
   "info.hide": "Ocultar",
+  "info.details": "Detalhes",
 
   "grade.title": "Marcar terreno",
   "grade.text":

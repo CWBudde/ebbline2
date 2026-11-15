@@ -132,6 +132,7 @@ export const pl: Record<Key, string> = {
   "info.dismantle": "Rozbierz",
   "info.notes": "Wskazówki",
   "info.hide": "Ukryj",
+  "info.details": "Szczegóły",
 
   "grade.title": "Oznacz teren",
   "grade.text": "Wybierz docelową wysokość, potem maluj pola. Równiarka w odległości najwyżej ośmiu pól wykona pracę.",

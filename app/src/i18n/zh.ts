@@ -129,6 +129,7 @@ export const zh: Record<Key, string> = {
   "info.dismantle": "拆除",
   "info.notes": "提示",
   "info.hide": "隐藏",
+  "info.details": "详情",
 
   "grade.title": "标记地面",
   "grade.text": "选择目标高度，然后涂抹格子。八格内的平地机会完成施工。",

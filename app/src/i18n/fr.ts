@@ -133,6 +133,7 @@ export const fr: Record<Key, string> = {
   "info.dismantle": "Démanteler",
   "info.notes": "Conseils",
   "info.hide": "Masquer",
+  "info.details": "Détails",
 
   "grade.title": "Marquer le terrain",
   "grade.text":

@@ -75,10 +75,22 @@ describe("store", () => {
     expect(store.saved()).toBeUndefined();
   });
 
+  it("remembers which descriptions were shown", () => {
+    const backing = memory();
+    const store = new Store(backing);
+    expect(store.seen()).toEqual([]);
+    store.setSeen(["pylon", "lance"]);
+    expect(new Store(backing).seen()).toEqual(["pylon", "lance"]);
+    backing.data.set("ebbline2.seen", '{"pylon":true}');
+    expect(store.seen()).toEqual([]);
+  });
+
   it("works without storage, or with storage that throws", () => {
     for (const store of [new Store(null), new Store(broken)]) {
       expect(store.settings()).toEqual(DEFAULT_SETTINGS);
       expect(store.progress()).toEqual({});
+      expect(store.seen()).toEqual([]);
+      store.setSeen(["pylon"]);
       expect(store.saved()).toBeUndefined();
       expect(store.setSaved({ id: "", name: "x", seconds: 0, when: 0, data: "" })).toBe(false);
       expect(store.recordWin("c1", 1)).toBe(true);

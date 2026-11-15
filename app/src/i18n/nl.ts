@@ -131,6 +131,7 @@ export const nl: Record<Key, string> = {
   "info.dismantle": "Afbreken",
   "info.notes": "Tips",
   "info.hide": "Verbergen",
+  "info.details": "Details",
 
   "grade.title": "Grond markeren",
   "grade.text": "Kies een doelhoogte en schilder dan vakken. Een egaliseerder binnen acht vakken doet het werk.",

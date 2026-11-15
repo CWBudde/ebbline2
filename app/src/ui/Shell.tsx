@@ -54,6 +54,7 @@ const ICONS = {
   check: "m3 8.5 3.5 3.5L13 4.5",
   back: "M10 3 5 8l5 5",
   next: "m6 3 5 5-5 5",
+  close: "m4 4 8 8M12 4l-8 8",
 } as const;
 
 /** A small line icon; decorative, the text beside it carries the meaning. */

@@ -1074,6 +1074,27 @@ kbd {
   padding: var(--s2) var(--s2) var(--s2) var(--s3);
 }
 
+/* Room for the close button in the corner. */
+.info.closable {
+  position: relative;
+}
+
+.info.closable .info-head {
+  padding-right: 40px;
+}
+
+.info-x {
+  position: absolute;
+  top: var(--s2);
+  right: var(--s2);
+  min-width: 36px;
+  padding: 0;
+}
+
+.info-top .cost {
+  margin-left: auto;
+}
+
 .info-top {
   display: flex;
   align-items: center;

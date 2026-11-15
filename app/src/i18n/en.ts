@@ -117,6 +117,7 @@ export const en = {
   "info.dismantle": "Dismantle",
   "info.notes": "Notes",
   "info.hide": "Hide",
+  "info.details": "Details",
 
   "grade.title": "Mark ground",
   "grade.text": "Pick a target height, then paint tiles. A Grader within eight tiles does the work.",
