@@ -70,7 +70,7 @@ export const pt: Record<Key, string> = {
     "O lodo brota das _fendas_ e escorre morro abaixo. Ele desgasta tudo sobre o que se acumula. Perca o módulo de pouso e a missão está perdida. Vença construindo uma *Tampa* em cada fenda.",
   "help.grid.title": "A rede",
   "help.grid.text":
-    "A energia sai do módulo de pouso em pacotes e percorre as ligações da rede. Toda estrutura repassa os pacotes e precisa ficar a até seis casas de outra já construída; as torres são o jeito barato de ir mais longe. Enquanto você constrói, ou com uma torre selecionada, a área que a rede pronta alcança fica colorida. Um ponto vermelho marca uma estrutura que a rede não alcança.",
+    "A energia sai do módulo de pouso em pacotes e percorre as ligações da rede. Toda estrutura repassa os pacotes e precisa ficar a até seis casas de outra já construída; as torres são o jeito barato de ir mais longe. Enquanto você constrói, ou com uma torre selecionada, a área que a rede pronta alcança fica colorida. Um ponto vermelho marca uma estrutura que a rede não alcança. As torres colhem energia das casas a até três passos que estão no mesmo nível e à vista direta (mostradas como uma área verde); terreno mais alto ou rocha no meio bloqueia isso, e casas cobertas de lodo não rendem nada.",
   "help.cap.title": "Tampar uma fenda",
   "help.cap.text":
     "Uma tampa só pode ser iniciada quando a casa da fenda está quase seca, o que um anel branco indica. Durante a construção ela mantém a fenda fechada, mas a pressão aumenta: se a tampa for perdida, tudo sai de uma vez.",
@@ -230,7 +230,7 @@ export const ptContent: Content = {
       name: "Módulo de pouso",
       blurb: "Origem da rede. Se ele for perdido, a missão acaba.",
     },
-    pylon: { name: "Torre", blurb: "Estende a rede em seis casas." },
+    pylon: { name: "Torre", blurb: "Estende a rede em seis casas e colhe um pouco de energia do terreno plano que enxerga na sua própria altura." },
     trunk: {
       name: "Tronco",
       blurb: "Liga-se a outros troncos a até quatorze casas e dobra a velocidade dos pacotes.",
@@ -260,12 +260,12 @@ export const ptContent: Content = {
   levels: {
     c1: {
       name: "Pouso",
-      brief: "Uma fenda preguiçosa, quinze casas a leste e bem abaixo de você. Leve a rede até ela, queime o lodo e tampe-a.",
+      brief: "Uma fenda, quinze casas a leste e bem abaixo de você, e a poça dela já está se espalhando. Leve a rede até ela, queime o lodo e tampe-a.",
       hints: [
         "As torres são o jeito barato de estender a rede. Tudo deve ficar a até seis casas de uma estrutura concluída.",
         "As lanças queimam o lodo. Ponha-as em terreno alto: elas não miram morro acima.",
         "Quando a fenda secar entre os pulsos, coloque uma tampa nela e mantenha-a abastecida.",
-        "O módulo de pouso gera uma energia por segundo, e aqui não há veios. Não construa mais que o necessário.",
+        "O módulo de pouso gera uma energia por segundo, e aqui não há veios. Uma torre colhe um pouco mais do terreno plano que enxerga na sua própria altura. Não construa mais que o necessário.",
       ],
     },
     c2: {
@@ -299,7 +299,7 @@ export const ptContent: Content = {
     },
     c6: {
       name: "Várzea",
-      brief: "Você pousou embaixo, na margem de um vale de rio, com quatro fendas ao redor. Aguente dez minutos.",
+      brief: "Você pousou embaixo, na margem de um vale de rio, com quatro fendas ao redor, uma delas bem perto. Aguente dez minutos.",
       hints: [
         "Uma barreira alimentada faz o lodo subir dois níveis a mais em cada casa a até quatro casas dela.",
         "Escolha Marcar, uma altura e pinte casas; uma niveladora a até oito casas as eleva ou rebaixa.",
@@ -307,7 +307,7 @@ export const ptContent: Content = {
     },
     c7: {
       name: "Bombardeio",
-      brief: "Dois cuspidores lançam lodo contra a sua rede vindo do noroeste. Os interceptores derrubam as bolotas em pleno voo.",
+      brief: "Três cuspidores lançam lodo contra a sua rede vindo do sul. Os interceptores derrubam as bolotas em pleno voo.",
       hints: [
         "As bolotas miram o seu grupo mais denso. Um interceptor alcança nove casas e precisa de três acertos por bolota.",
       ],

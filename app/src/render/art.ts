@@ -11,6 +11,7 @@ export const COLORS = {
   economy: 0xffc857,
   weapon: 0xff7a45,
   utility: 0xb6f36b,
+  harvest: 0x4fd67a,
   cap: 0xf4f7f8,
   silt: 0xff3fa4,
   bad: 0xff5470,

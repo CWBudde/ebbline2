@@ -67,7 +67,7 @@ export const it: Record<Key, string> = {
     "La melma sgorga dagli _sfiati_ e scorre verso il basso. Logora tutto ciò su cui si posa. Se perdi il lander, perdi la missione. Vinci costruendo un *Tappo* su ogni sfiato.",
   "help.grid.title": "La rete",
   "help.grid.text":
-    "L'energia lascia il lander in pacchetti e viaggia lungo i collegamenti della rete. Ogni struttura inoltra i pacchetti e deve trovarsi entro sei caselle da un'altra già costruita; i piloni sono il modo economico per arrivare più lontano. Mentre costruisci, o con un pilone selezionato, l'area raggiunta dalla rete completa è colorata. Un punto rosso indica una struttura che la rete non raggiunge.",
+    "L'energia lascia il lander in pacchetti e viaggia lungo i collegamenti della rete. Ogni struttura inoltra i pacchetti e deve trovarsi entro sei caselle da un'altra già costruita; i piloni sono il modo economico per arrivare più lontano. Mentre costruisci, o con un pilone selezionato, l'area raggiunta dalla rete completa è colorata. Un punto rosso indica una struttura che la rete non raggiunge. I piloni raccolgono energia dalle caselle entro tre passi che sono al loro stesso livello e in vista diretta (mostrate come area verde); un terreno più alto o la roccia in mezzo la blocca, e le caselle coperte di melma non rendono nulla.",
   "help.cap.title": "Tappare uno sfiato",
   "help.cap.text":
     "Un tappo si può iniziare solo quando la casella dello sfiato è quasi asciutta, come indica un anello bianco. Mentre è in costruzione tiene chiuso lo sfiato, ma la pressione cresce: se il tappo va perso, esce tutto in un colpo.",
@@ -227,7 +227,7 @@ export const itContent: Content = {
       name: "Lander",
       blurb: "Origine della rete. Se lo perdi, la missione è finita.",
     },
-    pylon: { name: "Pilone", blurb: "Estende la rete di sei caselle." },
+    pylon: { name: "Pilone", blurb: "Estende la rete di sei caselle e raccoglie un po' di energia dal terreno piano che vede alla sua stessa altezza." },
     trunk: {
       name: "Dorsale",
       blurb: "Si collega ad altre dorsali entro quattordici caselle e raddoppia la velocità dei pacchetti.",
@@ -257,12 +257,12 @@ export const itContent: Content = {
   levels: {
     c1: {
       name: "Atterraggio",
-      brief: "Uno sfiato svogliato, quindici caselle a est e molto più in basso. Porta la rete fin laggiù, bruciane la melma e tappalo.",
+      brief: "Uno sfiato, quindici caselle a est e molto più in basso, e la sua pozza si sta già allargando. Porta la rete fin laggiù, bruciane la melma e tappalo.",
       hints: [
         "I piloni sono il modo economico per estendere la rete. Tutto deve stare entro sei caselle da una struttura completata.",
         "Le lance bruciano la melma. Mettile in alto: non possono mirare in salita.",
         "Quando lo sfiato si secca tra un'ondata e l'altra, piazzaci un tappo e tienilo rifornito.",
-        "Il lander produce un'energia al secondo e qui non ci sono filoni. Non costruire più del necessario.",
+        "Il lander produce un'energia al secondo e qui non ci sono filoni. Un pilone raccoglie un po' di più dal terreno piano che vede alla sua stessa altezza. Non costruire più del necessario.",
       ],
     },
     c2: {
@@ -296,7 +296,7 @@ export const itContent: Content = {
     },
     c6: {
       name: "Piana alluvionale",
-      brief: "Sei atterrato in basso, sulla riva di una valle fluviale, con quattro sfiati intorno. Resisti dieci minuti.",
+      brief: "Sei atterrato in basso, sulla riva di una valle fluviale, con quattro sfiati intorno, uno dei quali vicino. Resisti dieci minuti.",
       hints: [
         "Una barriera alimentata costringe la melma a salire due livelli in più su ogni casella entro quattro caselle da essa.",
         "Scegli Segna, un'altezza e dipingi le caselle; una livellatrice entro otto caselle le alza o le abbassa.",
@@ -304,7 +304,7 @@ export const itContent: Content = {
     },
     c7: {
       name: "Bombardamento",
-      brief: "Due sputatori scagliano melma sulla tua rete da nord-ovest. Gli intercettori abbattono i grumi in volo.",
+      brief: "Tre sputatori scagliano melma sulla tua rete da sud. Gli intercettori abbattono i grumi in volo.",
       hints: [
         "I grumi mirano al tuo gruppo più denso. Un intercettore raggiunge nove caselle e servono tre colpi per grumo.",
       ],

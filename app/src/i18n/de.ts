@@ -67,7 +67,7 @@ export const de: Record<Key, string> = {
     "Schlick quillt aus _Schloten_ und fließt bergab. Er zersetzt alles, worauf er steht. Geht der Lander verloren, ist die Mission verloren. Du gewinnst, indem du auf jeden Schlot eine *Kappe* baust.",
   "help.grid.title": "Das Netz",
   "help.grid.text":
-    "Energie verlässt den Lander in Paketen und wandert über die Leitungen des Netzes. Jedes Gebäude leitet Pakete weiter und muss höchstens sechs Felder von einem fertigen Gebäude entfernt stehen; Pylonen sind der günstige Weg, weiter zu reichen. Beim Bauen, oder wenn ein Pylon ausgewählt ist, ist der Bereich eingefärbt, den das fertige Netz erreicht. Ein roter Punkt markiert ein Gebäude, das das Netz nicht erreicht.",
+    "Energie verlässt den Lander in Paketen und wandert über die Leitungen des Netzes. Jedes Gebäude leitet Pakete weiter und muss höchstens sechs Felder von einem fertigen Gebäude entfernt stehen; Pylonen sind der günstige Weg, weiter zu reichen. Beim Bauen, oder wenn ein Pylon ausgewählt ist, ist der Bereich eingefärbt, den das fertige Netz erreicht. Ein roter Punkt markiert ein Gebäude, das das Netz nicht erreicht. Pylonen sammeln Energie von Feldern in bis zu drei Schritten Entfernung, die auf ihrer eigenen Höhe liegen und direkt sichtbar sind (als grüne Fläche dargestellt); höheres Gelände oder Fels dazwischen blockiert das, und mit Schlick bedeckte Felder liefern nichts.",
   "help.cap.title": "Einen Schlot verschließen",
   "help.cap.text":
     "Eine Kappe lässt sich erst beginnen, wenn das Feld des Schlots fast trocken ist; das zeigt ein weißer Ring. Im Bau hält sie den Schlot zu, doch der Druck steigt: Geht die Kappe verloren, bricht alles auf einmal hervor.",
@@ -227,7 +227,7 @@ export const deContent: Content = {
       name: "Lander",
       blurb: "Ausgangspunkt des Netzes. Geht er verloren, ist die Mission vorbei.",
     },
-    pylon: { name: "Pylon", blurb: "Erweitert das Netz um sechs Felder." },
+    pylon: { name: "Pylon", blurb: "Erweitert das Netz um sechs Felder und sammelt etwas Energie vom ebenen Boden, den er auf seiner eigenen Höhe sehen kann." },
     trunk: {
       name: "Trasse",
       blurb: "Verbindet sich über vierzehn Felder mit anderen Trassen und verdoppelt das Tempo der Pakete.",
@@ -257,12 +257,12 @@ export const deContent: Content = {
   levels: {
     c1: {
       name: "Landung",
-      brief: "Ein träger Schlot, fünfzehn Felder östlich und weit unter dir. Führ das Netz zu ihm hinunter, brenn ihn trocken und verschließ ihn.",
+      brief: "Ein Schlot, fünfzehn Felder östlich und weit unter dir, und sein Becken breitet sich schon aus. Führ das Netz zu ihm hinunter, brenn ihn trocken und verschließ ihn.",
       hints: [
         "Pylonen erweitern das Netz am günstigsten. Alles muss höchstens sechs Felder von einem fertigen Gebäude entfernt stehen.",
         "Lanzen brennen Schlick weg. Stell sie auf Anhöhen: Bergauf können sie nicht zielen.",
         "Läuft der Schlot zwischen zwei Schüben trocken, setz eine Kappe darauf und halt sie versorgt.",
-        "Der Lander liefert eine Energie pro Sekunde, und hier gibt es keine Adern. Bau nicht mehr als nötig.",
+        "Der Lander liefert eine Energie pro Sekunde, und hier gibt es keine Adern. Ein Pylon sammelt etwas mehr vom ebenen Boden, den er auf seiner eigenen Höhe sehen kann. Bau nicht mehr als nötig.",
       ],
     },
     c2: {
@@ -296,7 +296,7 @@ export const deContent: Content = {
     },
     c6: {
       name: "Flussaue",
-      brief: "Du bist tief unten gelandet, am Ufer eines Flusstals, mit vier Schloten ringsum. Halt zehn Minuten durch.",
+      brief: "Du bist tief unten gelandet, am Ufer eines Flusstals, mit vier Schloten ringsum, einer davon ganz in der Nähe. Halt zehn Minuten durch.",
       hints: [
         "Eine versorgte Sperre zwingt den Schlick, auf jedem Feld bis vier Felder von ihr zwei Stufen mehr zu steigen.",
         "Wähl „Markieren“, such eine Höhe aus und markier die Felder; ein Planierer höchstens acht Felder entfernt hebt oder senkt sie.",
@@ -304,7 +304,7 @@ export const deContent: Content = {
     },
     c7: {
       name: "Dauerfeuer",
-      brief: "Zwei Speier schleudern Schlick aus Nordwesten auf dein Netz. Abfänger schießen die Klumpen im Flug ab.",
+      brief: "Drei Speier schleudern Schlick aus Süden auf dein Netz. Abfänger schießen die Klumpen im Flug ab.",
       hints: [
         "Klumpen zielen auf deine dichteste Gebäudegruppe. Ein Abfänger reicht neun Felder weit und braucht drei Treffer pro Klumpen.",
       ],

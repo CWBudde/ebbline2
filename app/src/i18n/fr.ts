@@ -68,7 +68,7 @@ export const fr: Record<Key, string> = {
     "La vase jaillit des _évents_ et s'écoule vers le bas. Elle ronge tout ce qu'elle recouvre. Si tu perds l'atterrisseur, la mission est perdue. Pour gagner, construis un *Bouchon* sur chaque évent.",
   "help.grid.title": "Le réseau",
   "help.grid.text":
-    "L'énergie quitte l'atterrisseur sous forme de paquets et circule le long des liaisons du réseau. Chaque bâtiment relaie les paquets et doit se trouver à six cases au plus d'un bâtiment achevé ; les Pylônes sont le moyen économique d'aller plus loin. Pendant la construction, ou quand un Pylône est sélectionné, la zone que le réseau atteindra est colorée. Un point rouge signale un bâtiment hors de portée du réseau.",
+    "L'énergie quitte l'atterrisseur sous forme de paquets et circule le long des liaisons du réseau. Chaque bâtiment relaie les paquets et doit se trouver à six cases au plus d'un bâtiment achevé ; les Pylônes sont le moyen économique d'aller plus loin. Pendant la construction, ou quand un Pylône est sélectionné, la zone que le réseau atteindra est colorée. Un point rouge signale un bâtiment hors de portée du réseau. Les Pylônes récoltent l'énergie des cases situées à trois pas au plus, à leur propre niveau et en vue directe (zone verte) ; un terrain plus haut ou un rocher entre les deux bloque la récolte, et les cases couvertes de vase ne donnent rien.",
   "help.cap.title": "Boucher un évent",
   "help.cap.text":
     "On ne peut commencer un Bouchon que lorsque la case de l'évent est presque sèche, ce qu'indique un anneau blanc. Pendant sa construction, il maintient l'évent fermé, mais la pression monte : si le Bouchon est perdu, tout jaillit d'un coup.",
@@ -228,7 +228,7 @@ export const frContent: Content = {
       name: "Atterrisseur",
       blurb: "Point de départ du réseau. S'il est perdu, la mission est terminée.",
     },
-    pylon: { name: "Pylône", blurb: "Étend le réseau de six cases." },
+    pylon: { name: "Pylône", blurb: "Étend le réseau de six cases et récolte un peu d'énergie sur le sol plat qu'il voit à sa propre hauteur." },
     trunk: {
       name: "Artère",
       blurb: "Se relie aux autres Artères sur quatorze cases et double la vitesse des paquets.",
@@ -258,12 +258,12 @@ export const frContent: Content = {
   levels: {
     c1: {
       name: "Atterrissage",
-      brief: "Un évent paresseux, à quinze cases à l'est et bien en contrebas. Descends le réseau jusqu'à lui, assèche-le au feu et bouche-le.",
+      brief: "Un évent, à quinze cases à l'est et bien en contrebas, dont la mare s'étend déjà. Descends le réseau jusqu'à lui, assèche-le au feu et bouche-le.",
       hints: [
         "Les Pylônes sont le moyen économique d'étendre le réseau. Tout doit se trouver à six cases au plus d'un bâtiment achevé.",
         "Les Lances brûlent la vase. Place-les en hauteur : elles ne peuvent pas viser vers le haut.",
         "Quand l'évent s'assèche entre deux poussées, place un Bouchon dessus et garde-le alimenté.",
-        "L'atterrisseur produit une énergie par seconde, et il n'y a pas de filons ici. Ne construis pas plus que nécessaire.",
+        "L'atterrisseur produit une énergie par seconde, et il n'y a pas de filons ici. Un Pylône récolte un peu plus sur le sol plat qu'il voit à sa propre hauteur. Ne construis pas plus que nécessaire.",
       ],
     },
     c2: {
@@ -297,7 +297,7 @@ export const frContent: Content = {
     },
     c6: {
       name: "Plaine inondable",
-      brief: "Tu t'es posé en contrebas, sur la berge d'une vallée fluviale, avec quatre évents autour de toi. Tiens dix minutes.",
+      brief: "Tu t'es posé en contrebas, sur la berge d'une vallée fluviale, avec quatre évents autour de toi, dont un tout proche. Tiens dix minutes.",
       hints: [
         "Une Barrière alimentée force la vase à gravir deux niveaux de plus sur chaque case à quatre cases ou moins d'elle.",
         "Choisis Marquer, une hauteur, puis peins des cases ; une Niveleuse à huit cases au plus les relève ou les abaisse.",
@@ -305,7 +305,7 @@ export const frContent: Content = {
     },
     c7: {
       name: "Pilonnage",
-      brief: "Deux cracheurs envoient de la vase sur ton réseau depuis le nord-ouest. Les Intercepteurs abattent les boules en plein vol.",
+      brief: "Trois cracheurs envoient de la vase sur ton réseau depuis le sud. Les Intercepteurs abattent les boules en plein vol.",
       hints: [
         "Les boules visent ta grappe la plus dense. Un Intercepteur porte à neuf cases et demande trois tirs par boule.",
       ],

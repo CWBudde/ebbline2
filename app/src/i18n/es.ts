@@ -68,7 +68,7 @@ export const es: Record<Key, string> = {
     "El limo brota de las _fumarolas_ y fluye cuesta abajo. Desgasta todo lo que cubre. Si pierdes el módulo, pierdes la misión. Para ganar, construye un *Tapón* sobre cada fumarola.",
   "help.grid.title": "La red",
   "help.grid.text":
-    "La energía sale del módulo en paquetes y viaja por los enlaces de la red. Cada estructura transmite los paquetes y debe estar a seis casillas como máximo de otra ya construida; los Pilones son la forma barata de llegar más lejos. Mientras construyes, o con un Pilón seleccionado, se colorea la zona que alcanzará la red terminada. Un punto rojo marca una estructura que la red no alcanza.",
+    "La energía sale del módulo en paquetes y viaja por los enlaces de la red. Cada estructura transmite los paquetes y debe estar a seis casillas como máximo de otra ya construida; los Pilones son la forma barata de llegar más lejos. Mientras construyes, o con un Pilón seleccionado, se colorea la zona que alcanzará la red terminada. Un punto rojo marca una estructura que la red no alcanza. Los Pilones recogen energía de las casillas a tres pasos o menos que están a su mismo nivel y a la vista directa (se muestran como un área verde); el terreno más alto o la roca de por medio lo bloquea, y las casillas cubiertas de limo no rinden nada.",
   "help.cap.title": "Taponar una fumarola",
   "help.cap.text":
     "Un Tapón solo puede empezarse cuando la casilla de la fumarola está casi seca, lo que indica un anillo blanco. Mientras se construye mantiene la fumarola cerrada, pero la presión aumenta: si se pierde el Tapón, todo sale de golpe.",
@@ -228,7 +228,7 @@ export const esContent: Content = {
       name: "Módulo",
       blurb: "Origen de la red. Si lo pierdes, se acaba la misión.",
     },
-    pylon: { name: "Pilón", blurb: "Amplía la red en seis casillas." },
+    pylon: { name: "Pilón", blurb: "Amplía la red en seis casillas y recoge algo de energía del terreno llano que ve a su propia altura." },
     trunk: {
       name: "Troncal",
       blurb: "Se enlaza con otras Troncales a catorce casillas y duplica la velocidad de los paquetes.",
@@ -258,12 +258,12 @@ export const esContent: Content = {
   levels: {
     c1: {
       name: "Aterrizaje",
-      brief: "Una fumarola perezosa, quince casillas al este y muy por debajo de ti. Baja la red hasta ella, sécala a fuego y tapónala.",
+      brief: "Una fumarola, quince casillas al este y muy por debajo de ti, cuya charca ya se está extendiendo. Baja la red hasta ella, sécala a fuego y tapónala.",
       hints: [
         "Los Pilones son la forma barata de extender la red. Todo debe estar a seis casillas como máximo de una estructura terminada.",
         "Las Lanzas queman el limo. Ponlas en terreno alto: no pueden apuntar cuesta arriba.",
         "Cuando la fumarola se seque entre pulsos, coloca un Tapón encima y mantenlo abastecido.",
-        "El módulo produce una energía por segundo y aquí no hay vetas. No construyas más de lo necesario.",
+        "El módulo produce una energía por segundo y aquí no hay vetas. Un Pilón recoge algo más del terreno llano que ve a su propia altura. No construyas más de lo necesario.",
       ],
     },
     c2: {
@@ -297,7 +297,7 @@ export const esContent: Content = {
     },
     c6: {
       name: "Llanura aluvial",
-      brief: "Aterrizaste abajo, en la orilla de un valle fluvial, con cuatro fumarolas a tu alrededor. Aguanta diez minutos.",
+      brief: "Aterrizaste abajo, en la orilla de un valle fluvial, con cuatro fumarolas a tu alrededor, una de ellas muy cerca. Aguanta diez minutos.",
       hints: [
         "Una Barrera con energía obliga al limo a subir dos niveles más en cada casilla a cuatro casillas o menos de ella.",
         "Elige Marcar, escoge una altura y pinta casillas; una Niveladora a ocho casillas como máximo las sube o las baja.",
@@ -305,7 +305,7 @@ export const esContent: Content = {
     },
     c7: {
       name: "Bombardeo",
-      brief: "Dos escupidores lanzan limo contra tu red desde el noroeste. Los Interceptores derriban los pegotes en pleno vuelo.",
+      brief: "Tres escupidores lanzan limo contra tu red desde el sur. Los Interceptores derriban los pegotes en pleno vuelo.",
       hints: [
         "Los pegotes apuntan a tu grupo más denso. Un Interceptor alcanza nueve casillas y necesita tres impactos por pegote.",
       ],

@@ -12,7 +12,7 @@ import {
 } from "@ebbline2/engine";
 import { TILE, worldSize, worldToTile } from "../camera.ts";
 import type { Controller } from "../controller.ts";
-import { groundColor } from "../render/terrain.ts";
+import { groundColor, groundOf } from "../render/terrain.ts";
 import { SPEEDS, type Hud, type Runtime } from "../runtime.ts";
 import { clock, kindBlurb, kindName, levelBrief, levelHints, levelName, num, t } from "../i18n/index.ts";
 import { ILLUSTRATION_BACKGROUND, illustrationUrl } from "../render/assets.ts";
@@ -316,10 +316,11 @@ function Minimap({ c, rt }: { c: Controller; rt: Runtime }) {
     if (!ctx) return;
     // One colour per tile as little-endian RGBA, then one look-up per pixel.
     const rgba = (r: number, g: number, b: number): number => ((255 << 24) | (b << 16) | (g << 8) | r) >>> 0;
+    const ground = groundOf(game);
     for (let i = 0; i < colours.length; i++) {
       const depth = game.silt[i] ?? 0;
       const h = game.height[i] ?? -1;
-      const [r, g, b] = depth >= 0.05 ? [255, 63, 164] : h < 0 ? [15, 14, 13] : groundColor(h);
+      const [r, g, b] = depth >= 0.05 ? [255, 63, 164] : h < 0 ? [15, 14, 13] : groundColor(h, ground);
       colours[i] = rgba(r, g, b);
     }
     const structure = rgba(95, 227, 255);

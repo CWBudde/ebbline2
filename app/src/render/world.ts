@@ -4,9 +4,9 @@ import { CanvasSource, Container, Graphics, Sprite, Texture, type Application } 
 import {
   BUILDABLE,
   KINDS,
-  LINK_RANGE,
   ROW,
   globAt,
+  harvestPreview,
   linksAt,
   placeError,
   span,
@@ -19,7 +19,6 @@ import { TILE, pointToWorld, tileToWorld, type View } from "../camera.ts";
 import type { Runtime } from "../runtime.ts";
 import { ACCENT, COLORS, drawStructure } from "./art.ts";
 import { spriteUrls, type SpriteKind } from "./assets.ts";
-import { coverageKey, gridCoverage } from "./coverage.ts";
 import { areaOutline, hexPoints, outline } from "./hexes.ts";
 import { loadArt, type Art, type SpriteArt } from "./sprites.ts";
 import {
@@ -67,9 +66,9 @@ export class Renderer {
   private readonly lodes = new Container();
   private readonly features = new Graphics();
   private readonly vents = new Container();
-  /** The tiles the built grid reaches, shown while building and for a selected structure. */
-  private readonly coverage = new Graphics();
-  private coverageKey = "";
+  /** The tiles the pylons collect energy from, shaded green. Under the silt, which hides what it drowns. */
+  private readonly harvest = new Graphics();
+  private harvestRev = -1;
   private readonly under = new Graphics();
   private readonly sprites = new Container();
   private readonly ghost = new Sprite();
@@ -106,9 +105,9 @@ export class Renderer {
       this.ground,
       this.lodes,
       this.features,
+      this.harvest,
       this.silt,
       this.vents,
-      this.coverage,
       this.under,
       this.sprites,
       this.ghost,
@@ -153,8 +152,8 @@ export class Renderer {
     this.ventSprites.length = 0;
     this.spitterSprites.clear();
     this.paintedTick = -1;
-    this.coverage.clear();
-    this.coverageKey = "";
+    this.harvest.clear();
+    this.harvestRev = -1;
     if (!game) return;
     this.groundCanvas = bakeTerrain(game, this.materials);
     this.ground.texture.destroy(true);
@@ -443,9 +442,7 @@ export class Renderer {
 
     const tool = rt.tool.value;
     const hover = rt.hover;
-    this.coverage.visible =
-      tool.kind === "build" || (tool.kind === "none" && selected !== undefined);
-    if (this.coverage.visible) this.drawCoverage(game);
+    this.drawHarvest(game);
     this.ghost.visible = false;
     if (hover && tool.kind === "build") {
       const def = KINDS[tool.structure];
@@ -467,7 +464,14 @@ export class Renderer {
         color: ok ? COLORS.utility : error === null ? COLORS.economy : COLORS.bad,
       });
       if (def.range > 0) this.range(over, game, hover.x, hover.y, def.range, def.minRange, ACCENT[tool.structure]);
-      else this.range(over, game, hover.x, hover.y, LINK_RANGE, 0, COLORS.grid);
+      if (tool.structure === "pylon" && error === null) {
+        // What a pylon here would collect from: the free tiles around it on its own level.
+        for (const i of harvestPreview(game, hover.x, hover.y)) {
+          const t = tileOf(game.w, i);
+          over.poly(hexPoints(t.x, t.y));
+        }
+        over.fill({ color: COLORS.harvest, alpha: 0.3 });
+      }
     } else if (hover && tool.kind === "grade") {
       over.poly(hexPoints(hover.x, hover.y)).stroke({ width: 2, color: COLORS.utility });
     }
@@ -481,26 +485,25 @@ export class Renderer {
     return g;
   }
 
-  /** Tints the tiles within reach of the grid and outlines their edge; redrawn only when the grid changes. */
-  private drawCoverage(game: Game): void {
-    const key = coverageKey(game);
-    if (key === this.coverageKey) return;
-    this.coverageKey = key;
-    const covered = gridCoverage(game);
-    const g = this.coverage.clear();
+  /** Shades the tiles the pylons collect energy from; redrawn only when the engine says they changed. */
+  private drawHarvest(game: Game): void {
+    if (game.harvestRev === this.harvestRev) return;
+    this.harvestRev = game.harvestRev;
+    const claimed = game.harvest;
+    const g = this.harvest.clear();
     const inSet = (x: number, y: number): boolean =>
-      x >= 0 && y >= 0 && x < game.w && y < game.h && covered[y * game.w + x] === 1;
+      x >= 0 && y >= 0 && x < game.w && y < game.h && claimed[y * game.w + x] === 1;
     const members: { x: number; y: number }[] = [];
-    for (let i = 0; i < covered.length; i++) {
-      if (covered[i] !== 1) continue;
+    for (let i = 0; i < claimed.length; i++) {
+      if (claimed[i] !== 1) continue;
       const t = tileOf(game.w, i);
       members.push(t);
       g.poly(hexPoints(t.x, t.y));
     }
-    g.fill({ color: COLORS.grid, alpha: 0.08 });
-    // The edge: every side of a covered tile that faces an uncovered one.
+    if (members.length === 0) return;
+    g.fill({ color: COLORS.harvest, alpha: 0.22 });
     for (const loop of outline(members, inSet)) g.poly(loop);
-    g.stroke({ width: 1, color: COLORS.grid, alpha: 0.2 });
+    g.stroke({ width: 1.5, color: COLORS.harvest, alpha: 0.45 });
   }
 
   /** The tiles within `range` steps of a tile, tinted and outlined; tiles closer than `min` are outlined inside. */

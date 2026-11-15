@@ -40,20 +40,58 @@ interface Patterns {
 
 const PATTERNS = new WeakMap<HTMLCanvasElement, Patterns>();
 
-const STOPS: readonly (readonly [number, number, number, number])[] = [
-  [0, 0x1c, 0x16, 0x11],
-  [3, 0x3d, 0x2c, 0x20],
-  [6, 0x7a, 0x5a, 0x3c],
-  [9, 0xc9, 0xa8, 0x78],
-];
+type Stops = readonly (readonly [number, number, number, number])[];
+
+/** The looks a level's ground can have: [height, r, g, b] stops from the lowest ground to the highest. */
+export type Ground = "earth" | "slate" | "sand" | "ash";
+
+// All of them stay on the warm side of grey: red ≥ green ≥ blue at every stop, so the ground reads as
+// earth and rock and never as water or ice.
+const PALETTES: Record<Ground, Stops> = {
+  // Grey-brown soil over dark rock.
+  earth: [
+    [0, 0x1b, 0x18, 0x15],
+    [3, 0x3b, 0x31, 0x29],
+    [6, 0x6c, 0x5a, 0x49],
+    [9, 0xa3, 0x90, 0x7a],
+  ],
+  // Bare grey stone with a trace of brown.
+  slate: [
+    [0, 0x19, 0x18, 0x16],
+    [3, 0x36, 0x33, 0x2f],
+    [6, 0x62, 0x5d, 0x56],
+    [9, 0x9a, 0x94, 0x8a],
+  ],
+  // Dry, pale and yellowish.
+  sand: [
+    [0, 0x1f, 0x19, 0x12],
+    [3, 0x45, 0x36, 0x26],
+    [6, 0x80, 0x66, 0x47],
+    [9, 0xbf, 0xa3, 0x79],
+  ],
+  // Dark red-brown, burnt.
+  ash: [
+    [0, 0x17, 0x13, 0x11],
+    [3, 0x33, 0x27, 0x21],
+    [6, 0x5c, 0x45, 0x39],
+    [9, 0x8c, 0x71, 0x60],
+  ],
+};
+
+/** The ground look of a game's level; earth unless the level names another. */
+export function groundOf(game: Game): Ground {
+  const ground = game.level.ground;
+  return ground && ground in PALETTES ? ground : "earth";
+}
 
 /** The colour of a terrain height as [r, g, b]. */
-export function groundColor(height: number): [number, number, number] {
-  let a = STOPS[0] ?? [0, 0, 0, 0];
-  let b = STOPS[STOPS.length - 1] ?? a;
-  for (let n = 0; n < STOPS.length - 1; n++) {
-    const lo = STOPS[n];
-    const hi = STOPS[n + 1];
+export function groundColor(height: number, ground: Ground = "earth"): [number, number, number] {
+  const stops = PALETTES[ground];
+  let a = stops[0] ?? [0, 0, 0, 0];
+  let b = stops[stops.length - 1] ?? a;
+  for (let n = 0; n < stops.length - 1; n++) {
+    const lo = stops[n];
+    const hi = stops[n + 1];
     if (lo && hi && height >= lo[0] && height <= hi[0]) {
       a = lo;
       b = hi;
@@ -92,7 +130,7 @@ function hatching(ctx: CanvasRenderingContext2D): CanvasPattern | null {
   tile.height = 10;
   const tctx = tile.getContext("2d");
   if (!tctx) return null;
-  tctx.strokeStyle = "#1a252b";
+  tctx.strokeStyle = "#262320";
   tctx.lineWidth = 2;
   tctx.beginPath();
   for (const d of [-10, 0, 10]) {
@@ -203,6 +241,7 @@ function rimPath(path: CanvasPath | undefined, cx: number, cy: number, direction
 /** Paints the given tiles: colours, then materials, then edges. */
 function paint(ctx: CanvasRenderingContext2D, game: Game, patterns: Patterns, tiles: readonly number[]): void {
   const w = game.w;
+  const ground = groundOf(game);
   const height = (i: number): number => (i < 0 ? ROCK : (game.height[i] ?? ROCK));
 
   // Flat colours. Each hexagon is grown by half a pixel so that the antialiased sides of neighbours overlap
@@ -212,7 +251,7 @@ function paint(ctx: CanvasRenderingContext2D, game: Game, patterns: Patterns, ti
     const h = height(i);
     const c = at(x, y);
     if (h !== ROCK) {
-      const [r, g, b] = groundColor(h);
+      const [r, g, b] = groundColor(h, ground);
       // A fixed per-tile grain keeps large plateaus from looking flat.
       const grain = (((x * 73856093) ^ (y * 19349663)) >>> 0) % 7 - 3;
       ctx.fillStyle = `rgb(${String(r + grain)},${String(g + grain)},${String(b + grain)})`;
@@ -286,7 +325,7 @@ function paint(ctx: CanvasRenderingContext2D, game: Game, patterns: Patterns, ti
       ctx.stroke(lit);
     }
     if (rock) {
-      ctx.strokeStyle = `rgba(150,190,200,${String(0.16 * weight)})`;
+      ctx.strokeStyle = `rgba(205,190,170,${String(0.16 * weight)})`;
       ctx.stroke(rock);
     }
   }

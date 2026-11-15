@@ -67,7 +67,7 @@ export const nl: Record<Key, string> = {
     "Slib welt op uit _bronnen_ en stroomt bergaf. Het tast alles aan waar het op staat. Verlies je de lander, dan is de missie verloren. Je wint door op elke bron een *Dop* te bouwen.",
   "help.grid.title": "Het net",
   "help.grid.text":
-    "Energie verlaat de lander in pakketten en reist over de verbindingen van het net. Elk gebouw stuurt pakketten door en moet binnen zes vakken van een voltooid gebouw staan; pylonen zijn de goedkope manier om verder te reiken. Tijdens het bouwen, of als een pyloon geselecteerd is, is het gebied gekleurd dat het voltooide net bereikt. Een rode stip markeert een gebouw dat het net niet bereikt.",
+    "Energie verlaat de lander in pakketten en reist over de verbindingen van het net. Elk gebouw stuurt pakketten door en moet binnen zes vakken van een voltooid gebouw staan; pylonen zijn de goedkope manier om verder te reiken. Tijdens het bouwen, of als een pyloon geselecteerd is, is het gebied gekleurd dat het voltooide net bereikt. Een rode stip markeert een gebouw dat het net niet bereikt. Pylonen vangen energie op van vakken binnen drie stappen die op hun eigen niveau liggen en direct zichtbaar zijn (getoond als een groen gebied); hoger terrein of rots ertussen blokkeert dat, en met slib bedekte vakken leveren niets op.",
   "help.cap.title": "Een bron afdoppen",
   "help.cap.text":
     "Een dop kan pas beginnen als het vak van de bron bijna droog is; dat toont een witte ring. Tijdens de bouw houdt hij de bron dicht, maar de druk loopt op: gaat de dop verloren, dan barst alles in één keer los.",
@@ -225,7 +225,7 @@ export const nlContent: Content = {
       name: "Lander",
       blurb: "Oorsprong van het net. Gaat hij verloren, dan is de missie voorbij.",
     },
-    pylon: { name: "Pyloon", blurb: "Breidt het net zes vakken uit." },
+    pylon: { name: "Pyloon", blurb: "Breidt het net zes vakken uit en vangt wat energie op van de vlakke grond die hij op zijn eigen hoogte kan zien." },
     trunk: {
       name: "Hoofdlijn",
       blurb: "Verbindt zich over veertien vakken met andere hoofdlijnen en verdubbelt de snelheid van pakketten.",
@@ -255,12 +255,12 @@ export const nlContent: Content = {
   levels: {
     c1: {
       name: "Landing",
-      brief: "Eén trage bron, vijftien vakken oostwaarts en ver onder je. Leid het net naar beneden, brand de bron droog en doe er een dop op.",
+      brief: "Eén bron, vijftien vakken oostwaarts en ver onder je, en zijn poel breidt zich al uit. Leid het net naar beneden, brand de bron droog en doe er een dop op.",
       hints: [
         "Pylonen zijn de goedkope manier om het net te verlengen. Alles moet binnen zes vakken van een voltooid gebouw staan.",
         "Lansen branden slib weg. Zet ze op hoge grond: ze kunnen niet bergop richten.",
         "Als de bron tussen twee stoten droogvalt, zet er een dop op en houd die gevoed.",
-        "De lander maakt één energie per seconde en hier zijn geen aders. Bouw niet meer dan nodig.",
+        "De lander maakt één energie per seconde en hier zijn geen aders. Een pyloon vangt iets meer op van de vlakke grond die hij op zijn eigen hoogte kan zien. Bouw niet meer dan nodig.",
       ],
     },
     c2: {
@@ -294,7 +294,7 @@ export const nlContent: Content = {
     },
     c6: {
       name: "Uiterwaard",
-      brief: "Je bent laag geland, op de oever van een riviervallei, met vier bronnen om je heen. Houd tien minuten stand.",
+      brief: "Je bent laag geland, op de oever van een riviervallei, met vier bronnen om je heen, waarvan één dichtbij. Houd tien minuten stand.",
       hints: [
         "Een gevoede kering laat slib op elk vak binnen vier vakken ervan twee treden extra klimmen.",
         "Kies Markeren, een hoogte en schilder vakken; een egaliseerder binnen acht vakken verhoogt of verlaagt ze.",
@@ -302,7 +302,7 @@ export const nlContent: Content = {
     },
     c7: {
       name: "Spervuur",
-      brief: "Twee spuwers slingeren slib vanuit het noordwesten naar je net. Onderscheppers schieten de klodders in de lucht neer.",
+      brief: "Drie spuwers slingeren slib vanuit het zuiden naar je net. Onderscheppers schieten de klodders in de lucht neer.",
       hints: [
         "Klodders mikken op je dichtste cluster. Een onderschepper reikt negen vakken en heeft drie treffers per klodder nodig.",
       ],
