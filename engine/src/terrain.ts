@@ -1,15 +1,20 @@
 // Builds a fresh game from a level definition: terrain, lander, vents, spitters and lodes.
 
-import { centre, distance, within, type Tile } from "./hex.ts";
+import { centre, distance, span, within, type Tile } from "./hex.ts";
 import { int, next, type RngState } from "./rng.ts";
+import { flow, stepVents } from "./silt.ts";
 import {
+  FLOW_EVERY,
   KINDS,
+  TICK_HZ,
   footprint,
   MAX_HEIGHT,
   ROCK,
   type Game,
+  type Landform,
   type LevelDef,
   type Structure,
+  type VentTweak,
 } from "./state.ts";
 
 export const START_ENERGY = 20;
@@ -60,15 +65,60 @@ function fractal(rng: RngState, size: number, cells: number): Float32Array {
     }
     amplitude /= 2;
   }
+  normalise(sum);
+  return sum;
+}
+
+/** Stretches the values to fill 0..1 again. */
+function normalise(values: Float32Array): void {
   let lo = Infinity;
   let hi = -Infinity;
-  for (const v of sum) {
+  for (const v of values) {
     lo = Math.min(lo, v);
     hi = Math.max(hi, v);
   }
   const range = hi - lo || 1;
-  for (let i = 0; i < sum.length; i++) sum[i] = ((sum[i] as number) - lo) / range;
-  return sum;
+  for (let i = 0; i < values.length; i++) values[i] = ((values[i] as number) - lo) / range;
+}
+
+/** Bends 0..1 relief into the given landform, in place; "hills" leaves it as it is. */
+function shape(relief: Float32Array, size: number, landform: Landform): void {
+  if (landform === "hills") return;
+  const mid = centre(size >> 1, size >> 1);
+  for (let i = 0; i < relief.length; i++) {
+    const r = relief[i] as number;
+    const x = i % size;
+    const y = Math.floor(i / size);
+    // 0 in the middle of the map, 1 at the middle of each edge.
+    const out = Math.min(1, span(x, y, Math.round(mid.x), Math.round(mid.y)) / (size / 2));
+    switch (landform) {
+      case "basin":
+        relief[i] = 0.4 * r + 0.6 * out * out;
+        break;
+      case "mesa": {
+        const lift = smooth(Math.max(0, Math.min(1, (0.75 - out) / 0.3)));
+        relief[i] = 0.35 * r + 0.65 * lift;
+        break;
+      }
+      case "ridges":
+        relief[i] = 1 - Math.abs(2 * r - 1);
+        break;
+      case "channels":
+        relief[i] = Math.sqrt(Math.abs(2 * r - 1));
+        break;
+      case "terraces":
+        relief[i] = Math.min(3, Math.floor(r * 4)) / 3;
+        break;
+    }
+  }
+  if (landform !== "terraces") normalise(relief);
+}
+
+/** The noise level above which `share` of the values lie. */
+function quantile(values: Float32Array, share: number): number {
+  const sorted = Float32Array.from(values).sort();
+  const at = Math.min(sorted.length - 1, Math.max(0, Math.floor((1 - share) * sorted.length)));
+  return sorted[at] ?? 1;
 }
 
 /** Whether p is at least `min` steps from every other tile. */
@@ -82,9 +132,11 @@ export function generate(level: LevelDef): Game {
   const height = new Int8Array(size * size);
   const relief = fractal(rng, size, 3);
   const stone = fractal(rng, size, 8);
+  shape(relief, size, level.landform ?? "hills");
+  const rockAbove = level.rock === undefined ? 0.82 : quantile(stone, level.rock);
   for (let i = 0; i < height.length; i++) {
     height[i] =
-      (stone[i] as number) > 0.82
+      (stone[i] as number) > rockAbove
         ? ROCK
         : Math.min(MAX_HEIGHT, Math.floor((relief[i] as number) * 10));
   }
@@ -130,6 +182,21 @@ export function generate(level: LevelDef): Game {
   }
   low.sort((a, b) => a.key - b.key);
   const vents: Tile[] = [];
+  const near = level.vents.near;
+  if (near !== undefined && level.vents.count > 0) {
+    // The lowest ground in a ring around the lander, a little way off.
+    let first: (Tile & { key: number }) | undefined;
+    for (let y = 3; y < size - 3; y++) {
+      for (let x = 3; x < size - 3; x++) {
+        const p = { x, y };
+        const d = fromLander(p);
+        if (at(x, y) === ROCK || d < near || d > near + 2) continue;
+        const key = at(x, y) + next(rng) * 0.99;
+        if (!first || key < first.key) first = { x, y, key };
+      }
+    }
+    if (first) vents.push({ x: first.x, y: first.y });
+  }
   for (let spread = size * 0.25; vents.length < level.vents.count; spread /= 2) {
     for (const p of low) {
       if (vents.length >= level.vents.count) break;
@@ -137,6 +204,10 @@ export function generate(level: LevelDef): Game {
     }
     if (spread < 1) break;
   }
+
+  // Per-vent tweaks count from the vent nearest the lander.
+  const nearest = [...vents].sort((a, b) => fromLander(a) - fromLander(b));
+  const tweaks = vents.map((p): VentTweak => level.vents.each?.[nearest.indexOf(p)] ?? {});
 
   const taken: Tile[] = [lander, ...vents];
   const pick = (ok: (p: Tile) => boolean, gap: number): Tile | undefined => {
@@ -180,21 +251,27 @@ export function generate(level: LevelDef): Game {
     mark: new Int8Array(size * size).fill(-1),
     occ: new Int32Array(size * size),
     baffle: new Uint8Array(size * size),
+    harvest: new Uint8Array(size * size),
+    harvestRev: 0,
     structures: [],
     packets: [],
     shells: [],
     globs: [],
-    vents: vents.map((p, n) => ({
-      x: p.x,
-      y: p.y,
-      period: level.vents.period,
-      amount: level.vents.amount,
-      ramp: level.vents.ramp,
-      // Staggered so the vents do not pulse in unison.
-      timer: level.vents.period + n * 17,
-      capped: false,
-      pressure: 0,
-    })),
+    vents: vents.map((p, n) => {
+      const tweak = tweaks[n] ?? {};
+      const period = tweak.period ?? level.vents.period;
+      return {
+        x: p.x,
+        y: p.y,
+        period,
+        amount: level.vents.amount * (tweak.amount ?? 1),
+        ramp: level.vents.ramp,
+        // Staggered so the vents do not pulse in unison.
+        timer: period + n * 17 + Math.round((tweak.delay ?? 0) * TICK_HZ),
+        capped: false,
+        pressure: 0,
+      };
+    }),
     spitters: spitters.map((p, n) => ({
       x: p.x,
       y: p.y,
@@ -235,5 +312,27 @@ export function generate(level: LevelDef): Game {
   };
   game.structures.push(base);
   for (const i of footprint(game, "lander", lander.x, lander.y)) game.occ[i] = base.id;
+  if (level.flood !== undefined) {
+    preflood(game, level.flood, tweaks.map((t) => (t.delay ?? 0) > 0));
+  }
   return game;
+}
+
+/**
+ * Lets the vents run for `seconds` before the game starts, so their pools already stand on the map. Dormant vents
+ * (those with a delay) stay dry, the ramp does not grow, and the vents' timers are set back afterwards.
+ */
+function preflood(game: Game, seconds: number, dormant: readonly boolean[]): void {
+  const timers = game.vents.map((v) => v.timer);
+  game.vents.forEach((v, n) => {
+    v.capped = dormant[n] === true;
+  });
+  for (let t = 1; t <= seconds * TICK_HZ; t++) {
+    stepVents(game, []);
+    if (t % FLOW_EVERY === 0) flow(game);
+  }
+  game.vents.forEach((v, n) => {
+    v.capped = false;
+    v.timer = timers[n] ?? v.period;
+  });
 }

@@ -4,7 +4,7 @@ import { next, int } from "./rng.ts";
 import { fingerprint } from "./save.ts";
 import { generate } from "./terrain.ts";
 import { distance, tileOf, within } from "./hex.ts";
-import { KINDS, MAX_HEIGHT, ROCK, find } from "./state.ts";
+import { KINDS, MAX_HEIGHT, ROCK, TICK_HZ, find, type Game, type Landform, type LevelDef } from "./state.ts";
 
 describe("rng", () => {
   it("repeats for the same seed and stays in range", () => {
@@ -56,10 +56,18 @@ describe("terrain", () => {
         expect(h).toBeGreaterThanOrEqual(ROCK);
         expect(h).toBeLessThanOrEqual(MAX_HEIGHT);
       }
-      for (const vent of game.vents) {
+      game.vents.forEach((vent, n) => {
         expect(game.height[vent.y * game.w + vent.x]).not.toBe(ROCK);
-        expect(distance(vent.x, vent.y, lander.x, lander.y)).toBeGreaterThanOrEqual(level.size * 0.35);
-      }
+        const d = distance(vent.x, vent.y, lander.x, lander.y);
+        // A level may ask for its first vent close by; the rest lie far out.
+        const near = level.vents.near;
+        if (n === 0 && near !== undefined) {
+          expect(d).toBeGreaterThanOrEqual(near);
+          expect(d).toBeLessThanOrEqual(near + 2);
+        } else {
+          expect(d).toBeGreaterThanOrEqual(level.size * 0.35);
+        }
+      });
       for (const spitter of game.spitters) {
         expect(distance(spitter.x, spitter.y, lander.x, lander.y)).toBeGreaterThanOrEqual(level.size * 0.4);
       }
@@ -71,4 +79,126 @@ describe("terrain", () => {
       });
     },
   );
+});
+
+describe("level variations", () => {
+  const base = skirmish(5, "medium", "normal");
+  const variant = (change: Partial<LevelDef>): LevelDef => ({ ...base, ...change });
+  const lander = (game: Game): { x: number; y: number } => {
+    const l = find(game, game.landerId);
+    if (!l) throw new Error("no lander");
+    return l;
+  };
+
+  /** Mean ground height of the non-rock tiles whose distance from the map's middle passes the test. */
+  function meanHeight(game: Game, keep: (fromMiddle: number) => boolean): number {
+    const mid = game.w >> 1;
+    let sum = 0;
+    let n = 0;
+    game.height.forEach((h, i) => {
+      const t = tileOf(game.w, i);
+      if (h === ROCK || !keep(distance(t.x, t.y, mid, mid))) return;
+      sum += h;
+      n += 1;
+    });
+    return sum / n;
+  }
+
+  it("leaves the map as it was when a level names no landform or names hills", () => {
+    const hills = generate(variant({ landform: "hills" }));
+    const plain = generate(base);
+    expect(hills.height).toEqual(plain.height);
+    expect(hills.lode).toEqual(plain.lode);
+    expect(hills.vents).toEqual(plain.vents);
+  });
+
+  it.each(["basin", "mesa", "ridges", "channels", "terraces"] as const)(
+    "shapes %s land that differs from hills and stays in range",
+    (landform: Landform) => {
+      const game = generate(variant({ landform }));
+      expect(game.height).not.toEqual(generate(base).height);
+      for (const h of game.height) {
+        expect(h).toBeGreaterThanOrEqual(ROCK);
+        expect(h).toBeLessThanOrEqual(MAX_HEIGHT);
+      }
+      expect(game.vents).toHaveLength(base.vents.count);
+    },
+  );
+
+  it("sinks the middle of a basin and lifts the middle of a mesa", () => {
+    const size = base.size;
+    const middle = (d: number): boolean => d < size / 6;
+    const rim = (d: number): boolean => d > size * 0.4;
+    const basin = generate(variant({ landform: "basin" }));
+    expect(meanHeight(basin, middle)).toBeLessThan(meanHeight(basin, rim) - 2);
+    const mesa = generate(variant({ landform: "mesa" }));
+    expect(meanHeight(mesa, middle)).toBeGreaterThan(meanHeight(mesa, rim) + 2);
+  });
+
+  it("flattens terraces into a few wide steps", () => {
+    const game = generate(variant({ landform: "terraces" }));
+    const levels = new Set(game.height.filter((h) => h !== ROCK));
+    expect([...levels].sort()).toEqual([0, 3, 6, 9]);
+  });
+
+  it("turns about the share of the map to rock that the level asks for", () => {
+    for (const rock of [0, 0.1, 0.3]) {
+      const game = generate(variant({ rock }));
+      const share = game.height.filter((h) => h === ROCK).length / game.height.length;
+      // The lander's surroundings are cleared of rock, so the share can only come out a little lower.
+      expect(share).toBeLessThanOrEqual(rock + 1e-9);
+      expect(share).toBeGreaterThan(rock - 0.01);
+    }
+  });
+
+  it("starts a flooded level with silt on the map and the clock and vents as usual", () => {
+    const dry = generate(base);
+    const game = generate(variant({ flood: 60 }));
+    expect(game.tick).toBe(0);
+    expect(game.silt.reduce((a, b) => a + b, 0)).toBeGreaterThan(base.vents.amount * 10);
+    expect(game.vents.map((v) => v.timer)).toEqual(dry.vents.map((v) => v.timer));
+    expect(game.vents.every((v) => !v.capped && v.pressure === 0)).toBe(true);
+  });
+
+  it("keeps a dormant vent dry while the level floods", () => {
+    const one = { ...base.vents, count: 1, each: [{ delay: 30 }] };
+    const game = generate(variant({ vents: one, flood: 60 }));
+    expect(game.silt.reduce((a, b) => a + b, 0)).toBe(0);
+  });
+
+  it("changes each vent as listed, counting from the one nearest the lander", () => {
+    const each = [{ amount: 2 }, { period: 25, delay: 10 }];
+    const game = generate(variant({ vents: { ...base.vents, each } }));
+    const plain = generate(base);
+    const l = lander(game);
+    const order = [...game.vents].sort((a, b) => distance(a.x, a.y, l.x, l.y) - distance(b.x, b.y, l.x, l.y));
+    const [first, second, third] = order;
+    if (!first || !second || !third) throw new Error("three vents expected");
+    expect(first.amount).toBe(base.vents.amount * 2);
+    expect(first.period).toBe(base.vents.period);
+    expect(second.amount).toBe(base.vents.amount);
+    expect(second.period).toBe(25);
+    expect(third).toMatchObject({ amount: base.vents.amount, period: base.vents.period });
+    // The delay comes on top of the usual stagger.
+    const index = game.vents.indexOf(second);
+    expect(second.timer).toBe(25 + index * 17 + 10 * TICK_HZ);
+    expect(game.vents.map((v) => [v.x, v.y])).toEqual(plain.vents.map((v) => [v.x, v.y]));
+  });
+
+  it("puts the first vent close to the lander when asked", () => {
+    const game = generate(variant({ vents: { ...base.vents, near: 8 } }));
+    const l = lander(game);
+    const [first, ...rest] = game.vents;
+    if (!first) throw new Error("no vent");
+    const d = distance(first.x, first.y, l.x, l.y);
+    expect(d).toBeGreaterThanOrEqual(8);
+    expect(d).toBeLessThanOrEqual(10);
+    expect(rest).toHaveLength(base.vents.count - 1);
+  });
+
+  it("only stores the ground colour for the renderer", () => {
+    const game = generate(variant({ ground: "ash" }));
+    expect(game.level.ground).toBe("ash");
+    expect(game.height).toEqual(generate(base).height);
+  });
 });

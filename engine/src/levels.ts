@@ -24,38 +24,48 @@ function upTo(last: Kind): readonly Kind[] {
 
 const NO_SPITTERS = { count: 0, period: 0, amount: 0 } as const;
 
-// Seeds were picked by looking at the maps they make; the numbers were tuned with the scripted player in
-// balance.test.ts, so that its winning time grows from mission to mission.
+// Seeds were picked by looking at the maps they make. The numbers were tuned with the scripted player in
+// balance.test.ts until it only just wins: from c3 on, an eighth to a quarter more silt from the vents beats it,
+// and c1 and c2 leave it a little more room. Each mission is hard in its own way: c1 starves you of energy, c2 wakes
+// a second, stronger vent behind you, c3 is already flooded deep, c4 is distance against a fast ramp, c5 is many
+// fronts round a mesa, c6 is a vent on your doorstep while the clock runs, c7 is a barrage from one side and c8
+// is all of it at once.
 export const CAMPAIGN: readonly LevelDef[] = [
   {
-    // A ridge above a long valley with the vent at its bottom. No lodes: the lander's own trickle has to do.
+    // A ridge above a long valley with the vent at its bottom, its pool already spreading. No lodes: the lander's
+    // own trickle and what pylons gather have to do.
     id: "c1",
     name: "Landfall",
-    brief: "One sluggish vent, fifteen tiles east and far below you. Walk the grid down to it, burn it dry and cap it.",
+    brief: "One vent, fifteen tiles east and far below you, and its pool is already spreading. Walk the grid down to it, burn it dry and cap it.",
     seed: 131,
     size: 32,
-    vents: { count: 1, period: 60, amount: 4, ramp: 0.15 },
+    vents: { count: 1, period: 60, amount: 14, ramp: 0.25 },
     spitters: NO_SPITTERS,
     lodes: 0,
+    flood: 60,
+    ground: "earth",
     allowed: upTo("cap"),
     objective: { kind: "cap" },
     hints: [
       "Pylons are the cheap way to extend the grid. Everything must stand within six tiles of a built structure.",
       "Lances burn silt away. Put them on high ground: they cannot aim uphill.",
       "When the vent runs dry between pulses, place a Cap on it and keep it supplied.",
-      "The lander makes one energy a second, and there are no lodes here. Do not build more than you need.",
+      "The lander makes one energy a second, and there are no lodes here. A pylon gathers a little more from the level ground it can see at its own height. Do not build more than you need.",
     ],
   },
   {
-    // A hill between a wide plain to the north-west and a valley to the south-east, a vent in each.
+    // A stepped hill between a wide plain to the north-west and a trough to the south-east, a vent in each. The
+    // far one sleeps for the first minute, then wakes half as strong again as the near one.
     id: "c2",
     name: "Two Fronts",
     brief: "Two vents, on opposite sides of your hill. Tap the lodes for energy and bank it for the Caps.",
     seed: 2145,
     size: 40,
-    vents: { count: 2, period: 60, amount: 10, ramp: 0.15 },
+    vents: { count: 2, period: 60, amount: 11, ramp: 0.2, each: [{}, { amount: 1.5, delay: 60 }] },
     spitters: NO_SPITTERS,
     lodes: 6,
+    landform: "terraces",
+    ground: "sand",
     allowed: upTo("cell"),
     objective: { kind: "cap" },
     hints: [
@@ -64,29 +74,40 @@ export const CAMPAIGN: readonly LevelDef[] = [
     ],
   },
   {
-    // A plateau above a deep basin to the north-east that takes two of the vents.
+    // A rim round a deep basin that takes all three vents, and has been filling for two minutes when you land.
     id: "c3",
     name: "Sump",
     brief: "Three vents gush in slow, heavy pulses, and the basin below fills deep. Lobbers reach the deep pools.",
     seed: 3161,
     size: 48,
-    vents: { count: 3, period: 150, amount: 18, ramp: 0.12 },
+    vents: { count: 3, period: 150, amount: 35, ramp: 0.15 },
     spitters: NO_SPITTERS,
     lodes: 6,
+    landform: "basin",
+    flood: 120,
+    ground: "slate",
     allowed: upTo("lobber"),
     objective: { kind: "cap" },
     hints: ["Lobbers ignore height but cannot hit anything closer than three tiles."],
   },
   {
-    // Open, rockless country with the vents spread to three far edges.
+    // Open, rockless country with the vents spread to three far edges: the nearest spits small and often, the
+    // furthest rarely but heavily.
     id: "c4",
     name: "Far Reaches",
     brief: "Three vents in three directions, the nearest twenty-nine tiles out. Trunks carry packets fast over long gaps.",
     seed: 4109,
     size: 64,
-    vents: { count: 3, period: 50, amount: 7.5, ramp: 0.16 },
+    vents: {
+      count: 3,
+      period: 50,
+      amount: 9,
+      ramp: 0.25,
+      each: [{ period: 30, amount: 0.7 }, {}, { period: 120, amount: 2.5 }],
+    },
     spitters: NO_SPITTERS,
     lodes: 8,
+    ground: "sand",
     allowed: upTo("trunk"),
     objective: { kind: "cap" },
     hints: ["Trunks link to each other over fourteen tiles and double packet speed."],
@@ -98,24 +119,28 @@ export const CAMPAIGN: readonly LevelDef[] = [
     brief: "Four vents ring your mesa, and there are only three lodes. Pumps skim shallow silt for energy.",
     seed: 5064,
     size: 48,
-    vents: { count: 4, period: 60, amount: 6, ramp: 0.13 },
+    vents: { count: 4, period: 60, amount: 13, ramp: 0.18 },
     spitters: NO_SPITTERS,
     lodes: 3,
+    landform: "mesa",
+    ground: "earth",
     allowed: upTo("pump"),
     objective: { kind: "cap" },
     hints: ["A Pump only reaches silt two tiles away, so it has to stand at the shore, where the silt can reach it too."],
   },
   {
-    // Low ground on the bank of a river valley that runs north to south, with heights to the east.
+    // Low ground on the bank of a river valley that runs north to south, with heights to the east. The nearest
+    // vent lies in the valley right below the lander; it gives half as much as the others.
     id: "c6",
     name: "Floodplain",
-    brief: "You came down low, on the bank of a river valley, with four vents around you. Hold out for ten minutes.",
+    brief: "You came down low, on the bank of a river valley, with four vents around you and one of them close. Hold out for ten minutes.",
     seed: 6078,
     size: 56,
-    vents: { count: 4, period: 60, amount: 13, ramp: 0.2 },
+    vents: { count: 4, period: 60, amount: 16.5, ramp: 0.2, near: 10, each: [{ amount: 0.5 }] },
     spitters: NO_SPITTERS,
     lodes: 6,
     lowStart: true,
+    ground: "slate",
     allowed: upTo("grader"),
     objective: { kind: "survive", ticks: 10 * 60 * TICK_HZ },
     hints: [
@@ -124,29 +149,40 @@ export const CAMPAIGN: readonly LevelDef[] = [
     ],
   },
   {
-    // Both spitters sit to the north-west, so the globs come from one side.
+    // Winding channels carry the silt; all three spitters sit to the south, so the globs come from one side.
     id: "c7",
     name: "Barrage",
-    brief: "Two spitters lob silt at your grid from the north-west. Interceptors shoot the globs down in flight.",
+    brief: "Three spitters lob silt at your grid from the south. Interceptors shoot the globs down in flight.",
     seed: 7132,
     size: 56,
-    vents: { count: 3, period: 60, amount: 10, ramp: 0.14 },
-    spitters: { count: 2, period: 540, amount: 14 },
+    vents: { count: 3, period: 60, amount: 9.5, ramp: 0.15 },
+    spitters: { count: 3, period: 360, amount: 16 },
     lodes: 7,
+    landform: "channels",
+    ground: "ash",
     allowed: upTo("interceptor"),
     objective: { kind: "cap" },
     hints: ["Globs aim at your densest cluster. An Interceptor reaches nine tiles and needs three hits per glob."],
   },
   {
-    // A central peak with vents and spitters on every side.
+    // A central peak with vents and spitters on every side, already flowing. One vent is stronger than the rest,
+    // and the furthest wakes only after five minutes.
     id: "c8",
     name: "Watershed",
     brief: "Five vents and three spitters all around the peak. Use everything you have.",
     seed: 8360,
     size: 72,
-    vents: { count: 5, period: 60, amount: 5, ramp: 0.14 },
-    spitters: { count: 3, period: 540, amount: 14 },
+    vents: {
+      count: 5,
+      period: 60,
+      amount: 9.5,
+      ramp: 0.15,
+      each: [{}, {}, { amount: 1.6 }, {}, { amount: 1.3, delay: 300 }],
+    },
+    spitters: { count: 3, period: 420, amount: 16 },
     lodes: 9,
+    flood: 60,
+    ground: "ash",
     allowed: EVERYTHING,
     objective: { kind: "cap" },
     hints: [],
@@ -193,9 +229,9 @@ const DIFFICULTIES: Record<
   Difficulty,
   { period: number; amount: number; ramp: number; spitters: number }
 > = {
-  easy: { period: 60, amount: 3.5, ramp: 0.1, spitters: 0 },
-  normal: { period: 60, amount: 4.5, ramp: 0.12, spitters: 1 },
-  hard: { period: 60, amount: 5.5, ramp: 0.16, spitters: 2 },
+  easy: { period: 60, amount: 6, ramp: 0.15, spitters: 0 },
+  normal: { period: 60, amount: 8, ramp: 0.18, spitters: 1 },
+  hard: { period: 60, amount: 9.5, ramp: 0.2, spitters: 2 },
 };
 
 export function skirmish(

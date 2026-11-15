@@ -60,7 +60,7 @@ export const KINDS: Readonly<Record<Kind, KindDef>> = {
     range: 0,
     minRange: 0,
     radius: 0,
-    blurb: "Extends the grid by six tiles.",
+    blurb: "Extends the grid by six tiles and gathers a little energy from the level ground it can see at its own height.",
   },
   trunk: {
     name: "Trunk",
@@ -261,6 +261,26 @@ export type Objective =
   | { readonly kind: "cap" }
   | { readonly kind: "survive"; readonly ticks: number };
 
+/**
+ * The overall shape of a map's terrain. "hills" is plain rolling noise; "basin" sinks the middle of the map below
+ * a rim; "mesa" lifts the middle above lowlands; "ridges" folds the land into sharp crests over broad valleys;
+ * "channels" cuts narrow, winding troughs between broad highlands; "terraces" flattens it into a few wide steps.
+ */
+export type Landform = "hills" | "basin" | "mesa" | "ridges" | "channels" | "terraces";
+
+/** The colour scheme of the ground. Only the renderer reads it. */
+export type Ground = "earth" | "slate" | "sand" | "ash";
+
+/** How one vent differs from the level's usual vent. */
+export interface VentTweak {
+  /** Factor on the level's vent amount. */
+  readonly amount?: number;
+  /** Ticks between pulses, instead of the level's period. */
+  readonly period?: number;
+  /** Seconds before the first pulse, on top of the usual stagger: the vent lies dormant until then. */
+  readonly delay?: number;
+}
+
 export interface LevelDef {
   readonly id: string;
   readonly name: string;
@@ -272,6 +292,10 @@ export interface LevelDef {
     readonly period: number;
     readonly amount: number;
     readonly ramp: number;
+    /** Puts the first vent this many to two more steps from the lander, instead of far away like the others. */
+    readonly near?: number;
+    /** Per-vent changes, nearest vent to the lander first; vents beyond the list are left as they are. */
+    readonly each?: readonly VentTweak[];
   };
   readonly spitters: {
     readonly count: number;
@@ -281,6 +305,14 @@ export interface LevelDef {
   readonly lodes: number;
   /** Puts the lander on middling ground instead of the heights. */
   readonly lowStart?: boolean;
+  /** Shape of the terrain; "hills" when absent. */
+  readonly landform?: Landform;
+  /** Share of the map that is rock, roughly; 0.18 when absent. */
+  readonly rock?: number;
+  /** Seconds the vents have already been flowing when the player lands, so silt stands on the map at the start. */
+  readonly flood?: number;
+  /** Colour scheme of the ground; "earth" when absent. */
+  readonly ground?: Ground;
   readonly allowed: readonly Kind[];
   readonly objective: Objective;
   readonly hints: readonly string[];
@@ -313,6 +345,10 @@ export interface Game {
   occ: Int32Array;
   /** Extra flow height from baffle fields. */
   baffle: Uint8Array;
+  /** 1 where a pylon claims the tile for its harvest, whether or not silt covers it; derived, see harvest.ts. */
+  harvest: Uint8Array;
+  /** Bumped whenever `harvest` changes, so a renderer can redraw the area only then. */
+  harvestRev: number;
   structures: Structure[];
   packets: Packet[];
   shells: Shell[];
