@@ -147,7 +147,7 @@ export const pl: Record<Key, string> = {
   "briefing.objective": "Cel",
   "briefing.objective.cap.one": "Zbuduj pokrywę na kominie.",
   "briefing.objective.cap.many": "Zbuduj pokrywę na każdym z {vents} kominów.",
-  "briefing.objective.survive": "Utrzymaj lądownik przez {minutes} min.",
+  "briefing.objective.survive": "Utrzymaj lądownik przez {minutes} min albo wcześniej zamknij każdy komin.",
   "briefing.new": "Nowość w tej misji",
   "briefing.new.threat": "Nowe zagrożenie",
   "briefing.new.goal": "Nowy cel",
@@ -159,7 +159,7 @@ export const pl: Record<Key, string> = {
     "Nie da się go zniszczyć. Mniej więcej co pół minuty ciska bryłę mułu w twoją sieć; znacznik pokazuje, gdzie spadnie.",
   "briefing.survive.name": "Wytrwaj",
   "briefing.survive.text":
-    "Pokrywy nie dadzą zwycięstwa w tej misji. Wygrywasz, gdy odliczanie u góry dobiegnie końca, a lądownik wciąż stoi.",
+    "Wygrywasz, gdy odliczanie u góry dobiegnie końca, a lądownik wciąż stoi. Zamknięcie każdego komina kończy misję wcześniej, zwycięstwem.",
 
   "tip.pylon":
     "Prowadź łańcuch po suchym terenie: pylon stracony w mule odcina wszystko, co było przez niego zasilane.",

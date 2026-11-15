@@ -148,7 +148,7 @@ export const it: Record<Key, string> = {
   "briefing.objective": "Obiettivo",
   "briefing.objective.cap.one": "Costruisci un tappo sullo sfiato.",
   "briefing.objective.cap.many": "Costruisci un tappo su ciascuno dei {vents} sfiati.",
-  "briefing.objective.survive": "Tieni in piedi il lander per {minutes} minuti.",
+  "briefing.objective.survive": "Tieni in piedi il lander per {minutes} minuti, oppure tappa ogni sfiato prima.",
   "briefing.new": "Novità in questa missione",
   "briefing.new.threat": "Nuova minaccia",
   "briefing.new.goal": "Nuovo obiettivo",
@@ -160,7 +160,7 @@ export const it: Record<Key, string> = {
     "Non si può distruggere. Circa ogni mezzo minuto scaglia un grumo di melma sulla tua rete; un segnale mostra dove cadrà.",
   "briefing.survive.name": "Resisti",
   "briefing.survive.text":
-    "I tappi non fanno vincere questa missione. È vinta quando il conto alla rovescia in alto si esaurisce e il lander è ancora in piedi.",
+    "È vinta quando il conto alla rovescia in alto si esaurisce e il lander è ancora in piedi. Tappare ogni sfiato la conclude prima, con una vittoria.",
 
   "tip.pylon":
     "Tieni la catena sul terreno asciutto: un pilone perso nella melma isola tutto ciò che alimentava.",

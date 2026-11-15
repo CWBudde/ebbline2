@@ -66,4 +66,17 @@ describe("cap", () => {
     run(game, 1);
     expect(game.phase).toBe("won");
   });
+
+  it("wins a survival mission early once every vent is capped", () => {
+    const game = flat(40);
+    game.level = { ...game.level, objective: { kind: "survive", ticks: 100000 } };
+    addVent(game, 30, 30, 2);
+    const vent = game.vents[0];
+    if (!vent) throw new Error("no vent");
+    run(game, 1);
+    expect(game.phase).toBe("playing");
+    vent.capped = true;
+    run(game, 1);
+    expect(game.phase).toBe("won");
+  });
 });

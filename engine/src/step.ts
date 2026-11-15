@@ -15,10 +15,9 @@ function judge(game: Game, events: Event[]): void {
     return;
   }
   const objective = game.level.objective;
-  const won =
-    objective.kind === "survive"
-      ? game.tick >= objective.ticks
-      : game.vents.length > 0 && game.vents.every((v) => v.capped);
+  // With no open vent left there is nothing to hold out against, so capping them all wins any mission.
+  const capped = game.vents.length > 0 && game.vents.every((v) => v.capped);
+  const won = capped || (objective.kind === "survive" && game.tick >= objective.ticks);
   if (won) {
     game.phase = "won";
     events.push({ kind: "won" });

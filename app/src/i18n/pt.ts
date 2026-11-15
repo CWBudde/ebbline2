@@ -151,7 +151,7 @@ export const pt: Record<Key, string> = {
   "briefing.objective": "Objetivo",
   "briefing.objective.cap.one": "Construa uma tampa na fenda.",
   "briefing.objective.cap.many": "Construa uma tampa em cada uma das {vents} fendas.",
-  "briefing.objective.survive": "Mantenha o módulo de pouso de pé por {minutes} minutos.",
+  "briefing.objective.survive": "Mantenha o módulo de pouso de pé por {minutes} minutos, ou tampe todas as fendas antes disso.",
   "briefing.new": "Novo nesta missão",
   "briefing.new.threat": "Nova ameaça",
   "briefing.new.goal": "Novo objetivo",
@@ -163,7 +163,7 @@ export const pt: Record<Key, string> = {
     "Não pode ser destruído. Mais ou menos a cada meio minuto ele lança uma bolota de lodo na sua rede; uma marca mostra onde ela vai cair.",
   "briefing.survive.name": "Resistir",
   "briefing.survive.text":
-    "Tampas não vencem esta missão. Ela é vencida quando a contagem regressiva no topo termina e o módulo de pouso ainda está de pé.",
+    "Ela é vencida quando a contagem regressiva no topo termina e o módulo de pouso ainda está de pé. Tampar todas as fendas a encerra antes, com vitória.",
 
   "tip.pylon":
     "Mantenha a corrente em terreno seco: uma torre perdida para o lodo corta tudo o que era abastecido por ela.",

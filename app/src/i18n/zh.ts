@@ -144,7 +144,7 @@ export const zh: Record<Key, string> = {
   "briefing.objective": "目标",
   "briefing.objective.cap.one": "在喷口上建造封盖。",
   "briefing.objective.cap.many": "在全部 {vents} 个喷口上各建一个封盖。",
-  "briefing.objective.survive": "让着陆舱坚持 {minutes} 分钟。",
+  "briefing.objective.survive": "让着陆舱坚持 {minutes} 分钟，或在此之前封堵所有喷口。",
   "briefing.new": "本任务新增",
   "briefing.new.threat": "新威胁",
   "briefing.new.goal": "新目标",
@@ -154,7 +154,7 @@ export const zh: Record<Key, string> = {
   "briefing.spitter.name": "喷吐者",
   "briefing.spitter.text": "无法摧毁。大约每半分钟向你的电网抛出一团淤泥；落点会有标记提示。",
   "briefing.survive.name": "坚守",
-  "briefing.survive.text": "本任务无法靠封盖获胜。顶部倒计时结束时着陆舱仍然屹立，即为胜利。",
+  "briefing.survive.text": "顶部倒计时结束时着陆舱仍然屹立，即为胜利。封堵所有喷口会提前以胜利结束任务。",
 
   "tip.pylon": "让电塔链保持在干燥地面上：一座电塔被淤泥吞没，经由它供能的一切都会断开。",
   "tip.tap": "每个汲取器在着陆舱每秒 1 点之外再提供 0.6 点能量，但前提是电网能覆盖到它。",

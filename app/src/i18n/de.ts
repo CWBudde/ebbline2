@@ -148,7 +148,7 @@ export const de: Record<Key, string> = {
   "briefing.objective": "Ziel",
   "briefing.objective.cap.one": "Bau eine Kappe auf den Schlot.",
   "briefing.objective.cap.many": "Bau auf jeden der {vents} Schlote eine Kappe.",
-  "briefing.objective.survive": "Sorg dafür, dass der Lander {minutes} Minuten übersteht.",
+  "briefing.objective.survive": "Sorg dafür, dass der Lander {minutes} Minuten übersteht, oder verschließe vorher jeden Schlot mit einer Kappe.",
   "briefing.new": "Neu in dieser Mission",
   "briefing.new.threat": "Neue Bedrohung",
   "briefing.new.goal": "Neues Ziel",
@@ -160,7 +160,7 @@ export const de: Record<Key, string> = {
     "Lässt sich nicht zerstören. Etwa jede halbe Minute schleudert er einen Klumpen Schlick auf dein Netz; eine Markierung zeigt, wo er einschlägt.",
   "briefing.survive.name": "Durchhalten",
   "briefing.survive.text":
-    "Mit Kappen gewinnst du diese Mission nicht. Sie ist gewonnen, wenn der Countdown oben abgelaufen ist und der Lander noch steht.",
+    "Sie ist gewonnen, wenn der Countdown oben abgelaufen ist und der Lander noch steht. Eine Kappe auf jedem Schlot beendet sie früher, als Sieg.",
 
   "tip.pylon":
     "Führ die Kette über trockenen Boden: Geht ein Pylon im Schlick verloren, ist alles abgeschnitten, was über ihn versorgt wurde.",

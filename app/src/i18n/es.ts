@@ -149,7 +149,7 @@ export const es: Record<Key, string> = {
   "briefing.objective": "Objetivo",
   "briefing.objective.cap.one": "Construye un Tapón sobre la fumarola.",
   "briefing.objective.cap.many": "Construye un Tapón sobre cada una de las {vents} fumarolas.",
-  "briefing.objective.survive": "Mantén el módulo en pie durante {minutes} minutos.",
+  "briefing.objective.survive": "Mantén el módulo en pie durante {minutes} minutos, o tapona todas las fumarolas antes.",
   "briefing.new": "Novedades de esta misión",
   "briefing.new.threat": "Nueva amenaza",
   "briefing.new.goal": "Nuevo objetivo",
@@ -161,7 +161,7 @@ export const es: Record<Key, string> = {
     "No se puede destruir. Más o menos cada medio minuto lanza un pegote de limo contra tu red; un marcador indica dónde caerá.",
   "briefing.survive.name": "Resistir",
   "briefing.survive.text":
-    "Los Tapones no ganan esta misión. Se gana cuando la cuenta atrás de arriba llega a cero y el módulo sigue en pie.",
+    "Se gana cuando la cuenta atrás de arriba llega a cero y el módulo sigue en pie. Taponar todas las fumarolas la termina antes, con victoria.",
 
   "tip.pylon":
     "Mantén la cadena en terreno seco: un Pilón perdido en el limo deja sin suministro todo lo que dependía de él.",

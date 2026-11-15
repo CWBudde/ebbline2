@@ -131,7 +131,7 @@ export const en = {
   "briefing.objective": "Objective",
   "briefing.objective.cap.one": "Build a Cap on the vent.",
   "briefing.objective.cap.many": "Build a Cap on each of the {vents} vents.",
-  "briefing.objective.survive": "Keep the lander standing for {minutes} minutes.",
+  "briefing.objective.survive": "Keep the lander standing for {minutes} minutes, or cap every vent before that.",
   "briefing.new": "New in this mission",
   "briefing.new.threat": "New threat",
   "briefing.new.goal": "New objective",
@@ -143,7 +143,7 @@ export const en = {
     "Cannot be destroyed. About every half minute it lobs a glob of silt at your grid; a marker shows where it will land.",
   "briefing.survive.name": "Hold out",
   "briefing.survive.text":
-    "Caps do not win this mission. It is won when the countdown at the top runs out and the lander still stands.",
+    "It is won when the countdown at the top runs out and the lander still stands. Capping every vent ends it early, as a win.",
 
   // One practical tip per briefing card: every buildable structure, the spitter and holding out.
   "tip.pylon": "Keep the chain on dry ground: a Pylon lost to silt cuts off everything that was fed through it.",

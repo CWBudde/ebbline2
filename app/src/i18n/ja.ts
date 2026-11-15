@@ -147,7 +147,7 @@ export const ja: Record<Key, string> = {
   "briefing.objective": "目標",
   "briefing.objective.cap.one": "噴出口にキャップを建てる。",
   "briefing.objective.cap.many": "{vents} か所の噴出口すべてにキャップを建てる。",
-  "briefing.objective.survive": "ランダーを {minutes} 分間守り抜く。",
+  "briefing.objective.survive": "ランダーを {minutes} 分間守り抜くか、それまでにすべての噴出口を塞ぐ。",
   "briefing.new": "このミッションの新要素",
   "briefing.new.threat": "新たな脅威",
   "briefing.new.goal": "新たな目標",
@@ -159,7 +159,7 @@ export const ja: Record<Key, string> = {
     "破壊できません。約 30 秒ごとにグリッドへ泥塊を撃ち込んできます。着弾地点はマーカーで示されます。",
   "briefing.survive.name": "耐え抜け",
   "briefing.survive.text":
-    "このミッションはキャップでは勝てません。上部のカウントダウンが終わったとき、ランダーが無事なら勝利です。",
+    "上部のカウントダウンが終わったとき、ランダーが無事なら勝利です。すべての噴出口を塞ぐと、勝利として早期に終了します。",
 
   "tip.pylon": "パイロンの列は乾いた地面に通しましょう。パイロンが泥に飲まれると、そこから給電していたものがすべて切り離されます。",
   "tip.tap": "タップ 1 基につき、ランダーの毎秒 1 に加えて 0.6 のエネルギーが入ります。ただし、グリッドが届いている間だけです。",

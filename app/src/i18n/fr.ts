@@ -149,7 +149,7 @@ export const fr: Record<Key, string> = {
   "briefing.objective": "Objectif",
   "briefing.objective.cap.one": "Construis un Bouchon sur l'évent.",
   "briefing.objective.cap.many": "Construis un Bouchon sur chacun des {vents} évents.",
-  "briefing.objective.survive": "Garde l'atterrisseur debout pendant {minutes} minutes.",
+  "briefing.objective.survive": "Garde l'atterrisseur debout pendant {minutes} minutes, ou bouche chaque évent avant.",
   "briefing.new": "Nouveau dans cette mission",
   "briefing.new.threat": "Nouvelle menace",
   "briefing.new.goal": "Nouvel objectif",
@@ -161,7 +161,7 @@ export const fr: Record<Key, string> = {
     "Indestructible. Toutes les trente secondes environ, il projette une boule de vase sur ton réseau ; un marqueur indique où elle va tomber.",
   "briefing.survive.name": "Tenir bon",
   "briefing.survive.text":
-    "Les Bouchons ne gagnent pas cette mission. Elle est gagnée quand le compte à rebours en haut arrive à zéro et que l'atterrisseur tient encore.",
+    "Elle est gagnée quand le compte à rebours en haut arrive à zéro et que l'atterrisseur tient encore. Boucher chaque évent la termine plus tôt, par une victoire.",
 
   "tip.pylon":
     "Garde la chaîne sur un sol sec : un Pylône perdu dans la vase coupe tout ce qu'il alimentait.",

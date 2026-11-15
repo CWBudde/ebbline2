@@ -146,7 +146,7 @@ export const nl: Record<Key, string> = {
   "briefing.objective": "Doel",
   "briefing.objective.cap.one": "Bouw een dop op de bron.",
   "briefing.objective.cap.many": "Bouw een dop op elk van de {vents} bronnen.",
-  "briefing.objective.survive": "Houd de lander {minutes} minuten overeind.",
+  "briefing.objective.survive": "Houd de lander {minutes} minuten overeind, of dop elke bron eerder af.",
   "briefing.new": "Nieuw in deze missie",
   "briefing.new.threat": "Nieuwe dreiging",
   "briefing.new.goal": "Nieuw doel",
@@ -158,7 +158,7 @@ export const nl: Record<Key, string> = {
     "Is niet te vernietigen. Ongeveer elke halve minuut slingert hij een klodder slib naar je net; een markering toont waar die neerkomt.",
   "briefing.survive.name": "Volhouden",
   "briefing.survive.text":
-    "Doppen winnen deze missie niet. Je wint als het aftellen bovenaan voorbij is en de lander nog staat.",
+    "Je wint als het aftellen bovenaan voorbij is en de lander nog staat. Als je elke bron afdopt, eindigt de missie eerder, als overwinning.",
 
   "tip.pylon":
     "Houd de keten op droge grond: een pyloon die in het slib verloren gaat, snijdt alles af wat via hem werd gevoed.",
