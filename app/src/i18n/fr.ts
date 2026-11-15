@@ -1,0 +1,338 @@
+// French interface text. Typed against the English keys: a missing or extra key fails typecheck.
+//
+// Glossary (decide once, use everywhere):
+//
+//   Silt         la vase                Vent        l'évent (m.)
+//   Lode         le filon               Spitter     le cracheur
+//   Glob         la boule               Grid        le réseau
+//   Packet       le paquet              Tile        la case
+//   Baffle field le champ de barrage
+//   Structure    le bâtiment            Energy      l'énergie
+//   Lander       l'atterrisseur         Pylon       le Pylône
+//   Trunk        l'Artère (f.)          Tap         l'Extracteur
+//   Cell         la Batterie            Pump        la Pompe
+//   Lance        la Lance               Lobber      le Mortier
+//   Baffle       la Barrière            Interceptor l'Intercepteur
+//   Grader       la Niveleuse           Cap         le Bouchon
+//   to cap       boucher                to seal     sceller
+//   to dismantle démanteler             Mark ground marquer le terrain
+//   Campaign     la campagne            Skirmish    l'escarmouche
+//   Mission      la mission             Seed        la graine
+//   Briefing     le briefing            Best (time) le record
+//
+// Style: informal "tu", short imperatives ("Construis", "Place", "Choisis"). Structure names are
+// capitalised in running text, as in English. Non-breaking spaces before : ; ! ? as French
+// typography wants. The game's title "Ebbline 2" is never translated. Keys follow an AZERTY
+// keyboard: Z Q S D, Espace, Suppr, and ) for the key right of 0.
+
+import type { Content, Key } from "./en.ts";
+
+export const fr: Record<Key, string> = {
+  "meta.description":
+    "Ebbline 2 : un jeu de défense contre la marée. La vase monte des évents ; construis un réseau, repousse-la et bouche-les tous.",
+
+  "title.lede": "La vase monte des évents. Construis un réseau, repousse-la, bouche-les tous.",
+  "title.continue": "Continuer",
+  "title.credit": "Un jeu open source sous licence MIT. Graphismes créés pour ce projet.",
+  "menu.campaign": "Campagne",
+  "menu.skirmish": "Escarmouche",
+  "menu.help": "Comment jouer",
+  "menu.settings": "Options",
+  "common.back": "Retour",
+
+  "campaign.locked": "Gagne la mission précédente pour débloquer celle-ci.",
+  "campaign.best": "Record {time}",
+  "campaign.next": "Mission suivante",
+
+  "skirmish.seed": "Graine",
+  "skirmish.size": "Taille de la carte",
+  "skirmish.size.small": "Petite, deux évents",
+  "skirmish.size.medium": "Moyenne, trois évents",
+  "skirmish.size.large": "Grande, quatre évents",
+  "skirmish.difficulty": "Difficulté",
+  "skirmish.difficulty.easy": "Facile, aucun cracheur",
+  "skirmish.difficulty.normal": "Normale, un cracheur",
+  "skirmish.difficulty.hard": "Difficile, deux cracheurs",
+  "skirmish.note":
+    "La même graine, la même taille et la même difficulté donnent toujours la même carte. Une fois la partie lancée, la barre d'adresse contient un lien vers elle.",
+  "skirmish.start": "Lancer",
+
+  "settings.language": "Langue",
+  "settings.language.auto": "Automatique",
+  "settings.volume": "Volume",
+  "settings.music": "Fond sonore",
+  "settings.edgeScroll": "Faire défiler quand le pointeur touche le bord de l'écran",
+  "settings.reducedMotion": "Réduire les flashs et les pulsations",
+
+  "help.intro":
+    "La vase jaillit des _évents_ et s'écoule vers le bas. Elle ronge tout ce qu'elle recouvre. Si tu perds l'atterrisseur, la mission est perdue. Pour gagner, construis un *Bouchon* sur chaque évent.",
+  "help.grid.title": "Le réseau",
+  "help.grid.text":
+    "L'énergie quitte l'atterrisseur sous forme de paquets et circule le long des liaisons du réseau. Chaque bâtiment relaie les paquets et doit se trouver à six cases au plus d'un bâtiment achevé ; les Pylônes sont le moyen économique d'aller plus loin. Pendant la construction, ou quand un Pylône est sélectionné, la zone que le réseau atteindra est colorée. Un point rouge signale un bâtiment hors de portée du réseau.",
+  "help.cap.title": "Boucher un évent",
+  "help.cap.text":
+    "On ne peut commencer un Bouchon que lorsque la case de l'évent est presque sèche, ce qu'indique un anneau blanc. Pendant sa construction, il maintient l'évent fermé, mais la pression monte : si le Bouchon est perdu, tout jaillit d'un coup.",
+  "help.structures.title": "Bâtiments",
+  "help.controls.title": "Commandes",
+  "help.keys.click": "Clic, toucher",
+  "help.keys.click.does": "Placer avec un outil, sinon sélectionner",
+  "help.keys.drag": "Glisser",
+  "help.keys.drag.does": "Placer une rangée ou peindre des marques avec un outil, sinon déplacer la carte",
+  "help.keys.cancel": "Clic droit, Échap",
+  "help.keys.cancel.does": "Ranger l'outil, désélectionner, ouvrir le menu",
+  "help.keys.zoom": "Molette, pincer",
+  "help.keys.zoom.does": "Zoomer",
+  "help.keys.pan": "Z Q S D, flèches",
+  "help.keys.pan.does": "Déplacer la carte",
+  "help.keys.slots": "1 à 0, )",
+  "help.keys.slots.does": "Choisir un bâtiment dans la barre de construction",
+  "help.keys.mark": "G",
+  "help.keys.mark.does": "Marquer le terrain pour les Niveleuses",
+  "help.keys.pause": "Espace",
+  "help.keys.pause.does": "Pause",
+  // On AZERTY the bracket keys are ^ and $; the keys at the comma and full stop positions also work.
+  "help.keys.speed": "^ $",
+  "help.keys.speed.does": "Plus lent, plus rapide",
+  "help.keys.toggle": "X",
+  "help.keys.toggle.does": "Éteindre ou allumer le bâtiment sélectionné",
+  "help.keys.dismantle": "Suppr",
+  "help.keys.dismantle.does": "Démanteler le bâtiment sélectionné pour la moitié de son coût",
+
+  "hud.energy.title": "Énergie en réserve, et ce qui est entré et sorti au cours de la dernière seconde",
+  "hud.hold": "Tenir {time}",
+  "hud.capped": "Évents bouchés {capped} / {vents}",
+  "hud.pause": "Pause",
+  "hud.paused": "En pause",
+  "hud.pause.title": "Pause (Espace)",
+  "hud.menu": "Menu",
+  "hud.menu.title": "Menu (Échap)",
+  "hud.map": "Vue d'ensemble",
+
+  "build.label": "Construire",
+  "build.mark": "Marquer",
+  "build.mark.cost": "terrain",
+  "build.mark.title": "Marquer le terrain que les Niveleuses doivent élever ou abaisser",
+  "key.slot11": ")",
+  "key.delete": "Suppr",
+
+  "status.offGrid": "Hors réseau : il faut un bâtiment à six cases au plus",
+  "status.building": "En construction",
+  "status.off": "Éteint",
+  "status.damaged": "Endommagé, en réparation",
+  "status.working": "En service",
+
+  "info.cost": "{cost} énergie",
+  "info.range": "Portée {range}",
+  "info.rangeMin": "Portée {range}, pas plus près que {min}",
+  "info.place": "Clique pour placer, glisse pour une rangée. Clic droit ou Échap pour ranger l'outil.",
+  "info.health": "État",
+  "info.energy": "Énergie",
+  "info.switchOff": "Éteindre",
+  "info.switchOn": "Allumer",
+  "info.dismantle": "Démanteler",
+  "info.notes": "Conseils",
+  "info.hide": "Masquer",
+
+  "grade.title": "Marquer le terrain",
+  "grade.text":
+    "Choisis une hauteur cible, puis peins les cases. Une Niveleuse à huit cases au plus fait le travail.",
+  "grade.erase": "Effacer",
+
+  "pause.title": "En pause",
+  "pause.resume": "Reprendre",
+  "pause.save": "Sauvegarder",
+  "pause.briefing": "Briefing",
+  "pause.restart": "Recommencer",
+  "pause.quit": "Sauver et quitter",
+
+  "briefing.mission": "Mission {number} sur {total}",
+  "briefing.objective": "Objectif",
+  "briefing.objective.cap.one": "Construis un Bouchon sur l'évent.",
+  "briefing.objective.cap.many": "Construis un Bouchon sur chacun des {vents} évents.",
+  "briefing.objective.survive": "Garde l'atterrisseur debout pendant {minutes} minutes.",
+  "briefing.new": "Nouveau dans cette mission",
+  "briefing.new.threat": "Nouvelle menace",
+  "briefing.new.goal": "Nouvel objectif",
+  "briefing.tip": "Conseil",
+  "briefing.deploy": "Déployer",
+  "briefing.resume": "Retour à la mission",
+  "briefing.spitter.name": "Cracheur",
+  "briefing.spitter.text":
+    "Indestructible. Toutes les trente secondes environ, il projette une boule de vase sur ton réseau ; un marqueur indique où elle va tomber.",
+  "briefing.survive.name": "Tenir bon",
+  "briefing.survive.text":
+    "Les Bouchons ne gagnent pas cette mission. Elle est gagnée quand le compte à rebours en haut arrive à zéro et que l'atterrisseur tient encore.",
+
+  "tip.pylon":
+    "Garde la chaîne sur un sol sec : un Pylône perdu dans la vase coupe tout ce qu'il alimentait.",
+  "tip.tap":
+    "Chaque Extracteur ajoute 0,6 énergie par seconde au 1 de l'atterrisseur, mais seulement tant que le réseau l'atteint.",
+  "tip.lance":
+    "Elle porte à sept cases et ne touche que le sol à sa hauteur ou plus bas : place-la sur le rebord au-dessus de la vase, pas au fond du bassin.",
+  "tip.cap":
+    "Il faut 60 paquets, et il ne retient l'évent que tant que le réseau l'atteint : sécurise d'abord la ligne jusqu'à l'évent, puis place le Bouchon.",
+  "tip.cell":
+    "La réserve ne contient d'abord que 30, et tout surplus est perdu : quelques Batteries te permettent d'épargner pour une grande offensive.",
+  "tip.lobber":
+    "Il ne tire que sur les nappes, pas sur les couches fines, et jamais à moins de trois cases : place-le derrière le front et laisse les hauts-fonds aux Lances.",
+  "tip.pump":
+    "Elle fonctionne sans énergie mais rapporte peu, et la vase sur sa propre case la ronge : garde une Lance à proximité.",
+  "tip.trunk":
+    "La liaison rapide sur quatorze cases exige une Artère à chaque bout ; avec tout le reste, une Artère se relie comme un Pylône, à six cases au plus.",
+  "tip.interceptor":
+    "Il porte à neuf cases et dépense une énergie par tir, trois tirs par boule : place-le là où tes bâtiments sont le plus serrés.",
+  "tip.baffle":
+    "Le champ couvre quatre cases autour d'elle et tombe dès que la Barrière manque d'énergie : protège la ligne qui l'alimente.",
+  "tip.grader":
+    "Chaque niveau de hauteur prend une seconde et demie, et rien ne peut être nivelé sous un bâtiment : marque tes digues avant que la vase n'arrive.",
+  "tip.spitter":
+    "Les boules visent le bâtiment entouré du plus grand nombre d'autres à cinq cases, tu sais donc où tombera la prochaine : places-y un Intercepteur.",
+  "tip.survive":
+    "Investis dans la défense autour de l'atterrisseur plutôt que dans l'expansion : les évents se renforcent chaque minute, les dernières sont les plus dures.",
+
+  "end.won": "Évents scellés",
+  "end.won.survive.title": "Tenu bon",
+  "end.lost": "Atterrisseur perdu",
+  "end.won.survive": "Tu as tenu la ligne.",
+  "end.won.cap": "La vase se retire.",
+  "end.lost.text": "La vase a atteint l'atterrisseur.",
+  "end.time": "Temps",
+  "end.newBest": "nouveau record",
+  "end.spent": "Énergie dépensée",
+  "end.built": "Bâtiments construits",
+  "end.destroyed": "Bâtiments perdus",
+  "end.removed": "Vase éliminée",
+  "end.next": "Suivante : {name}",
+  "end.again": "Rejouer",
+  "end.retry": "Réessayer",
+  "end.menu": "Menu principal",
+
+  "notice.unreadable": "Impossible de lire cette sauvegarde.",
+  "notice.saved": "Partie sauvegardée.",
+  "notice.noStorage": "La sauvegarde n'est pas possible dans ce navigateur.",
+
+  "place.locked": "Ce n'est pas disponible dans cette mission.",
+  "place.outside": "C'est hors de la carte.",
+  "place.rock": "On ne peut rien construire sur la roche.",
+  "place.occupied": "Il y a déjà quelque chose ici.",
+  "place.spitter": "Un cracheur se trouve ici.",
+  "place.needs vent": "Un Bouchon ne va que sur un évent ouvert.",
+  "place.flooded": "Trop de vase ici. Brûle-la d'abord.",
+  "place.vent": "Seul un Bouchon peut se trouver sur un évent.",
+  "place.needs lode": "Un Extracteur ne va que sur un filon.",
+};
+
+export const frContent: Content = {
+  kinds: {
+    lander: {
+      name: "Atterrisseur",
+      blurb: "Point de départ du réseau. S'il est perdu, la mission est terminée.",
+    },
+    pylon: { name: "Pylône", blurb: "Étend le réseau de six cases." },
+    trunk: {
+      name: "Artère",
+      blurb: "Se relie aux autres Artères sur quatorze cases et double la vitesse des paquets.",
+    },
+    tap: { name: "Extracteur", blurb: "Tire une énergie régulière d'un filon. Ne va que sur un filon." },
+    cell: { name: "Batterie", blurb: "Stocke trente énergie de plus." },
+    pump: {
+      name: "Pompe",
+      blurb: "Écrème la vase peu profonde à proximité et en tire un peu d'énergie.",
+    },
+    lance: { name: "Lance", blurb: "Brûle la vase case par case. Ne peut pas viser vers le haut." },
+    lobber: {
+      name: "Mortier",
+      blurb: "Projette une charge lente sur la vase la plus profonde à portée.",
+    },
+    baffle: {
+      name: "Barrière",
+      blurb: "Projette un champ que la vase doit franchir comme un mur de deux niveaux.",
+    },
+    interceptor: { name: "Intercepteur", blurb: "Abat les boules en vol." },
+    grader: { name: "Niveleuse", blurb: "Élève ou abaisse le terrain marqué, niveau par niveau." },
+    cap: {
+      name: "Bouchon",
+      blurb: "Retient un évent sec pendant sa construction, puis le scelle pour de bon.",
+    },
+  },
+  levels: {
+    c1: {
+      name: "Premières lueurs",
+      brief: "Deux évents paresseux. Exploite les filons, étends le réseau vers le bas et bouche-les.",
+      hints: [
+        "Place des Extracteurs sur les filons lumineux près de l'atterrisseur pour gagner de l'énergie.",
+        "Les Pylônes sont le moyen économique d'étendre le réseau. Tout doit se trouver à six cases au plus d'un bâtiment achevé.",
+        "Les Lances brûlent la vase. Place-les en hauteur : elles ne peuvent pas viser vers le haut.",
+        "Quand l'évent s'assèche entre deux poussées, place un Bouchon dessus et garde-le alimenté.",
+      ],
+    },
+    c2: {
+      name: "Réservoir",
+      brief: "Trois évents. Les Batteries stockent l'énergie pour l'offensive ; les Mortiers atteignent les bassins profonds.",
+      hints: ["Les Mortiers ignorent la hauteur, mais ne touchent rien à moins de trois cases."],
+    },
+    c3: {
+      name: "Écrémeurs",
+      brief: "Les filons sont rares ici. Les Pompes changent les hauts-fonds en énergie, non sans risque.",
+      hints: ["Une Pompe n'agit que sur la vase à deux cases au plus : sa place est en première ligne."],
+    },
+    c4: {
+      name: "Longue distance",
+      brief: "Trois évents, tous lointains. Les Artères transportent vite les paquets sur de longues distances.",
+      hints: ["Les Artères se relient entre elles sur quatorze cases et doublent la vitesse des paquets."],
+    },
+    c5: {
+      name: "Tirs entrants",
+      brief: "Un cracheur t'a repéré. Guette le marqueur d'impact et abats les boules.",
+      hints: ["Les boules visent ton groupe de bâtiments le plus dense. Un Intercepteur doit toucher trois fois par boule."],
+    },
+    c6: {
+      name: "Brise-lames",
+      brief: "Tu es au fond du bassin et les évents sont hors de portée. Tiens dix minutes.",
+      hints: ["Une Barrière alimentée force la vase à monter deux niveaux de plus : un barrage en travers d'une vallée."],
+    },
+    c7: {
+      name: "Terrassement",
+      brief: "Cinq évents et un terrain accidenté. Les Niveleuses élèvent des digues et creusent des rampes.",
+      hints: [
+        "Choisis « Marquer », sélectionne une hauteur et peins les cases ; une Niveleuse à portée fait le travail.",
+      ],
+    },
+    c8: {
+      name: "Ebbline",
+      brief: "Six évents, trois cracheurs, tout ce que tu as. Renverse la marée.",
+      hints: [],
+    },
+    c9: {
+      name: "Feux croisés",
+      brief: "Trois cracheurs encerclent un petit bassin. Disperse-toi pour qu'aucune boule ne puisse te briser.",
+      hints: ["Les boules visent ton groupe le plus dense : un réseau étalé répartit les dégâts."],
+    },
+    c10: {
+      name: "Terre aride",
+      brief: "Peu de filons et cinq évents affamés. Chaque paquet compte.",
+      hints: ["Quand les filons s'épuisent, les Pompes en première ligne financent l'offensive."],
+    },
+    c11: {
+      name: "Grêle",
+      brief: "Deux cracheurs tirent vite et souvent. Protège le réseau avant d'avancer.",
+      hints: [],
+    },
+    c12: {
+      name: "Ressac",
+      brief: "Quatre évents, un cracheur et aucune hauteur. Tiens quinze minutes.",
+      hints: ["Trouve les vallées qui mènent à l'atterrisseur et barre chacune d'une Barrière."],
+    },
+    c13: {
+      name: "Delta",
+      brief: "Cinq évents dispersés sur un vaste delta. Artères et Batteries ravitaillent un long front.",
+      hints: [],
+    },
+    c14: {
+      name: "Grande marée",
+      brief: "La plus haute marée jusqu'ici : quatre évents et trois cracheurs. Termine ce que tu as commencé.",
+      hints: [],
+    },
+  },
+  skirmish: { name: "Escarmouche {seed}", brief: "Bouche chaque évent." },
+};

@@ -1,0 +1,337 @@
+// German interface text. Typed against the English keys: a missing or extra key fails typecheck.
+//
+// Glossary (decide once, use everywhere):
+//
+//   Silt         der Schlick            Vent        der Schlot (die Schlote)
+//   Lode         die Ader               Spitter     der Speier
+//   Glob         der Klumpen            Grid        das Netz
+//   Packet       das Paket              Tile        das Feld
+//   Baffle field das Sperrfeld
+//   Structure    das Gebäude            Energy      die Energie
+//   Lander       der Lander             Pylon       der Pylon (die Pylonen)
+//   Trunk        die Trasse             Tap         der Zapfer
+//   Cell         der Speicher           Pump        die Pumpe
+//   Lance        die Lanze              Lobber      der Werfer
+//   Baffle       die Sperre             Interceptor der Abfänger
+//   Grader       der Planierer          Cap         die Kappe
+//   to cap       verschließen           to seal     versiegeln
+//   to dismantle abreißen               Mark ground Boden markieren
+//   Campaign     die Kampagne           Skirmish    das Gefecht
+//   Mission      die Mission            Seed        der Seed
+//   Briefing     der Auftrag            Best (time) die Bestzeit
+//
+// Style: informal "du", short imperatives ("Bau", "Setz", "Wähl"), no "Sie". The game's title
+// "Ebbline 2" is never translated. Keys follow a German keyboard: Leertaste, Entf, Esc, and ß for the
+// key right of 0.
+
+import type { Content, Key } from "./en.ts";
+
+export const de: Record<Key, string> = {
+  "meta.description":
+    "Ebbline 2: ein Verteidigungsspiel gegen die Flut. Schlick steigt aus den Schloten; bau ein Netz, dräng ihn zurück und verschließ sie alle.",
+
+  "title.lede": "Aus den Schloten steigt Schlick. Bau ein Netz, dräng ihn zurück und verschließ sie alle.",
+  "title.continue": "Fortsetzen",
+  "title.credit": "Ein Open-Source-Spiel unter der MIT-Lizenz. Grafik eigens für dieses Projekt erstellt.",
+  "menu.campaign": "Kampagne",
+  "menu.skirmish": "Gefecht",
+  "menu.help": "Spielanleitung",
+  "menu.settings": "Einstellungen",
+  "common.back": "Zurück",
+
+  "campaign.locked": "Gewinn die Mission davor, um diese freizuschalten.",
+  "campaign.best": "Bestzeit {time}",
+  "campaign.next": "Nächste Mission",
+
+  "skirmish.seed": "Seed",
+  "skirmish.size": "Kartengröße",
+  "skirmish.size.small": "Klein, zwei Schlote",
+  "skirmish.size.medium": "Mittel, drei Schlote",
+  "skirmish.size.large": "Groß, vier Schlote",
+  "skirmish.difficulty": "Schwierigkeit",
+  "skirmish.difficulty.easy": "Leicht, keine Speier",
+  "skirmish.difficulty.normal": "Normal, ein Speier",
+  "skirmish.difficulty.hard": "Schwer, zwei Speier",
+  "skirmish.note":
+    "Gleicher Seed, gleiche Größe und gleiche Schwierigkeit ergeben immer dieselbe Karte. Sobald das Spiel läuft, steht in der Adresszeile ein Link dorthin.",
+  "skirmish.start": "Starten",
+
+  "settings.language": "Sprache",
+  "settings.language.auto": "Automatisch",
+  "settings.volume": "Lautstärke",
+  "settings.music": "Hintergrundklang",
+  "settings.edgeScroll": "Karte verschieben, wenn der Zeiger den Bildschirmrand berührt",
+  "settings.reducedMotion": "Aufblitzen und Pulsieren verringern",
+
+  "help.intro":
+    "Schlick quillt aus _Schloten_ und fließt bergab. Er zersetzt alles, worauf er steht. Geht der Lander verloren, ist die Mission verloren. Du gewinnst, indem du auf jeden Schlot eine *Kappe* baust.",
+  "help.grid.title": "Das Netz",
+  "help.grid.text":
+    "Energie verlässt den Lander in Paketen und wandert über die Leitungen des Netzes. Jedes Gebäude leitet Pakete weiter und muss höchstens sechs Felder von einem fertigen Gebäude entfernt stehen; Pylonen sind der günstige Weg, weiter zu reichen. Beim Bauen, oder wenn ein Pylon ausgewählt ist, ist der Bereich eingefärbt, den das fertige Netz erreicht. Ein roter Punkt markiert ein Gebäude, das das Netz nicht erreicht.",
+  "help.cap.title": "Einen Schlot verschließen",
+  "help.cap.text":
+    "Eine Kappe lässt sich erst beginnen, wenn das Feld des Schlots fast trocken ist; das zeigt ein weißer Ring. Im Bau hält sie den Schlot zu, doch der Druck steigt: Geht die Kappe verloren, bricht alles auf einmal hervor.",
+  "help.structures.title": "Gebäude",
+  "help.controls.title": "Steuerung",
+  "help.keys.click": "Klick, Tippen",
+  "help.keys.click.does": "Mit Werkzeug setzen, sonst auswählen",
+  "help.keys.drag": "Ziehen",
+  "help.keys.drag.does": "Mit Werkzeug eine Reihe setzen oder Markierungen malen, sonst die Karte verschieben",
+  "help.keys.cancel": "Rechtsklick, Esc",
+  "help.keys.cancel.does": "Werkzeug weglegen, Auswahl aufheben, Menü öffnen",
+  "help.keys.zoom": "Mausrad, Finger spreizen",
+  "help.keys.zoom.does": "Zoomen",
+  "help.keys.pan": "W A S D, Pfeiltasten",
+  "help.keys.pan.does": "Karte verschieben",
+  "help.keys.slots": "1 bis 0, ß",
+  "help.keys.slots.does": "Gebäude aus der Bauleiste wählen",
+  "help.keys.mark": "G",
+  "help.keys.mark.does": "Boden für Planierer markieren",
+  "help.keys.pause": "Leertaste",
+  "help.keys.pause.does": "Pause",
+  // On a German keyboard the bracket keys are Ü and +; comma and full stop do the same.
+  "help.keys.speed": ", .",
+  "help.keys.speed.does": "Langsamer, schneller",
+  "help.keys.toggle": "X",
+  "help.keys.toggle.does": "Ausgewähltes Gebäude aus- oder einschalten",
+  "help.keys.dismantle": "Entf",
+  "help.keys.dismantle.does": "Ausgewähltes Gebäude abreißen; die Hälfte der Kosten gibt es zurück",
+
+  "hud.energy.title": "Energie im Vorrat sowie Zufluss und Verbrauch der letzten Sekunde",
+  "hud.hold": "Noch {time} halten",
+  "hud.capped": "Schlote verschlossen {capped} / {vents}",
+  "hud.pause": "Pause",
+  "hud.paused": "Pausiert",
+  "hud.pause.title": "Pause (Leertaste)",
+  "hud.menu": "Menü",
+  "hud.menu.title": "Menü (Esc)",
+  "hud.map": "Kartenübersicht",
+
+  "build.label": "Bauen",
+  "build.mark": "Markieren",
+  "build.mark.cost": "Boden",
+  "build.mark.title": "Boden markieren, den Planierer heben oder senken sollen",
+  "key.slot11": "ß",
+  "key.delete": "Entf",
+
+  "status.offGrid": "Nicht am Netz: braucht ein Gebäude im Umkreis von sechs Feldern",
+  "status.building": "Im Bau",
+  "status.off": "Abgeschaltet",
+  "status.damaged": "Beschädigt, wird repariert",
+  "status.working": "In Betrieb",
+
+  "info.cost": "{cost} Energie",
+  "info.range": "Reichweite {range}",
+  "info.rangeMin": "Reichweite {range}, nicht näher als {min}",
+  "info.place": "Klick setzt, Ziehen baut eine Reihe. Rechtsklick oder Esc legt das Werkzeug weg.",
+  "info.health": "Zustand",
+  "info.energy": "Energie",
+  "info.switchOff": "Abschalten",
+  "info.switchOn": "Einschalten",
+  "info.dismantle": "Abreißen",
+  "info.notes": "Hinweise",
+  "info.hide": "Ausblenden",
+
+  "grade.title": "Boden markieren",
+  "grade.text":
+    "Wähl eine Zielhöhe und markier dann die Felder. Ein Planierer im Umkreis von acht Feldern erledigt die Arbeit.",
+  "grade.erase": "Löschen",
+
+  "pause.title": "Pausiert",
+  "pause.resume": "Weiter",
+  "pause.save": "Speichern",
+  "pause.briefing": "Auftrag",
+  "pause.restart": "Mission neu starten",
+  "pause.quit": "Speichern und beenden",
+
+  "briefing.mission": "Mission {number} von {total}",
+  "briefing.objective": "Ziel",
+  "briefing.objective.cap.one": "Bau eine Kappe auf den Schlot.",
+  "briefing.objective.cap.many": "Bau auf jeden der {vents} Schlote eine Kappe.",
+  "briefing.objective.survive": "Sorg dafür, dass der Lander {minutes} Minuten übersteht.",
+  "briefing.new": "Neu in dieser Mission",
+  "briefing.new.threat": "Neue Bedrohung",
+  "briefing.new.goal": "Neues Ziel",
+  "briefing.tip": "Tipp",
+  "briefing.deploy": "Einsatz starten",
+  "briefing.resume": "Zurück zur Mission",
+  "briefing.spitter.name": "Speier",
+  "briefing.spitter.text":
+    "Lässt sich nicht zerstören. Etwa jede halbe Minute schleudert er einen Klumpen Schlick auf dein Netz; eine Markierung zeigt, wo er einschlägt.",
+  "briefing.survive.name": "Durchhalten",
+  "briefing.survive.text":
+    "Mit Kappen gewinnst du diese Mission nicht. Sie ist gewonnen, wenn der Countdown oben abgelaufen ist und der Lander noch steht.",
+
+  "tip.pylon":
+    "Führ die Kette über trockenen Boden: Geht ein Pylon im Schlick verloren, ist alles abgeschnitten, was über ihn versorgt wurde.",
+  "tip.tap":
+    "Jeder Zapfer bringt 0,6 Energie pro Sekunde, zusätzlich zu der einen des Landers, aber nur, solange das Netz ihn erreicht.",
+  "tip.lance":
+    "Sie reicht sieben Felder weit und trifft nur Boden auf ihrer Höhe oder darunter. Stell sie also an den Rand über dem Schlick, nicht unten ins Becken.",
+  "tip.cap":
+    "Sie braucht 60 Pakete und hält den Schlot nur zu, solange das Netz sie erreicht: Sichere erst die Leitung zum Schlot, dann setz die Kappe.",
+  "tip.cell":
+    "Anfangs fasst der Vorrat nur 30, und was darüber hinaus hereinkommt, verfällt: Mit ein paar Speichern sparst du für einen großen Vorstoß.",
+  "tip.lobber":
+    "Er feuert nur auf Becken, nicht auf dünne Schichten, und nie näher als drei Felder: Stell ihn hinter die Front und überlass das Flache den Lanzen.",
+  "tip.pump":
+    "Sie läuft ohne Energie, bringt aber wenig ein, und Schlick auf ihrem eigenen Feld zersetzt sie: Stell eine Lanze in die Nähe.",
+  "tip.trunk":
+    "Die schnelle Verbindung über vierzehn Felder braucht an beiden Enden eine Trasse; mit allem anderen verbindet sie sich wie ein Pylon, über höchstens sechs Felder.",
+  "tip.interceptor":
+    "Er reicht neun Felder weit und braucht pro Schuss eine Einheit Energie, drei Schüsse pro Klumpen: Stell ihn dorthin, wo deine Gebäude am dichtesten stehen.",
+  "tip.baffle":
+    "Das Sperrfeld reicht vier Felder weit und fällt in dem Moment zusammen, in dem der Sperre die Energie ausgeht. Schütz also die Leitung, die sie versorgt.",
+  "tip.grader":
+    "Jede Höhenstufe dauert anderthalb Sekunden, und unter Gebäuden lässt sich nichts planieren: Markier deine Deiche, bevor der Schlick da ist.",
+  "tip.spitter":
+    "Klumpen zielen auf das Gebäude, um das im Umkreis von fünf Feldern die meisten anderen stehen. Du weißt also, wo der nächste einschlägt: Stell dort einen Abfänger hin.",
+  "tip.survive":
+    "Steck die Energie in die Verteidigung rund um den Lander statt in die Ausdehnung: Die Schlote werden jede Minute stärker, die letzten Minuten sind die härtesten.",
+
+  "end.won": "Schlote versiegelt",
+  "end.won.survive.title": "Durchgehalten",
+  "end.lost": "Lander verloren",
+  "end.won.survive": "Du hast die Stellung gehalten.",
+  "end.won.cap": "Der Schlick zieht sich zurück.",
+  "end.lost.text": "Der Schlick hat den Lander erreicht.",
+  "end.time": "Zeit",
+  "end.newBest": "neue Bestzeit",
+  "end.spent": "Energie verbraucht",
+  "end.built": "Gebäude gebaut",
+  "end.destroyed": "Gebäude verloren",
+  "end.removed": "Schlick beseitigt",
+  "end.next": "Weiter: {name}",
+  "end.again": "Noch einmal",
+  "end.retry": "Neuer Versuch",
+  "end.menu": "Hauptmenü",
+
+  "notice.unreadable": "Dieser Spielstand ließ sich nicht lesen.",
+  "notice.saved": "Spiel gespeichert.",
+  "notice.noStorage": "Speichern ist in diesem Browser nicht möglich.",
+
+  "place.locked": "Das gibt es in dieser Mission nicht.",
+  "place.outside": "Das liegt außerhalb der Karte.",
+  "place.rock": "Auf Fels lässt sich nichts bauen.",
+  "place.occupied": "Da steht schon etwas.",
+  "place.spitter": "Da sitzt ein Speier.",
+  "place.needs vent": "Eine Kappe passt nur auf einen offenen Schlot.",
+  "place.flooded": "Dort steht zu viel Schlick. Brenn ihn erst weg.",
+  "place.vent": "Auf einem Schlot kann nur eine Kappe stehen.",
+  "place.needs lode": "Ein Zapfer passt nur auf eine Ader.",
+};
+
+export const deContent: Content = {
+  kinds: {
+    lander: {
+      name: "Lander",
+      blurb: "Ausgangspunkt des Netzes. Geht er verloren, ist die Mission vorbei.",
+    },
+    pylon: { name: "Pylon", blurb: "Erweitert das Netz um sechs Felder." },
+    trunk: {
+      name: "Trasse",
+      blurb: "Verbindet sich über vierzehn Felder mit anderen Trassen und verdoppelt das Tempo der Pakete.",
+    },
+    tap: { name: "Zapfer", blurb: "Zieht stetig Energie aus einer Ader. Passt nur auf eine Ader." },
+    cell: { name: "Speicher", blurb: "Fasst dreißig Energie zusätzlich." },
+    pump: {
+      name: "Pumpe",
+      blurb: "Schöpft flachen Schlick in der Nähe ab und gewinnt daraus etwas Energie.",
+    },
+    lance: { name: "Lanze", blurb: "Brennt Schlick Feld für Feld weg. Kann nicht bergauf zielen." },
+    lobber: {
+      name: "Werfer",
+      blurb: "Schleudert eine langsame Ladung auf den tiefsten Schlick in Reichweite.",
+    },
+    baffle: {
+      name: "Sperre",
+      blurb: "Erzeugt ein Sperrfeld, das Schlick wie eine zwei Stufen hohe Mauer überwinden muss.",
+    },
+    interceptor: { name: "Abfänger", blurb: "Schießt Klumpen im Flug ab." },
+    grader: { name: "Planierer", blurb: "Hebt oder senkt markierten Boden, Stufe für Stufe." },
+    cap: {
+      name: "Kappe",
+      blurb: "Hält einen trockenen Schlot zu, solange sie gebaut wird, und versiegelt ihn dann endgültig.",
+    },
+  },
+  levels: {
+    c1: {
+      name: "Erstes Licht",
+      brief: "Zwei träge Schlote. Zapf die Adern an, führ das Netz bergab und verschließ sie.",
+      hints: [
+        "Setz Zapfer auf die leuchtenden Adern beim Lander, um Energie zu gewinnen.",
+        "Pylonen erweitern das Netz am günstigsten. Alles muss höchstens sechs Felder von einem fertigen Gebäude entfernt stehen.",
+        "Lanzen brennen Schlick weg. Stell sie auf Anhöhen: Bergauf können sie nicht zielen.",
+        "Läuft der Schlot zwischen zwei Schüben trocken, setz eine Kappe darauf und halt sie versorgt.",
+      ],
+    },
+    c2: {
+      name: "Reservoir",
+      brief: "Drei Schlote. Speicher sammeln Energie für den Vorstoß; Werfer erreichen tiefe Becken.",
+      hints: ["Werfer ignorieren Höhenunterschiede, treffen aber nichts, was näher als drei Felder liegt."],
+    },
+    c3: {
+      name: "Abschöpfer",
+      brief: "Adern sind hier rar. Pumpen machen aus flachem Schlick Energie, aber nicht ohne Risiko.",
+      hints: ["Eine Pumpe erreicht nur Schlick im Umkreis von zwei Feldern, also steht sie an vorderster Front."],
+    },
+    c4: {
+      name: "Langstrecke",
+      brief: "Die Schlote liegen weit weg. Trassen bringen Pakete schnell über große Lücken.",
+      hints: ["Trassen verbinden sich untereinander über vierzehn Felder und verdoppeln das Tempo der Pakete."],
+    },
+    c5: {
+      name: "Beschuss",
+      brief: "Ein Speier hat dich entdeckt. Achte auf die Einschlagmarkierung und schieß die Klumpen ab.",
+      hints: ["Klumpen zielen auf deine dichteste Gebäudegruppe. Abfänger brauchen drei Treffer pro Klumpen."],
+    },
+    c6: {
+      name: "Wellenbrecher",
+      brief: "Du sitzt unten im Becken, und die Schlote sind außer Reichweite. Halt zehn Minuten durch.",
+      hints: ["Eine versorgte Sperre zwingt den Schlick zwei Stufen höher: ein Damm quer durchs Tal."],
+    },
+    c7: {
+      name: "Erdarbeiten",
+      brief: "Fünf Schlote und zerklüftetes Gelände. Planierer schütten Deiche auf und graben Rampen.",
+      hints: [
+        "Wähl „Markieren“, such eine Höhe aus und markier die Felder; ein Planierer in Reichweite erledigt die Arbeit.",
+      ],
+    },
+    c8: {
+      name: "Ebbline",
+      brief: "Sechs Schlote, drei Speier, alles, was du hast. Wende das Blatt.",
+      hints: [],
+    },
+    c9: {
+      name: "Kreuzfeuer",
+      brief: "Drei Speier umkreisen ein kleines Becken. Verteil dich, damit dich kein einzelner Klumpen bricht.",
+      hints: ["Klumpen zielen auf deine dichteste Gebäudegruppe, ein weit verzweigtes Netz verteilt also den Schaden."],
+    },
+    c10: {
+      name: "Dürreland",
+      brief: "Wenige Adern und fünf hungrige Schlote. Jedes Paket zählt.",
+      hints: ["Wenn die Adern ausgehen, bezahlen Pumpen an der Front den Vorstoß."],
+    },
+    c11: {
+      name: "Hagelsturm",
+      brief: "Zwei Speier feuern schnell und oft. Sichere dein Netz ab, bevor du vorrückst.",
+      hints: [],
+    },
+    c12: {
+      name: "Sog",
+      brief: "Vier Schlote, ein Speier und keine Anhöhe. Halt fünfzehn Minuten durch.",
+      hints: ["Such die Täler, die zum Lander führen, und sperr jedes mit einer Sperre ab."],
+    },
+    c13: {
+      name: "Delta",
+      brief: "Fünf Schlote, verstreut über ein weites Delta. Trassen und Speicher versorgen eine lange Front.",
+      hints: [],
+    },
+    c14: {
+      name: "Springflut",
+      brief: "Die höchste Flut bisher: vier Schlote und drei Speier. Bring zu Ende, was du begonnen hast.",
+      hints: [],
+    },
+  },
+  skirmish: { name: "Gefecht {seed}", brief: "Verschließ jeden Schlot." },
+};

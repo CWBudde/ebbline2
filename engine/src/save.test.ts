@@ -1,0 +1,60 @@
+import { describe, expect, it } from "vitest";
+import { apply } from "./commands.ts";
+import { CAMPAIGN } from "./levels.ts";
+import { fingerprint, load, save } from "./save.ts";
+import { step } from "./step.ts";
+import { generate } from "./terrain.ts";
+import { think } from "./testing/bot.ts";
+import { type Game, type LevelDef } from "./state.ts";
+
+const level = CAMPAIGN[4] as LevelDef;
+
+function advance(game: Game, ticks: number): void {
+  for (let n = 0; n < ticks; n++) {
+    if (game.tick % 15 === 0) for (const c of think(game)) apply(game, c);
+    step(game);
+  }
+}
+
+describe("saves", () => {
+  it("round-trip the whole state", () => {
+    const game = generate(level);
+    advance(game, 1500);
+    const copy = load(save(game));
+    expect(copy).toEqual(game);
+    expect(fingerprint(copy)).toBe(fingerprint(game));
+  });
+
+  it("continue exactly like the game they were taken from", () => {
+    const game = generate(level);
+    advance(game, 900);
+    const copy = load(save(game));
+    advance(game, 900);
+    advance(copy, 900);
+    expect(fingerprint(copy)).toBe(fingerprint(game));
+  });
+
+  it("rebuild the grid of saves taken under the old routing rules", () => {
+    const game = generate(level);
+    advance(game, 900);
+    expect(game.gridDirty).toBe(false);
+    const old = JSON.parse(save(game)) as { schema: number };
+    old.schema = 1;
+    expect(load(JSON.stringify(old)).gridDirty).toBe(true);
+  });
+
+  it("reject other schemas", () => {
+    expect(() => load('{"schema":99}')).toThrow("unsupported save schema 99");
+  });
+});
+
+describe("determinism", () => {
+  it("gives the same game for the same seed and commands", () => {
+    const a = generate(level);
+    const b = generate(level);
+    advance(a, 2400);
+    advance(b, 2400);
+    expect(fingerprint(a)).toBe(fingerprint(b));
+    expect(a.structures.length).toBeGreaterThan(5);
+  });
+});

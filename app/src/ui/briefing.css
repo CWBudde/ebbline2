@@ -1,0 +1,274 @@
+/* The mission briefing. Self-contained: only the colour variables come from style.css. */
+
+.veil.briefing-veil {
+  overflow: hidden;
+  padding: 16px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+}
+
+.briefing {
+  width: min(860px, 100%);
+  max-height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  /* The panel colour is translucent; over the HUD the text behind would show through. */
+  background: linear-gradient(var(--panel), var(--panel)), var(--bg, #070d10);
+  border: 1px solid var(--line);
+  border-top: 2px solid var(--grid);
+  border-radius: var(--radius);
+  overflow: hidden;
+  animation: briefing-in 220ms ease-out;
+}
+
+@keyframes briefing-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+.still .briefing {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .briefing {
+    animation: none;
+  }
+}
+
+.briefing-head {
+  display: grid;
+  gap: 6px;
+  padding: 20px 22px 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.briefing-eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--grid);
+}
+
+.briefing-brief {
+  color: var(--text);
+  font-size: 15px;
+  max-width: 62ch;
+}
+
+.briefing-goal {
+  margin-top: 4px;
+  color: var(--text);
+}
+
+.briefing-goal strong,
+.briefing-tip strong {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-right: 6px;
+}
+
+.briefing-goal strong {
+  color: var(--amber);
+}
+
+.briefing-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 14px 22px 18px;
+}
+
+.briefing-body:focus-visible {
+  outline: 2px solid var(--grid);
+  outline-offset: -2px;
+}
+
+.briefing-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin: 0 0 10px;
+}
+
+.briefing-cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.briefing-cards.single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.briefing-card {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.briefing-card.spitter {
+  border-color: color-mix(in srgb, var(--silt) 55%, var(--line));
+}
+
+.briefing-card.survive {
+  border-color: color-mix(in srgb, var(--amber) 55%, var(--line));
+}
+
+.briefing-picture {
+  width: 96px;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-small);
+  overflow: hidden;
+}
+
+.briefing-picture img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* The top-down sprite is a small map piece: shown with room around it, not blown up to the frame. */
+.briefing-picture img.sprite {
+  width: 66%;
+  height: 66%;
+  object-fit: contain;
+}
+
+.briefing-picture svg {
+  width: 56%;
+  fill: none;
+  stroke: var(--amber);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.briefing-text {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.briefing-text h3 {
+  font-size: 16px;
+}
+
+.briefing-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 12px;
+  font-size: 12px;
+  color: var(--dim);
+}
+
+.briefing-meta .cost {
+  color: var(--amber);
+}
+
+.briefing-meta .badge {
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+
+.spitter .badge {
+  color: var(--silt);
+}
+
+.survive .badge {
+  color: var(--amber);
+}
+
+.briefing-tip {
+  margin-top: 2px;
+  padding-left: 9px;
+  border-left: 2px solid var(--lime);
+  color: var(--dim);
+  font-size: 13px;
+}
+
+.briefing-tip strong {
+  color: var(--lime);
+}
+
+.briefing-foot {
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px 22px;
+  border-top: 1px solid var(--line);
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.briefing-foot .btn {
+  min-width: 190px;
+  padding: 12px 22px;
+  text-align: center;
+  font-size: 15px;
+  letter-spacing: 0.04em;
+}
+
+/* A mission with nothing new has no body: the rule under the head would double the footer's. */
+.briefing-head:has(+ .briefing-foot) {
+  border-bottom: 0;
+}
+
+@media (max-width: 720px) {
+  .veil.briefing-veil {
+    padding: 8px;
+    padding-bottom: calc(8px + env(safe-area-inset-bottom));
+  }
+
+  .briefing-head {
+    padding: 14px 14px 12px;
+  }
+
+  .briefing-brief {
+    font-size: 14px;
+  }
+
+  .briefing-body {
+    padding: 12px 14px 14px;
+  }
+
+  .briefing-cards {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .briefing-card {
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .briefing-picture {
+    width: 64px;
+  }
+
+  .briefing-foot {
+    padding: 10px 14px;
+  }
+
+  .briefing-foot .btn {
+    width: 100%;
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "@ebbline2/engine",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}
