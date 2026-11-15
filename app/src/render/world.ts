@@ -20,7 +20,7 @@ import { TILE, pointToWorld, tileToWorld, type View } from "../camera.ts";
 import type { Runtime } from "../runtime.ts";
 import { ACCENT, COLORS, drawStructure } from "./art.ts";
 import { spriteUrls, type SpriteKind } from "./assets.ts";
-import { areaOutline, hexPoints, outline } from "./hexes.ts";
+import { areaOutline, hatch, hexPoints, outline } from "./hexes.ts";
 import { loadArt, type Art, type SpriteArt } from "./sprites.ts";
 import {
   BAKE,
@@ -514,13 +514,20 @@ export class Renderer {
       for (const loop of outline(members, inSet)) g.poly(loop);
       g.stroke({ width: 1.5, color: COLORS.harvest, alpha: 0.45 });
     }
-    // What the pylons still under construction are going to collect from, much fainter.
+    // What the pylons still under construction are going to collect from: fainter, and hatched.
     const pending = key === "" ? [] : harvestPending(game);
     for (const i of pending) {
       const t = tileOf(game.w, i);
       g.poly(hexPoints(t.x, t.y));
     }
-    if (pending.length > 0) g.fill({ color: COLORS.harvest, alpha: 0.08 });
+    if (pending.length > 0) {
+      g.fill({ color: COLORS.harvest, alpha: 0.1 });
+      for (const i of pending) {
+        const t = tileOf(game.w, i);
+        for (const [x1, y1, x2, y2] of hatch(t.x, t.y, TILE / 3)) g.moveTo(x1, y1).lineTo(x2, y2);
+      }
+      g.stroke({ width: 1.5, color: COLORS.harvest, alpha: 0.4 });
+    }
   }
 
   /** The tiles within `range` steps of a tile, tinted and outlined; tiles closer than `min` are outlined inside. */

@@ -12,6 +12,38 @@ export function hexPoints(x: number, y: number, scale = 1): number[] {
 }
 
 /**
+ * Diagonal hatching inside one tile, as line segments [x1, y1, x2, y2] in world pixels. The lines belong to one
+ * family across the whole map (x + y a multiple of `spacing`), so the hatching of touching tiles joins up.
+ */
+export function hatch(x: number, y: number, spacing: number): [number, number, number, number][] {
+  const p = hexPoints(x, y);
+  const sums: number[] = [];
+  for (let k = 0; k < p.length; k += 2) sums.push((p[k] ?? 0) + (p[k + 1] ?? 0));
+  const segments: [number, number, number, number][] = [];
+  const first = Math.ceil(Math.min(...sums) / spacing);
+  const last = Math.floor(Math.max(...sums) / spacing);
+  for (let n = first; n <= last; n++) {
+    const level = n * spacing;
+    // A convex tile is crossed in at most two points: where the sum of a side's ends straddles the line.
+    const cut: number[] = [];
+    for (let k = 0; k < sums.length && cut.length < 4; k++) {
+      const j = (k + 1) % sums.length;
+      const a = sums[k] ?? 0;
+      const b = sums[j] ?? 0;
+      if (a === b || (a - level) * (b - level) > 0 || b === level) continue;
+      const t = (level - a) / (b - a);
+      cut.push(
+        (p[2 * k] ?? 0) + ((p[2 * j] ?? 0) - (p[2 * k] ?? 0)) * t,
+        (p[2 * k + 1] ?? 0) + ((p[2 * j + 1] ?? 0) - (p[2 * k + 1] ?? 0)) * t,
+      );
+    }
+    const [x1, y1, x2, y2] = cut;
+    if (x1 !== undefined && y1 !== undefined && x2 !== undefined && y2 !== undefined) segments.push([x1, y1, x2, y2]);
+  }
+  return segments;
+}
+
+/**
  * The boundary of a set of tiles as closed polygons in world pixels (flat lists for Graphics.poly). Each side of a
  * member that faces a non-member is part of it; the sides run clockwise around their own tile, so they chain end to
  * start. `inSet` must be false off the map.
