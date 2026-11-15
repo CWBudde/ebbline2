@@ -2,6 +2,8 @@
 
 Ebbline 2 is the successor to [Ebbline](https://github.com/CWBudde/Ebbline). It is played on hexagonal tiles and is in early development.
 
+Play it at <https://cwbudde.github.io/ebbline2/>.
+
 A browser strategy game: a survey crew lands on a dead colony world where silt, a dense reactive
 fluid, wells up from vents and floods the lowlands. Build a power grid outward from the lander,
 push the silt back and cap every vent.

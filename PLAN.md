@@ -16,8 +16,6 @@ on hexagonal tiles instead of squares. Ranges are counted in steps from tile to 
 
 ## Open
 
-- [ ] GitHub repository and Pages deployment. Only `test.yaml` exists in `.github/workflows/`; the
-      deploy workflow was removed for now.
 - [ ] Landforms, or other ways to give missions more character.
 - [ ] More missions.
 - [ ] Title art for the hex look: it still shows the old four-legged lander and grey-teal rock.
