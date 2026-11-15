@@ -1,5 +1,6 @@
 // The power grid: which structures link, and the cheapest way from the lander to each.
 
+import { updateHarvest } from "./harvest.ts";
 import { distance } from "./hex.ts";
 import {
   LINK_RANGE,
@@ -90,4 +91,6 @@ export function rebuild(game: Game): void {
   }
   game.links = links;
   game.gridDirty = false;
+  // Which pylons harvest follows from what is built and connected.
+  updateHarvest(game);
 }

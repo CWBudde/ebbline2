@@ -1,6 +1,7 @@
 // What built structures do each tick: lances, lobbers, pumps, baffles, interceptors and graders.
 
 import { centre, distance, span, tileAtPoint, within, type Point } from "./hex.ts";
+import { updateHarvest } from "./harvest.ts";
 import { gain } from "./packets.ts";
 import {
   DRY,
@@ -217,6 +218,8 @@ function grader(game: Game, s: Structure, events: Event[]): void {
   const next = Math.min(MAX_HEIGHT, ground + Math.sign(mark - ground));
   game.height[i] = next;
   if (next === mark) game.mark[i] = -1;
+  // Ground that changed height may now lie at a pylon's level, or no longer.
+  updateHarvest(game);
   events.push({ kind: "graded", tile: i });
 }
 

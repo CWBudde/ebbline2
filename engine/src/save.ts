@@ -1,12 +1,14 @@
 // Saves: versioned JSON with the tile arrays packed as base64.
 
+import { claims } from "./harvest.ts";
 import { type Game } from "./state.ts";
 
 /**
  * 3: the map is made of hexagons. Older saves were taken on square tiles; their coordinates mean other places
  * now, so they are refused rather than converted.
+ * 4: pylons harvest energy (`harvest`, `harvestRev`), and the campaign got harder; saves from before are refused.
  */
-export const SAVE_SCHEMA = 3;
+export const SAVE_SCHEMA = 4;
 
 type Packed = { [K in keyof Game]: Game[K] extends ArrayBufferView ? string : Game[K] };
 
@@ -18,6 +20,7 @@ const ARRAYS = {
   mark: Int8Array,
   occ: Int32Array,
   baffle: Uint8Array,
+  harvest: Uint8Array,
 } as const;
 
 function pack(view: ArrayBufferView): string {
@@ -63,10 +66,13 @@ export function load(text: string): Game {
     mark: new Int8Array(unpack(packed.mark)),
     occ: new Int32Array(unpack(packed.occ)),
     baffle: new Uint8Array(unpack(packed.baffle)),
+    harvest: new Uint8Array(unpack(packed.harvest)),
   } satisfies Game;
   for (const s of game.structures) {
     if (s.dist < 0) s.dist = Infinity;
   }
+  // The harvest area is derived: work it out again instead of trusting the save.
+  game.harvest = claims(game);
   return game;
 }
 

@@ -7,6 +7,7 @@ import {
   disc,
   distance,
   extent,
+  line,
   neighbour,
   neighbourIndices,
   neighbours,
@@ -158,6 +159,49 @@ describe("disc", () => {
       for (const tile of tiles) expect(distance(4, cy, tile.x, tile.y)).toBeLessThanOrEqual(1);
     }
     expect(disc(0, 0, 1).some((tile) => tile.x < 0 || tile.y < 0)).toBe(true);
+  });
+});
+
+describe("line", () => {
+  it("runs from tile to touching tile, one per step, both ends included", () => {
+    for (const [ax, ay] of [[6, 5], [5, 4]] as const) {
+      for (let by = 0; by < H; by++) {
+        for (let bx = 0; bx < W; bx++) {
+          for (const side of [1, -1] as const) {
+            const path = line(ax, ay, bx, by, side);
+            expect(path).toHaveLength(distance(ax, ay, bx, by) + 1);
+            expect(path[0]).toEqual({ x: ax, y: ay });
+            expect(path.at(-1)).toEqual({ x: bx, y: by });
+            for (let k = 1; k < path.length; k++) {
+              const a = path[k - 1] as { x: number; y: number };
+              const b = path[k] as { x: number; y: number };
+              expect(distance(a.x, a.y, b.x, b.y)).toBe(1);
+            }
+          }
+        }
+      }
+    }
+  });
+
+  it("follows a straight row of neighbours", () => {
+    let at = { x: 6, y: 5 };
+    const row = [at];
+    for (let k = 0; k < 4; k++) {
+      at = neighbour(at.x, at.y, 1);
+      row.push(at);
+    }
+    expect(line(6, 5, at.x, at.y)).toEqual(row);
+    expect(line(6, 5, at.x, at.y, -1)).toEqual(row);
+  });
+
+  it("picks either tile along an edge, depending on the side", () => {
+    // Two steps east-then-south-east end where the line runs along the edge between the two middle tiles.
+    const end = neighbour(neighbour(6, 4, 0).x, neighbour(6, 4, 0).y, 1);
+    const a = line(6, 4, end.x, end.y, 1)[1];
+    const b = line(6, 4, end.x, end.y, -1)[1];
+    expect(a).not.toEqual(b);
+    expect([a, b]).toContainEqual(neighbour(6, 4, 0));
+    expect([a, b]).toContainEqual(neighbour(6, 4, 1));
   });
 });
 

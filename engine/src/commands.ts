@@ -1,5 +1,6 @@
 // Everything the player can do, as data. Applying the same commands at the same ticks replays a game.
 
+import { updateHarvest } from "./harvest.ts";
 import { dismantle, place } from "./structures.ts";
 import {
   MAX_HEIGHT,
@@ -30,6 +31,8 @@ export function apply(game: Game, command: Command): Event[] {
     case "toggle": {
       const s = find(game, command.id);
       if (s && s.kind !== "lander") s.active = !s.active;
+      // A switched-off pylon gives up its harvest.
+      if (s?.kind === "pylon") updateHarvest(game);
       break;
     }
     case "mark": {

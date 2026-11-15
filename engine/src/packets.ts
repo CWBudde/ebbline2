@@ -1,6 +1,7 @@
 // Energy: income, and the packets that carry it from the lander to whatever asks for it.
 
 import { PACKET_SPEED } from "./grid.ts";
+import { harvestIncome } from "./harvest.ts";
 import { span, tileOf } from "./hex.ts";
 import { complete } from "./structures.ts";
 import {
@@ -33,7 +34,7 @@ function spend(game: Game, amount: number): void {
 }
 
 function stepIncome(game: Game): void {
-  let perSecond = LANDER_INCOME;
+  let perSecond = LANDER_INCOME + harvestIncome(game);
   for (const s of game.structures) {
     if (s.kind === "tap" && s.built && s.active && Number.isFinite(s.dist)) {
       perSecond += TAP_INCOME;

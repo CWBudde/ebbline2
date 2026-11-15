@@ -134,6 +134,47 @@ export function within(
   }
 }
 
+/**
+ * Rounds fractional cube coordinates (q, r, −q − r) to the tile that contains them: round each, then repair the
+ * one that moved furthest, so that q + r + s stays 0.
+ */
+function cubeRound(q: number, r: number): Tile {
+  const s = -q - r;
+  let rq = Math.round(q);
+  let rr = Math.round(r);
+  const rs = Math.round(s);
+  const dq = Math.abs(rq - q);
+  const dr = Math.abs(rr - r);
+  const ds = Math.abs(rs - s);
+  if (dq > dr && dq > ds) rq = -rr - rs;
+  else if (dr > ds) rr = -rq - rs;
+  // Adding 0 turns a rounded -0 into 0.
+  return { x: offsetX(rq, rr), y: rr + 0 };
+}
+
+/** How far a line is pushed off the exact edge between two tiles, so the rounding does not depend on luck. */
+const NUDGE = 1e-6;
+
+/**
+ * The tiles on the straight line from (ax, ay) to (bx, by), both ends included, one per step: the tiles whose
+ * hexagons the line between the two centres passes through. Where the line runs exactly along the edge between
+ * two tiles it would touch both; `side` picks one of them (1 or −1), so a caller can try both.
+ */
+export function line(ax: number, ay: number, bx: number, by: number, side: 1 | -1 = 1): Tile[] {
+  const n = distance(ax, ay, bx, by);
+  const aq = axialQ(ax, ay) + NUDGE * side;
+  const ar = ay + NUDGE * side;
+  const bq = axialQ(bx, by) + NUDGE * side;
+  // The third cube coordinate moves by −2 × NUDGE, so the nudged line leaves every edge in all three axes.
+  const br = by + NUDGE * side;
+  const out: Tile[] = [];
+  for (let k = 0; k <= n; k++) {
+    const t = n === 0 ? 0 : k / n;
+    out.push(cubeRound(aq + (bq - aq) * t, ar + (br - ar) * t));
+  }
+  return out;
+}
+
 /** Every tile at most `radius` steps from (cx, cy), whether or not it lies on a map. */
 export function disc(cx: number, cy: number, radius: number): Tile[] {
   const out: Tile[] = [];
@@ -159,19 +200,7 @@ export function span(ax: number, ay: number, bx: number, by: number): number {
 /** The tile whose hexagon contains the point (px, py), given in tile units. It may lie outside the map. */
 export function tileAtPoint(px: number, py: number): Tile {
   const r = py / ROW;
-  const q = px - r / 2;
-  // Round in cube coordinates and repair the one that moved furthest, so that q + r + s stays 0.
-  const s = -q - r;
-  let rq = Math.round(q);
-  let rr = Math.round(r);
-  const rs = Math.round(s);
-  const dq = Math.abs(rq - q);
-  const dr = Math.abs(rr - r);
-  const ds = Math.abs(rs - s);
-  if (dq > dr && dq > ds) rq = -rr - rs;
-  else if (dr > ds) rr = -rq - rs;
-  // Adding 0 turns a rounded -0 into 0.
-  return { x: offsetX(rq, rr), y: rr + 0 };
+  return cubeRound(px - r / 2, r);
 }
 
 /** The size of a w × h map in tile units, from the left edge of the first tile to the right edge of the last. */
