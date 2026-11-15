@@ -3,7 +3,8 @@ import { CAMPAIGN, skirmish } from "./levels.ts";
 import { next, int } from "./rng.ts";
 import { fingerprint } from "./save.ts";
 import { generate } from "./terrain.ts";
-import { MAX_HEIGHT, ROCK, find } from "./state.ts";
+import { distance, tileOf, within } from "./hex.ts";
+import { KINDS, MAX_HEIGHT, ROCK, find } from "./state.ts";
 
 describe("rng", () => {
   it("repeats for the same seed and stays in range", () => {
@@ -43,8 +44,10 @@ describe("terrain", () => {
         if (game.lode[i] !== 1) continue;
         lodes += 1;
         expect(game.height[i]).not.toBe(ROCK);
-        const d = Math.hypot((i % game.w) - lander.x, Math.floor(i / game.w) - lander.y);
-        if (d <= 6) close += 1;
+        const t = tileOf(game.w, i);
+        const d = distance(lander.x, lander.y, t.x, t.y);
+        expect(d).toBeGreaterThanOrEqual(3);
+        if (d <= 5) close += 1;
       }
       expect(lodes).toBe(level.lodes);
       expect(close).toBeGreaterThanOrEqual(2);
@@ -54,10 +57,17 @@ describe("terrain", () => {
       }
       for (const vent of game.vents) {
         expect(game.height[vent.y * game.w + vent.x]).not.toBe(ROCK);
-        expect(Math.hypot(vent.x - lander.x, vent.y - lander.y)).toBeGreaterThan(
-          level.size * 0.3,
-        );
+        expect(distance(vent.x, vent.y, lander.x, lander.y)).toBeGreaterThanOrEqual(level.size * 0.35);
       }
+      for (const spitter of game.spitters) {
+        expect(distance(spitter.x, spitter.y, lander.x, lander.y)).toBeGreaterThanOrEqual(level.size * 0.4);
+      }
+      // The lander's seven tiles are level ground, and no rock stands within three steps of it.
+      const ground = game.height[lander.y * game.w + lander.x];
+      within(game.w, game.h, lander.x, lander.y, 3, (i, steps) => {
+        expect(game.height[i]).not.toBe(ROCK);
+        if (steps <= KINDS.lander.radius) expect(game.height[i]).toBe(ground);
+      });
     },
   );
 });

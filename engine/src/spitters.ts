@@ -1,9 +1,14 @@
 // Spitters lob globs of silt at the densest part of the player's grid.
 
-import { around } from "./weapons.ts";
+import { distance, span, within } from "./hex.ts";
 import { ROCK, type Event, type Game, type Structure } from "./state.ts";
 
-export const GLOB = { hp: 3, ticksPerTile: 5, warning: 60, radius: 1.5 } as const;
+/**
+ * A glob splashes onto every tile within `radius` steps and shares its amount between them, so the volume it
+ * lands does not depend on the radius.
+ */
+export const GLOB = { hp: 3, ticksPerTile: 5, warning: 60, radius: 1 } as const;
+/** Structures within this many steps of each other count as one cluster. */
 const CLUSTER = 5;
 
 /** The structure with the most neighbours; the first such one on a tie. */
@@ -13,7 +18,7 @@ export function densest(game: Game): Structure | undefined {
   for (const s of game.structures) {
     let count = 0;
     for (const o of game.structures) {
-      if (Math.hypot(o.x - s.x, o.y - s.y) <= CLUSTER) count += 1;
+      if (distance(s.x, s.y, o.x, o.y) <= CLUSTER) count += 1;
     }
     if (count > bestCount) {
       best = s;
@@ -30,7 +35,8 @@ export function stepSpitters(game: Game, events: Event[]): void {
     spitter.timer = spitter.period;
     const target = densest(game);
     if (!target) continue;
-    const distance = Math.hypot(target.x - spitter.x, target.y - spitter.y);
+    // Globs fly in a straight line, so the flight time follows the distance between the centres.
+    const flight = span(spitter.x, spitter.y, target.x, target.y);
     game.globs.push({
       id: game.nextId++,
       sx: spitter.x,
@@ -38,7 +44,7 @@ export function stepSpitters(game: Game, events: Event[]): void {
       tx: target.x,
       ty: target.y,
       t: 0,
-      duration: Math.round(distance * GLOB.ticksPerTile) + GLOB.warning,
+      duration: Math.round(flight * GLOB.ticksPerTile) + GLOB.warning,
       amount: spitter.amount,
       hp: GLOB.hp,
     });
@@ -58,7 +64,7 @@ export function stepSpitters(game: Game, events: Event[]): void {
       continue;
     }
     const tiles: number[] = [];
-    around(game, glob.tx, glob.ty, GLOB.radius, (i) => {
+    within(game.w, game.h, glob.tx, glob.ty, GLOB.radius, (i) => {
       if (game.height[i] !== ROCK) tiles.push(i);
     });
     for (const i of tiles) {

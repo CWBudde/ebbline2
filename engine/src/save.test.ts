@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { apply } from "./commands.ts";
 import { CAMPAIGN } from "./levels.ts";
-import { fingerprint, load, save } from "./save.ts";
+import { SAVE_SCHEMA, fingerprint, load, save } from "./save.ts";
 import { step } from "./step.ts";
 import { generate } from "./terrain.ts";
 import { think } from "./testing/bot.ts";
@@ -20,7 +20,9 @@ describe("saves", () => {
   it("round-trip the whole state", () => {
     const game = generate(level);
     advance(game, 1500);
-    const copy = load(save(game));
+    const text = save(game);
+    expect((JSON.parse(text) as { schema: number }).schema).toBe(SAVE_SCHEMA);
+    const copy = load(text);
     expect(copy).toEqual(game);
     expect(fingerprint(copy)).toBe(fingerprint(game));
   });
@@ -34,13 +36,15 @@ describe("saves", () => {
     expect(fingerprint(copy)).toBe(fingerprint(game));
   });
 
-  it("rebuild the grid of saves taken under the old routing rules", () => {
+  it("refuse saves from the square-tile map", () => {
+    expect(SAVE_SCHEMA).toBe(3);
     const game = generate(level);
-    advance(game, 900);
-    expect(game.gridDirty).toBe(false);
-    const old = JSON.parse(save(game)) as { schema: number };
-    old.schema = 1;
-    expect(load(JSON.stringify(old)).gridDirty).toBe(true);
+    advance(game, 300);
+    for (const schema of [1, 2]) {
+      const old = JSON.parse(save(game)) as { schema: number };
+      old.schema = schema;
+      expect(() => load(JSON.stringify(old))).toThrow(`unsupported save schema ${schema}`);
+    }
   });
 
   it("reject other schemas", () => {

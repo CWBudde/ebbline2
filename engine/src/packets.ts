@@ -1,6 +1,7 @@
 // Energy: income, and the packets that carry it from the lander to whatever asks for it.
 
 import { PACKET_SPEED } from "./grid.ts";
+import { span, tileOf } from "./hex.ts";
 import { complete } from "./structures.ts";
 import {
   KINDS,
@@ -126,12 +127,11 @@ function drop(game: Game, packet: Packet): void {
 function move(game: Game, events: Event[]): void {
   const kept: Packet[] = [];
   for (const p of game.packets) {
-    const a = p.tiles[p.seg] ?? 0;
     const b = p.tiles[p.seg + 1] ?? 0;
-    const length = Math.hypot(
-      (a % game.w) - (b % game.w),
-      Math.floor(a / game.w) - Math.floor(b / game.w),
-    );
+    // Packets run straight from centre to centre, so a segment is as long as the line between them.
+    const from = tileOf(game.w, p.tiles[p.seg] ?? 0);
+    const to = tileOf(game.w, b);
+    const length = span(from.x, from.y, to.x, to.y);
     const fast =
       find(game, p.ids[p.seg] ?? 0)?.kind === "trunk" &&
       find(game, p.ids[p.seg + 1] ?? 0)?.kind === "trunk";

@@ -1,8 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { apply } from "./commands.ts";
-import { placeError } from "./structures.ts";
-import { KINDS, ROCK, find, structureAt } from "./state.ts";
+import { disc, distance, tileOf, within } from "./hex.ts";
+import { placeError, stepWear } from "./structures.ts";
+import { KINDS, ROCK, find, footprint, structureAt, type Event } from "./state.ts";
 import { addVent, build, flat, lander, pour, run } from "./testing/fixtures.ts";
+import { generate } from "./terrain.ts";
+import { CAMPAIGN } from "./levels.ts";
 
 describe("placing", () => {
   it("names what is in the way", () => {
@@ -15,7 +18,7 @@ describe("placing", () => {
     game.spitters.push({ x: 9, y: 9, period: 900, amount: 5, timer: 900 });
     expect(placeError(game, "pylon", -1, 0)).toBe("outside");
     expect(placeError(game, "pylon", 2, 2)).toBe("rock");
-    expect(placeError(game, "pylon", l.x + 1, l.y + 1)).toBe("occupied");
+    expect(placeError(game, "pylon", l.x + 1, l.y)).toBe("occupied");
     expect(placeError(game, "pylon", 6, 6)).toBe("flooded");
     expect(placeError(game, "pylon", 8, 8)).toBe("vent");
     expect(placeError(game, "pylon", 9, 9)).toBe("spitter");
@@ -32,6 +35,55 @@ describe("placing", () => {
     expect(placeError(game, "lance", 5, 5)).toBe("locked");
     apply(game, { kind: "place", structure: "lance", x: 5, y: 5 });
     expect(structureAt(game, 5, 5)).toBeUndefined();
+  });
+});
+
+describe("the lander", () => {
+  // The fixture's lander stands on an even row; a generated one may stand on either.
+  const games = [flat(40), ...CAMPAIGN.slice(0, 4).map((level) => generate(level))];
+
+  it("covers its tile and the six around it", () => {
+    for (const game of games) {
+      const l = lander(game);
+      const tiles = footprint(game, "lander", l.x, l.y);
+      expect(tiles).toHaveLength(7);
+      for (let i = 0; i < game.occ.length; i++) {
+        const own = tiles.includes(i);
+        expect(game.occ[i] === l.id).toBe(own);
+        const t = tileOf(game.w, i);
+        if (own) expect(distance(l.x, l.y, t.x, t.y)).toBeLessThanOrEqual(1);
+      }
+    }
+  });
+
+  it("refuses a structure on each of its seven tiles and allows one right beside them", () => {
+    for (const game of games) {
+      const l = lander(game);
+      game.silt.fill(0);
+      game.height.fill(5);
+      within(game.w, game.h, l.x, l.y, 2, (_i, steps, x, y) => {
+        expect(structureAt(game, x, y)?.id === l.id).toBe(steps <= 1);
+        expect(placeError(game, "pylon", x, y)).toBe(steps <= 1 ? "occupied" : null);
+      });
+    }
+  });
+
+  it("wears down from silt on any one of its tiles", () => {
+    for (const t of disc(12, 12, 1)) {
+      const game = flat(40);
+      const l = lander(game);
+      pour(game, t.x, t.y, 1);
+      stepWear(game, []);
+      expect(l.health).toBeCloseTo(KINDS.lander.cost - 1 * 0.03, 6);
+    }
+    // Silt one step beyond the footprint does not touch it.
+    const game = flat(40);
+    const l = lander(game);
+    within(game.w, game.h, l.x, l.y, 2, (i, steps) => {
+      if (steps === 2) game.silt[i] = 3;
+    });
+    stepWear(game, []);
+    expect(l.health).toBe(KINDS.lander.cost);
   });
 });
 
@@ -144,16 +196,17 @@ describe("wear", () => {
     const game = flat(40);
     const l = lander(game);
     game.height.fill(9);
-    for (let dy = -1; dy <= 1; dy++) {
-      for (let dx = -1; dx <= 1; dx++) {
-        game.height[(l.y + dy) * game.w + l.x + dx] = 0;
-        pour(game, l.x + dx, l.y + dy, 8);
-      }
-    }
+    // Only one outer tile of the footprint is flooded; that is enough.
+    const t = disc(l.x, l.y, 1)[0] ?? { x: 0, y: 0 };
+    game.height[t.y * game.w + t.x] = 0;
+    pour(game, t.x, t.y, 8);
     game.energy = 0;
-    const events = run(game, 600);
+    const events: Event[] = run(game, 600);
     expect(game.phase).toBe("lost");
     expect(events).toContainEqual({ kind: "lost" });
+    expect(events).toContainEqual({ kind: "destroyed", structure: "lander", x: l.x, y: l.y });
+    // Its whole footprint is free again.
+    expect([...game.occ].every((id) => id === 0)).toBe(true);
     expect(run(game, 10)).toEqual([]);
   });
 });

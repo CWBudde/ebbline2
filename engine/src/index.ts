@@ -29,6 +29,7 @@ export {
   neighbours,
   span,
   tileAtPoint,
+  tileOf,
   within,
   type Point,
   type Tile,

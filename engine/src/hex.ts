@@ -55,6 +55,11 @@ export const CORNERS: readonly Point[] = Array.from({ length: 6 }, (_, k) => {
   return { x: CORNER * Math.cos(angle), y: CORNER * Math.sin(angle) };
 });
 
+/** The tile stored at index i of a map w tiles wide. */
+export function tileOf(w: number, i: number): Tile {
+  return { x: i % w, y: Math.floor(i / w) };
+}
+
 /** The neighbour of (x, y) in the given direction. It may lie outside the map. */
 export function neighbour(x: number, y: number, direction: number): Tile {
   const step = STEPS[y & 1]?.[direction] ?? [0, 0];

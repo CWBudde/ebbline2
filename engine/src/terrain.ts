@@ -1,8 +1,10 @@
 // Builds a fresh game from a level definition: terrain, lander, vents, spitters and lodes.
 
+import { centre, distance, within, type Tile } from "./hex.ts";
 import { int, next, type RngState } from "./rng.ts";
 import {
   KINDS,
+  footprint,
   MAX_HEIGHT,
   ROCK,
   type Game,
@@ -17,18 +19,23 @@ function smooth(t: number): number {
   return t * t * (3 - 2 * t);
 }
 
-/** One octave of value noise over a size×size field with the given number of lattice cells. */
+/**
+ * One octave of value noise over a size×size map with the given number of lattice cells. It is sampled at the
+ * tile centres, so the half-tile shift of odd rows does not shear the landforms.
+ */
 function octave(rng: RngState, size: number, cells: number): Float32Array {
   const n = cells + 1;
   const lattice = new Float32Array(n * n);
   for (let i = 0; i < lattice.length; i++) lattice[i] = next(rng);
   const out = new Float32Array(size * size);
   for (let y = 0; y < size; y++) {
-    const fy = (y / size) * cells;
-    const y0 = Math.floor(fy);
-    const ty = smooth(fy - y0);
     for (let x = 0; x < size; x++) {
-      const fx = (x / size) * cells;
+      // Centres stay below size in both directions, so the lattice is never overrun.
+      const at = centre(x, y);
+      const fy = (at.y / size) * cells;
+      const y0 = Math.floor(fy);
+      const ty = smooth(fy - y0);
+      const fx = (at.x / size) * cells;
       const x0 = Math.floor(fx);
       const tx = smooth(fx - x0);
       const a = lattice[y0 * n + x0] as number;
@@ -59,18 +66,14 @@ function fractal(rng: RngState, size: number, cells: number): Float32Array {
     lo = Math.min(lo, v);
     hi = Math.max(hi, v);
   }
-  const span = hi - lo || 1;
-  for (let i = 0; i < sum.length; i++) sum[i] = ((sum[i] as number) - lo) / span;
+  const range = hi - lo || 1;
+  for (let i = 0; i < sum.length; i++) sum[i] = ((sum[i] as number) - lo) / range;
   return sum;
 }
 
-interface Point {
-  x: number;
-  y: number;
-}
-
-function far(p: Point, others: readonly Point[], min: number): boolean {
-  return others.every((o) => Math.hypot(o.x - p.x, o.y - p.y) >= min);
+/** Whether p is at least `min` steps from every other tile. */
+function far(p: Tile, others: readonly Tile[], min: number): boolean {
+  return others.every((o) => distance(o.x, o.y, p.x, p.y) >= min);
 }
 
 export function generate(level: LevelDef): Game {
@@ -92,14 +95,14 @@ export function generate(level: LevelDef): Game {
   for (let y = 5; y < size - 5; y++) {
     for (let x = 5; x < size - 5; x++) best = Math.max(best, at(x, y));
   }
-  const spots: Point[] = [];
-  const centre = (size - 1) / 2;
+  const spots: Tile[] = [];
+  const middle = size >> 1;
   for (let y = 5; y < size - 5; y++) {
     for (let x = 5; x < size - 5; x++) {
       const fits =
         level.lowStart === true
           ? at(x, y) === Math.ceil(best / 2) &&
-            Math.hypot(x - centre, y - centre) < size / 4
+            distance(x, y, middle, middle) < size / 4
           : at(x, y) >= best - 1;
       if (fits) spots.push({ x, y });
     }
@@ -108,19 +111,15 @@ export function generate(level: LevelDef): Game {
     x: size >> 1,
     y: size >> 1,
   };
+  // The lander's own seven tiles are levelled; the two rings around them only lose their rock.
   const ground = Math.max(0, at(lander.x, lander.y));
-  for (let dy = -3; dy <= 3; dy++) {
-    for (let dx = -3; dx <= 3; dx++) {
-      const i = (lander.y + dy) * size + lander.x + dx;
-      const flat = Math.abs(dx) <= 1 && Math.abs(dy) <= 1;
-      if (flat || height[i] === ROCK) height[i] = ground;
-    }
-  }
-  const fromLander = (p: Point): number =>
-    Math.hypot(p.x - lander.x, p.y - lander.y);
+  within(size, size, lander.x, lander.y, 3, (i, steps) => {
+    if (steps <= KINDS.lander.radius || height[i] === ROCK) height[i] = ground;
+  });
+  const fromLander = (p: Tile): number => distance(p.x, p.y, lander.x, lander.y);
 
   // Vents sit in the lowest ground far from the lander, spread apart.
-  const low: (Point & { key: number })[] = [];
+  const low: (Tile & { key: number })[] = [];
   for (let y = 3; y < size - 3; y++) {
     for (let x = 3; x < size - 3; x++) {
       const p = { x, y };
@@ -130,7 +129,7 @@ export function generate(level: LevelDef): Game {
     }
   }
   low.sort((a, b) => a.key - b.key);
-  const vents: Point[] = [];
+  const vents: Tile[] = [];
   for (let spread = size * 0.25; vents.length < level.vents.count; spread /= 2) {
     for (const p of low) {
       if (vents.length >= level.vents.count) break;
@@ -139,8 +138,8 @@ export function generate(level: LevelDef): Game {
     if (spread < 1) break;
   }
 
-  const taken: Point[] = [lander, ...vents];
-  const pick = (ok: (p: Point) => boolean, gap: number): Point | undefined => {
+  const taken: Tile[] = [lander, ...vents];
+  const pick = (ok: (p: Tile) => boolean, gap: number): Tile | undefined => {
     for (let tries = 0; tries < 400; tries++) {
       const p = { x: 2 + int(rng, size - 4), y: 2 + int(rng, size - 4) };
       if (at(p.x, p.y) !== ROCK && far(p, taken, gap) && ok(p)) {
@@ -151,7 +150,7 @@ export function generate(level: LevelDef): Game {
     return undefined;
   };
 
-  const spitters: Point[] = [];
+  const spitters: Tile[] = [];
   for (let n = 0; n < level.spitters.count; n++) {
     const p = pick((q) => fromLander(q) >= size * 0.4, 6);
     if (p) spitters.push(p);
@@ -162,7 +161,7 @@ export function generate(level: LevelDef): Game {
   for (let n = 0; n < level.lodes; n++) {
     const p =
       n < 2
-        ? pick((q) => fromLander(q) >= 3 && fromLander(q) <= 5.5, 3)
+        ? pick((q) => fromLander(q) >= 3 && fromLander(q) <= 5, 3)
         : pick((q) => fromLander(q) >= 7 && fromLander(q) <= size * 0.6, 6);
     if (p) lode[p.y * size + p.x] = 1;
   }
@@ -235,10 +234,6 @@ export function generate(level: LevelDef): Game {
     parent: 0,
   };
   game.structures.push(base);
-  for (let dy = -1; dy <= 1; dy++) {
-    for (let dx = -1; dx <= 1; dx++) {
-      game.occ[(lander.y + dy) * size + lander.x + dx] = 1;
-    }
-  }
+  for (const i of footprint(game, "lander", lander.x, lander.y)) game.occ[i] = base.id;
   return game;
 }

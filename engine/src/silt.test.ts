@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { flow, pulseAmount, total } from "./silt.ts";
+import { distance, neighbours } from "./hex.ts";
+import { FLOW_RATE, flow, pulseAmount, total } from "./silt.ts";
 import { ROCK, TICK_HZ } from "./state.ts";
 import { addVent, build, depth, flat, lander, pour, run } from "./testing/fixtures.ts";
 
@@ -13,6 +14,51 @@ function pit() {
 }
 
 describe("silt flow", () => {
+  // One even and one odd row, since odd rows reach their neighbours with other column steps.
+  for (const [x, y] of [
+    [6, 6],
+    [6, 7],
+  ] as const) {
+    it(`spreads evenly to all six neighbours of ${x},${y} and keeps every grain`, () => {
+      const game = flat(24, 0);
+      pour(game, x, y, 1);
+      flow(game);
+      const around = neighbours(game.w, game.h, x, y);
+      expect(around).toHaveLength(6);
+      for (const n of around) expect(depth(game, n.x, n.y)).toBeCloseTo(FLOW_RATE, 6);
+      expect(depth(game, x, y)).toBeCloseTo(1 - 6 * FLOW_RATE, 6);
+      for (let ty = 0; ty < game.h; ty++) {
+        for (let tx = 0; tx < game.w; tx++) {
+          if (distance(x, y, tx, ty) > 1) expect(depth(game, tx, ty)).toBe(0);
+        }
+      }
+      expect(total(game)).toBeCloseTo(1, 6);
+    });
+
+    it(`never leaves ${x},${y} below zero when it towers over six empty neighbours`, () => {
+      const game = flat(24, 0);
+      game.height[y * game.w + x] = 9;
+      pour(game, x, y, 5);
+      flow(game);
+      // Each neighbour asks for far more than the tile holds; together they get 6 × 0.13 of it.
+      expect(depth(game, x, y)).toBeCloseTo(5 * (1 - 6 * FLOW_RATE), 5);
+      expect(depth(game, x, y)).toBeGreaterThan(0);
+      for (let n = 0; n < 50; n++) {
+        flow(game);
+        for (const v of game.silt) expect(v).toBeGreaterThanOrEqual(0);
+      }
+    });
+  }
+
+  it("keeps the total over a step in the open", () => {
+    const game = flat(24, 0);
+    pour(game, 10, 9, 10);
+    pour(game, 11, 9, 3);
+    // No film is thin enough to dry up yet, so the step moves silt without losing or gaining any.
+    flow(game);
+    expect(total(game)).toBeCloseTo(13, 4);
+  });
+
   it("levels out in a closed pit without gaining silt", () => {
     const game = pit();
     pour(game, 2, 2, 16);
@@ -54,6 +100,10 @@ describe("silt flow", () => {
     const game = flat(8, 0);
     game.structures = [];
     pour(game, 0, 0, 64);
+    // A corner tile has only two neighbours on the map; nothing leaks through the four that are missing.
+    flow(game);
+    expect(total(game)).toBeCloseTo(64, 4);
+    expect(depth(game, 0, 0)).toBeCloseTo(64 * (1 - 2 * FLOW_RATE), 4);
     for (let n = 0; n < 500; n++) flow(game);
     expect(total(game)).toBeLessThanOrEqual(64);
     expect(total(game)).toBeGreaterThan(63);

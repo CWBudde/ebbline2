@@ -7,6 +7,7 @@ import {
   BUILDABLE,
   KINDS,
   find,
+  footprint,
   type Event,
   type Game,
   type Kind,
@@ -29,14 +30,12 @@ export function flat(size = 24, ground = 5): Game {
     hints: [],
   });
   game.height.fill(ground);
-  // The lander always stands at 12,12, so tests can use fixed coordinates.
+  // The lander always stands at 12,12 (an even row), so tests can use fixed coordinates.
   const base = lander(game);
   base.x = 12;
   base.y = 12;
   game.occ.fill(0);
-  for (let dy = -1; dy <= 1; dy++) {
-    for (let dx = -1; dx <= 1; dx++) game.occ[(12 + dy) * size + 12 + dx] = base.id;
-  }
+  for (const i of footprint(game, "lander", 12, 12)) game.occ[i] = base.id;
   return game;
 }
 

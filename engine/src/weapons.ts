@@ -1,5 +1,6 @@
 // What built structures do each tick: lances, lobbers, pumps, baffles, interceptors and graders.
 
+import { centre, distance, span, tileAtPoint, within, type Point } from "./hex.ts";
 import { gain } from "./packets.ts";
 import {
   DRY,
@@ -13,34 +14,21 @@ import {
 } from "./state.ts";
 
 export const LANCE = { every: 10, cost: 0.04, removes: 0.8, idle: 15 } as const;
+/**
+ * The blast reaches every tile within `radius` steps and takes `removes` × (1 − steps / (radius + 1)) from each.
+ * Over its 19 tiles that is 13.05 silt, about what the square-tile blast of radius 2.5 took over 21 tiles.
+ */
 export const LOBBER = {
   every: 75,
   cost: 1,
-  removes: 1.2,
-  radius: 2.5,
+  removes: 1.45,
+  radius: 2,
   least: 0.3,
 } as const;
 export const PUMP = { removes: 0.03, yield: 0.15 } as const;
 export const BAFFLE = { lift: 2, drainEvery: 90 } as const;
 export const INTERCEPTOR = { every: 15, cost: 1 } as const;
 export const GRADER = { work: 45, cost: 0.5 } as const;
-
-/** Calls fn for every tile whose centre lies within the radius of (cx, cy). */
-export function around(
-  game: Game,
-  cx: number,
-  cy: number,
-  radius: number,
-  fn: (i: number, distance: number, x: number, y: number) => void,
-): void {
-  const r = Math.ceil(radius);
-  for (let y = Math.max(0, cy - r); y <= Math.min(game.h - 1, cy + r); y++) {
-    for (let x = Math.max(0, cx - r); x <= Math.min(game.w - 1, cx + r); x++) {
-      const d = Math.hypot(x - cx, y - cy);
-      if (d <= radius) fn(y * game.w + x, d, x, y);
-    }
-  }
-}
 
 function take(game: Game, i: number, amount: number): number {
   const depth = game.silt[i] ?? 0;
@@ -58,7 +46,7 @@ function lance(game: Game, s: Structure, events: Event[]): void {
   let bestScore = -Infinity;
   let bx = 0;
   let by = 0;
-  around(game, s.x, s.y, KINDS.lance.range, (i, d, x, y) => {
+  within(game.w, game.h, s.x, s.y, KINDS.lance.range, (i, d, x, y) => {
     const depth = game.silt[i] ?? 0;
     if (depth < DRY || (game.height[i] ?? 0) > own) return;
     const score = Math.min(depth, LANCE.removes) - d * 0.02;
@@ -86,15 +74,13 @@ function lobber(game: Game, s: Structure, events: Event[]): void {
   let bestDepth: number = LOBBER.least;
   let bx = 0;
   let by = 0;
-  let bd = 0;
-  around(game, s.x, s.y, KINDS.lobber.range, (i, d, x, y) => {
+  within(game.w, game.h, s.x, s.y, KINDS.lobber.range, (i, d, x, y) => {
     const depth = game.silt[i] ?? 0;
     if (d < KINDS.lobber.minRange || depth <= bestDepth) return;
     best = i;
     bestDepth = depth;
     bx = x;
     by = y;
-    bd = d;
   });
   s.target = best;
   if (best < 0) {
@@ -110,7 +96,8 @@ function lobber(game: Game, s: Structure, events: Event[]): void {
     tx: bx,
     ty: by,
     t: 0,
-    duration: Math.round(bd * 2.5) + 10,
+    // The shell flies in a straight line, so its flight time follows the distance between the centres.
+    duration: Math.round(span(s.x, s.y, bx, by) * 2.5) + 10,
   });
   events.push({ kind: "lob", x: s.x, y: s.y });
 }
@@ -123,7 +110,7 @@ function stepShells(game: Game, events: Event[]): void {
       kept.push(shell);
       continue;
     }
-    around(game, shell.tx, shell.ty, LOBBER.radius, (i, d) => {
+    within(game.w, game.h, shell.tx, shell.ty, LOBBER.radius, (i, d) => {
       take(game, i, LOBBER.removes * (1 - d / (LOBBER.radius + 1)));
     });
     events.push({
@@ -139,7 +126,7 @@ function stepShells(game: Game, events: Event[]): void {
 function pump(game: Game, s: Structure): void {
   if (game.tick % FLOW_EVERY !== 0) return;
   let taken = 0;
-  around(game, s.x, s.y, KINDS.pump.range, (i) => {
+  within(game.w, game.h, s.x, s.y, KINDS.pump.range, (i) => {
     taken += take(game, i, PUMP.removes);
   });
   if (taken > 0) gain(game, taken * PUMP.yield);
@@ -159,19 +146,21 @@ export function projectBaffles(game: Game): void {
   game.baffle.fill(0);
   for (const s of game.structures) {
     if (s.kind !== "baffle" || !s.built || !s.active || s.energy <= 0) continue;
-    around(game, s.x, s.y, KINDS.baffle.range, (i) => {
+    within(game.w, game.h, s.x, s.y, KINDS.baffle.range, (i) => {
       game.baffle[i] = BAFFLE.lift;
     });
   }
 }
 
-/** Where a glob is right now. */
-export function globAt(g: { sx: number; sy: number; tx: number; ty: number; t: number; duration: number }): {
-  x: number;
-  y: number;
-} {
+/**
+ * Where a glob or shell is right now, as a position in tile units (see centre()), not a tile: it flies in a
+ * straight line from the centre of its start tile to the centre of its target tile.
+ */
+export function globAt(g: { sx: number; sy: number; tx: number; ty: number; t: number; duration: number }): Point {
   const f = g.t / g.duration;
-  return { x: g.sx + (g.tx - g.sx) * f, y: g.sy + (g.ty - g.sy) * f };
+  const a = centre(g.sx, g.sy);
+  const b = centre(g.tx, g.ty);
+  return { x: a.x + (b.x - a.x) * f, y: a.y + (b.y - a.y) * f };
 }
 
 function interceptor(game: Game, s: Structure, events: Event[]): void {
@@ -179,8 +168,10 @@ function interceptor(game: Game, s: Structure, events: Event[]): void {
   let best: (typeof game.globs)[number] | undefined;
   let bestD: number = KINDS.interceptor.range;
   for (const g of game.globs) {
+    // In range when the tile the glob is over right now is.
     const p = globAt(g);
-    const d = Math.hypot(p.x - s.x, p.y - s.y);
+    const over = tileAtPoint(p.x, p.y);
+    const d = distance(s.x, s.y, over.x, over.y);
     if (d <= bestD) {
       best = g;
       bestD = d;
@@ -208,7 +199,7 @@ function grader(game: Game, s: Structure, events: Event[]): void {
     s.target = -1;
     s.progress = 0;
     let bestD = Infinity;
-    around(game, s.x, s.y, KINDS.grader.range, (i, d) => {
+    within(game.w, game.h, s.x, s.y, KINDS.grader.range, (i, d) => {
       if (d < bestD && gradeable(game, i)) {
         s.target = i;
         bestD = d;

@@ -1,5 +1,6 @@
 // The power grid: which structures link, and the cheapest way from the lander to each.
 
+import { distance } from "./hex.ts";
 import {
   LINK_RANGE,
   TRUNK_RANGE,
@@ -7,7 +8,10 @@ import {
   type Structure,
 } from "./state.ts";
 
-/** Packet speed in tiles per tick on an ordinary link; trunk-to-trunk links run twice as fast. */
+/**
+ * Packet speed in tile units per tick (the centres of touching tiles are one unit apart) on an ordinary link;
+ * trunk-to-trunk links run twice as fast.
+ */
 export const PACKET_SPEED = 0.3;
 
 export function isTrunkLink(a: Structure, b: Structure): boolean {
@@ -15,11 +19,11 @@ export function isTrunkLink(a: Structure, b: Structure): boolean {
 }
 
 /**
- * Length of the link between two structures, or 0 if they do not link.
- * Any two structures within LINK_RANGE link; two trunks link over TRUNK_RANGE.
+ * Length of the link between two structures in steps, or 0 if they do not link.
+ * Any two structures within LINK_RANGE steps link; two trunks link over TRUNK_RANGE.
  */
 export function linkLength(a: Structure, b: Structure): number {
-  const d = Math.hypot(a.x - b.x, a.y - b.y);
+  const d = distance(a.x, a.y, b.x, b.y);
   return d <= (isTrunkLink(a, b) ? TRUNK_RANGE : LINK_RANGE) ? d : 0;
 }
 

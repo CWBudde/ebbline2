@@ -1,5 +1,7 @@
 // The game state: plain data only, so it can be saved and structured-cloned.
 
+import { disc } from "./hex.ts";
+
 export const TICK_HZ = 30;
 /** Silt flows on every FLOW_EVERY-th tick. */
 export const FLOW_EVERY = 6;
@@ -33,10 +35,10 @@ export interface KindDef {
   readonly cost: number;
   /** Energy the structure can hold for its own work; 0 if it needs none. */
   readonly store: number;
-  /** Working radius in tiles; 0 if none. */
+  /** Working radius in steps; 0 if none. */
   readonly range: number;
   readonly minRange: number;
-  /** Footprint edge length in tiles. */
+  /** Footprint edge length in square tiles. Left over from the square map; the engine reads `radius` instead. */
   readonly size: 1 | 3;
   /** Footprint: the structure covers every tile within this many steps of its centre tile. */
   readonly radius: 0 | 1;
@@ -228,6 +230,10 @@ export interface Spitter {
   timer: number;
 }
 
+/**
+ * A glob in flight. sx, sy and tx, ty are tiles (the spitter's and the target's), not positions; globAt() gives
+ * the position in between, along the straight line between the two tile centres.
+ */
 export interface Glob {
   id: number;
   sx: number;
@@ -240,6 +246,7 @@ export interface Glob {
   hp: number;
 }
 
+/** A lobber shell in flight. Like a glob, sx, sy and tx, ty are tiles; globAt() gives the position in between. */
 export interface Shell {
   id: number;
   sx: number;
@@ -256,7 +263,7 @@ export interface Packet {
   target: number;
   /** Structure ids from the lander to the target. */
   ids: number[];
-  /** Their centre tile indices. */
+  /** Their centre tile indices; the packet runs straight between the centres of these tiles. */
   tiles: number[];
   /** Index of the node the packet last left. */
   seg: number;
@@ -356,6 +363,7 @@ export type Event =
   | { kind: "burst"; x: number; y: number }
   | { kind: "spit"; x: number; y: number; tx: number; ty: number }
   | { kind: "splash"; x: number; y: number }
+  /** x, y is where the glob was hit: a position in tile units (see centre()), not a tile. */
   | { kind: "intercept"; id: number; x: number; y: number; kill: boolean }
   | { kind: "graded"; tile: number }
   | { kind: "capped"; x: number; y: number }
@@ -372,6 +380,18 @@ export function inBounds(game: Game, x: number, y: number): boolean {
 
 export function find(game: Game, id: number): Structure | undefined {
   return game.structures.find((s) => s.id === id);
+}
+
+/**
+ * Indices of the tiles a structure of this kind covers when centred on (x, y): the centre tile and, for a
+ * radius of 1, the six around it. Tiles off the map are left out.
+ */
+export function footprint(game: Game, kind: Kind, x: number, y: number): number[] {
+  const tiles: number[] = [];
+  for (const t of disc(x, y, KINDS[kind].radius)) {
+    if (inBounds(game, t.x, t.y)) tiles.push(tileIndex(game, t.x, t.y));
+  }
+  return tiles;
 }
 
 /** The structure standing on a tile, if any. */

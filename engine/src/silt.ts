@@ -1,5 +1,6 @@
 // Silt: flow over the terrain and the vents that feed it.
 
+import { DIRECTIONS, neighbourIndices } from "./hex.ts";
 import {
   CAP_DRY,
   ROCK,
@@ -12,14 +13,20 @@ import {
   type Vent,
 } from "./state.ts";
 
-/** Share of a level difference that moves to one neighbour per flow step. */
-export const FLOW_RATE = 0.2;
+/**
+ * Share of a level difference that moves to one neighbour per flow step. With six neighbours a tile can give
+ * away at most 6 × 0.13 = 0.78 of its depth in one step, so depth never goes negative.
+ */
+export const FLOW_RATE = 0.13;
 /** Films thinner than this dry up. */
 export const FILM = 0.01;
 
+// Neighbour indices of the tile being flowed; reused so the whole-map loop does not allocate.
+const around = new Int32Array(DIRECTIONS);
+
 /**
  * One flow step. Every tile gives part of its surface-level difference to each lower neighbour,
- * computed from the state before the step and applied to a second buffer.
+ * computed from the state before the step and applied to a second buffer. The map edge is closed.
  */
 export function flow(game: Game): void {
   const { w, h, height, baffle } = game;
@@ -32,21 +39,10 @@ export function flow(game: Game): void {
       const depth = from[i] as number;
       if (depth <= 0) continue;
       const level = (height[i] as number) + (baffle[i] as number) + depth;
-      for (let n = 0; n < 4; n++) {
-        let j: number;
-        if (n === 0) {
-          if (x + 1 >= w) continue;
-          j = i + 1;
-        } else if (n === 1) {
-          if (x === 0) continue;
-          j = i - 1;
-        } else if (n === 2) {
-          if (y + 1 >= h) continue;
-          j = i + w;
-        } else {
-          if (y === 0) continue;
-          j = i - w;
-        }
+      neighbourIndices(w, h, x, y, around);
+      for (let n = 0; n < DIRECTIONS; n++) {
+        const j = around[n] as number;
+        if (j < 0) continue;
         const ground = height[j] as number;
         if (ground === ROCK) continue;
         const other = ground + (baffle[j] as number) + (from[j] as number);

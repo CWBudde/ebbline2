@@ -1,11 +1,13 @@
 // Placing, losing and dismantling structures, and the wear silt puts on them.
 
+import { disc } from "./hex.ts";
 import { BASE_CAPACITY } from "./terrain.ts";
 import {
   CAP_DRY,
   DRY,
   KINDS,
   ROCK,
+  footprint,
   inBounds,
   tileIndex,
   ventAt,
@@ -40,10 +42,12 @@ export function placeError(
   y: number,
 ): PlaceError | null {
   if (kind === "lander" || !game.level.allowed.includes(kind)) return "locked";
-  if (!inBounds(game, x, y)) return "outside";
+  // The whole footprint must lie on the map.
+  const tiles = footprint(game, kind, x, y);
+  if (!inBounds(game, x, y) || tiles.length < disc(x, y, KINDS[kind].radius).length) return "outside";
+  if (tiles.some((t) => game.height[t] === ROCK)) return "rock";
+  if (tiles.some((t) => game.occ[t] !== 0)) return "occupied";
   const i = tileIndex(game, x, y);
-  if (game.height[i] === ROCK) return "rock";
-  if (game.occ[i] !== 0) return "occupied";
   if (game.spitters.some((s) => s.x === x && s.y === y)) return "spitter";
   const vent = ventAt(game, x, y);
   const depth = game.silt[i] ?? 0;
@@ -83,7 +87,7 @@ export function place(
     parent: 0,
   };
   game.structures.push(s);
-  game.occ[tileIndex(game, x, y)] = s.id;
+  for (const i of footprint(game, kind, x, y)) game.occ[i] = s.id;
   game.gridDirty = true;
   events.push({ kind: "placed", id: s.id });
   return s;
@@ -97,20 +101,9 @@ export function recountCapacity(game: Game): void {
   game.energy = Math.min(game.energy, game.capacity);
 }
 
-function footprint(game: Game, s: Structure): number[] {
-  const half = (KINDS[s.kind].size - 1) / 2;
-  const tiles: number[] = [];
-  for (let dy = -half; dy <= half; dy++) {
-    for (let dx = -half; dx <= half; dx++) {
-      tiles.push(tileIndex(game, s.x + dx, s.y + dy));
-    }
-  }
-  return tiles;
-}
-
 function remove(game: Game, s: Structure): void {
   game.structures = game.structures.filter((o) => o !== s);
-  for (const i of footprint(game, s)) game.occ[i] = 0;
+  for (const i of footprint(game, s.kind, s.x, s.y)) game.occ[i] = 0;
   const vent = s.kind === "cap" ? ventAt(game, s.x, s.y) : undefined;
   if (vent) vent.capped = false;
   game.gridDirty = true;
@@ -150,7 +143,8 @@ export function dismantle(game: Game, id: number, events: Event[]): boolean {
 export function stepWear(game: Game, events: Event[]): void {
   for (const s of [...game.structures]) {
     let depth = 0;
-    for (const i of footprint(game, s)) {
+    // Silt on any tile of the footprint wears the whole structure.
+    for (const i of footprint(game, s.kind, s.x, s.y)) {
       depth = Math.max(depth, game.silt[i] ?? 0);
     }
     // A cap is a sealed rig: only silt too deep to start one on harms it.

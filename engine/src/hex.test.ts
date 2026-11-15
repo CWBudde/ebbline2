@@ -12,6 +12,7 @@ import {
   neighbours,
   span,
   tileAtPoint,
+  tileOf,
   within,
 } from "./hex.ts";
 
@@ -82,6 +83,14 @@ describe("neighbours", () => {
         .map((n) => n.y * W + n.x)
         .sort((a, b) => a - b),
     );
+  });
+});
+
+describe("tileOf", () => {
+  it("reads back the tile stored at an index", () => {
+    for (let y = 0; y < H; y++) {
+      for (let x = 0; x < W; x++) expect(tileOf(W, y * W + x)).toEqual({ x, y });
+    }
   });
 });
 
