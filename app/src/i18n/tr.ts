@@ -69,7 +69,7 @@ export const tr: Record<Key, string> = {
     "Balçık _bacalardan_ fışkırır ve yokuş aşağı akar. Üzerinde durduğu her şeyi aşındırır. İniş aracını kaybedersen görev kaybedilir. Her bacanın üzerine bir *Kapak* kurarak kazanırsın.",
   "help.grid.title": "Şebeke",
   "help.grid.text":
-    "Enerji iniş aracından paketler hâlinde çıkar ve şebekenin bağlantıları boyunca ilerler. Her yapı paketleri iletir ve her biri, tamamlanmış bir yapıya en fazla altı karo uzakta durmalıdır; daha uzağa ulaşmanın ucuz yolu Direklerdir. İnşa ederken ya da bir Direk seçiliyken, tamamlanmış şebekenin ulaştığı alan renklendirilir. Kırmızı nokta, şebekenin ulaşmadığı bir yapıyı gösterir. Direkler, üç adım içindeki, kendi seviyelerinde olan ve doğrudan gördükleri karolardan enerji toplar (yeşil alan olarak gösterilir); aradaki daha yüksek zemin ya da kaya bunu engeller, balçıkla kaplı karolar ise hiçbir şey vermez.",
+    "Enerji iniş aracından paketler hâlinde çıkar ve şebekenin bağlantıları boyunca ilerler. Paketleri yalnızca iniş aracı, Direkler, Ana Hatlar ve Hızlandırıcılar iletir; bu yüzden her yapı, bunlardan tamamlanmış birine en fazla altı karo uzakta durmalıdır. Daha uzağa ulaşmanın ucuz yolu Direklerdir. Kırmızı nokta, şebekenin ulaşmadığı bir yapıyı gösterir. Direkler, üç adım içindeki, kendi seviyelerinde olan ve doğrudan gördükleri karolardan enerji toplar (yeşil alan olarak gösterilir); aradaki daha yüksek zemin ya da kaya bunu engeller, balçıkla kaplı karolar ise hiçbir şey vermez.",
   "help.cap.title": "Bir bacayı kapatmak",
   "help.cap.text":
     "Bir Kapağa ancak baca karosu neredeyse kuruyken başlanabilir; bunu beyaz bir halka gösterir. İnşa sürerken Kapak bacayı kapalı tutar ama basınç birikir: Kapak kaybedilirse hepsi birden dışarı fışkırır.",
@@ -120,7 +120,7 @@ export const tr: Record<Key, string> = {
   "key.slot12": "-",
   "key.delete": "Del",
 
-  "status.offGrid": "Şebeke dışında: altı karo içinde bir yapı gerekiyor",
+  "status.offGrid": "Şebeke dışında: altı karo içinde tamamlanmış bir Direk gerekiyor",
   "status.building": "İnşa ediliyor",
   "status.off": "Kapalı",
   "status.damaged": "Hasarlı, onarılıyor",
@@ -301,7 +301,7 @@ export const trContent: Content = {
       name: "İniş",
       brief: "Tek bir baca, on beş karo doğuda ve çok aşağında; birikintisi şimdiden yayılıyor. Şebekeyi ona kadar indir, onu kurut ve kapat.",
       hints: [
-        "Şebekeyi uzatmanın ucuz yolu Direklerdir. Her şey, tamamlanmış bir yapıya en fazla altı karo uzakta durmalıdır.",
+        "Şebekeyi yalnızca Direkler uzatır: Her şey, iniş aracına ya da tamamlanmış bir Direğe en fazla altı karo uzakta durmalıdır.",
         "Mızraklar balçığı yakar. Onları yüksek zemine koy: yokuş yukarı nişan alamazlar.",
         "Baca iki atım arasında kuruduğunda üzerine bir Kapak yerleştir ve onu beslemeyi sürdür.",
         "İniş aracı saniyede bir enerji üretir ve burada hiç damar yok. Bir Direk, kendi yüksekliğinde görebildiği düz zeminden biraz daha toplar. Gerektiğinden fazlasını kurma.",

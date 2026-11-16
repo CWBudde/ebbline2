@@ -70,7 +70,7 @@ export const pt: Record<Key, string> = {
     "O lodo brota das _fendas_ e escorre morro abaixo. Ele desgasta tudo sobre o que se acumula. Perca o módulo de pouso e a missão está perdida. Vença construindo uma *Tampa* em cada fenda.",
   "help.grid.title": "A rede",
   "help.grid.text":
-    "A energia sai do módulo de pouso em pacotes e percorre as ligações da rede. Toda estrutura repassa os pacotes e precisa ficar a até seis casas de outra já construída; as torres são o jeito barato de ir mais longe. Enquanto você constrói, ou com uma torre selecionada, a área que a rede pronta alcança fica colorida. Um ponto vermelho marca uma estrutura que a rede não alcança. As torres colhem energia das casas a até três passos que estão no mesmo nível e à vista direta (mostradas como uma área verde); terreno mais alto ou rocha no meio bloqueia isso, e casas cobertas de lodo não rendem nada.",
+    "A energia sai do módulo de pouso em pacotes e percorre as ligações da rede. Só o módulo de pouso, as torres, os troncos e os aceleradores repassam os pacotes, então toda estrutura precisa ficar a até seis casas de um deles já construído; as torres são o jeito barato de ir mais longe. Um ponto vermelho marca uma estrutura que a rede não alcança. As torres colhem energia das casas a até três passos que estão no mesmo nível e à vista direta (mostradas como uma área verde); terreno mais alto ou rocha no meio bloqueia isso, e casas cobertas de lodo não rendem nada.",
   "help.cap.title": "Tampar uma fenda",
   "help.cap.text":
     "Uma tampa só pode ser iniciada quando a casa da fenda está quase seca, o que um anel branco indica. Durante a construção ela mantém a fenda fechada, mas a pressão aumenta: se a tampa for perdida, tudo sai de uma vez.",
@@ -121,7 +121,7 @@ export const pt: Record<Key, string> = {
   "key.slot12": "=",
   "key.delete": "Del",
 
-  "status.offGrid": "Fora da rede: precisa de uma estrutura a até seis casas",
+  "status.offGrid": "Fora da rede: precisa de uma torre concluída a até seis casas",
   "status.building": "Em construção",
   "status.off": "Desligada",
   "status.damaged": "Danificada, em reparo",
@@ -302,7 +302,7 @@ export const ptContent: Content = {
       name: "Pouso",
       brief: "Uma fenda, quinze casas a leste e bem abaixo de você, e a poça dela já está se espalhando. Leve a rede até ela, queime o lodo e tampe-a.",
       hints: [
-        "As torres são o jeito barato de estender a rede. Tudo deve ficar a até seis casas de uma estrutura concluída.",
+        "Só as torres estendem a rede: tudo deve ficar a até seis casas do módulo de pouso ou de uma torre concluída.",
         "As lanças queimam o lodo. Ponha-as em terreno alto: elas não miram morro acima.",
         "Quando a fenda secar entre os pulsos, coloque uma tampa nela e mantenha-a abastecida.",
         "O módulo de pouso gera uma energia por segundo, e aqui não há veios. Uma torre colhe um pouco mais do terreno plano que enxerga na sua própria altura. Não construa mais que o necessário.",

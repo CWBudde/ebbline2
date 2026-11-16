@@ -68,7 +68,7 @@ export const pl: Record<Key, string> = {
     "Muł wypływa z _kominów_ i spływa w dół. Niszczy wszystko, na czym się znajdzie. Stracisz lądownik, przegrasz misję. Wygrywasz, budując *Pokrywę* na każdym kominie.",
   "help.grid.title": "Sieć",
   "help.grid.text":
-    "Energia opuszcza lądownik w pakietach i wędruje połączeniami sieci. Każda budowla przekazuje pakiety dalej i musi stać najwyżej sześć pól od innej, już zbudowanej; pylony to tani sposób, by sięgnąć dalej. Podczas budowy lub gdy wybrany jest pylon, obszar, do którego sięgnie gotowa sieć, jest podświetlony. Czerwona kropka oznacza budowlę, do której sieć nie sięga. Pylony zbierają energię z pól oddalonych najwyżej o trzy kroki, leżących na ich własnym poziomie i widocznych bezpośrednio (pokazane jako zielony obszar); wyższy teren lub skała pomiędzy blokuje zbieranie, a pola pokryte mułem nic nie dają.",
+    "Energia opuszcza lądownik w pakietach i wędruje połączeniami sieci. Pakiety przekazują dalej tylko lądownik, pylony, magistrale i przyspieszacze, więc każda budowla musi stać najwyżej sześć pól od jednego z nich, już zbudowanego; pylony to tani sposób, by sięgnąć dalej. Czerwona kropka oznacza budowlę, do której sieć nie sięga. Pylony zbierają energię z pól oddalonych najwyżej o trzy kroki, leżących na ich własnym poziomie i widocznych bezpośrednio (pokazane jako zielony obszar); wyższy teren lub skała pomiędzy blokuje zbieranie, a pola pokryte mułem nic nie dają.",
   "help.cap.title": "Zamykanie komina",
   "help.cap.text":
     "Pokrywę można zacząć dopiero, gdy pole komina jest prawie suche; pokazuje to biały pierścień. W trakcie budowy trzyma komin zamknięty, ale ciśnienie rośnie: jeśli pokrywa zostanie zniszczona, wszystko wybucha naraz.",
@@ -118,7 +118,7 @@ export const pl: Record<Key, string> = {
   "key.slot12": "=",
   "key.delete": "Del",
 
-  "status.offGrid": "Poza siecią: potrzebna budowla w odległości najwyżej sześciu pól",
+  "status.offGrid": "Poza siecią: potrzebny zbudowany pylon w odległości najwyżej sześciu pól",
   "status.building": "W budowie",
   "status.off": "Wyłączona",
   "status.damaged": "Uszkodzona, w naprawie",
@@ -298,7 +298,7 @@ export const plContent: Content = {
       name: "Lądowanie",
       brief: "Jeden komin, piętnaście pól na wschód i daleko w dole, a jego kałuża już się rozlewa. Poprowadź sieć w dół, wypal go do sucha i zamknij pokrywą.",
       hints: [
-        "Pylony to tani sposób na rozszerzenie sieci. Wszystko musi stać najwyżej sześć pól od ukończonej budowli.",
+        "Tylko pylony rozszerzają sieć: wszystko musi stać najwyżej sześć pól od lądownika lub ukończonego pylonu.",
         "Lance wypalają muł. Stawiaj je na wzniesieniach: nie mogą celować pod górę.",
         "Gdy komin wysycha między rzutami, postaw na nim pokrywę i dbaj o jej zasilanie.",
         "Lądownik daje jedną energię na sekundę, a żył tu nie ma. Pylon zbiera trochę więcej z równego terenu, który widzi na własnej wysokości. Nie buduj więcej, niż trzeba.",

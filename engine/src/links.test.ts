@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { apply } from "./commands.ts";
-import { BOOST, linksAt, rebuild } from "./grid.ts";
+import { BOOST, linksAt, rebuild, relays } from "./grid.ts";
 import { BUILDABLE, KINDS, type Game, type Kind, type Structure } from "./state.ts";
 import { addVent, build, flat, lander, run } from "./testing/fixtures.ts";
 
@@ -73,9 +73,10 @@ describe("links after placement", () => {
       // A structure already standing gets the same answer.
       expect(ids(linksAt(sc.game, kind, AT.x, AT.y, s.id))).toEqual(ids(preview));
 
-      // Every kind links to everything within six tiles, built or planned, not just the nearest;
-      // only a trunk reaches the trunk fourteen tiles away.
-      const expected = [sc.lander, sc.near, sc.planned, sc.trunk, sc.lance];
+      // Every kind links to every relay within six tiles, built or planned, not just the nearest; only a
+      // relay links to the lance as well, and only a trunk reaches the trunk fourteen tiles away.
+      const expected = [sc.lander, sc.near, sc.planned, sc.trunk];
+      if (relays(kind)) expected.push(sc.lance);
       if (kind === "trunk") expected.push(sc.farTrunk);
       expect(linkedIds(sc.game, s.id)).toEqual(ids(expected));
       expect(linkedIds(sc.game, s.id)).not.toContain(sc.far.id);
@@ -105,13 +106,19 @@ describe("links after placement", () => {
 describe("relaying", () => {
   // The relay stands 5 tiles from the lander; the target 5 tiles further on, 10 from the lander.
   for (const kind of BUILDABLE) {
-    it(`routes packets through a built ${kind}`, () => {
+    it(`${relays(kind) ? "routes" : "does not route"} packets through a built ${kind}`, () => {
       const game = flat(40);
       const l = lander(game);
       if (kind === "cap") addVent(game, l.x + 5, l.y);
       if (kind === "tap") game.lode[l.y * game.w + l.x + 5] = 1;
       const relay = build(game, kind, l.x + 5, l.y);
       const target = drop(game, "lance", l.x + 10, l.y);
+      if (!relays(kind)) {
+        // The lance does not even link to it, so there is no chaining from, say, a cell.
+        expect(linksAt(game, "lance", target.x, target.y, target.id)).toEqual([]);
+        expect(target.dist).toBe(Infinity);
+        return;
+      }
       expect(target.parent).toBe(relay.id);
       // Past a booster, packets run a fifth faster, so the far leg takes less time.
       expect(target.dist).toBe(kind === "booster" ? 5 + 5 / BOOST : 10);
@@ -126,22 +133,33 @@ describe("relaying", () => {
     expect(target.dist).toBe(Infinity);
   });
 
+  it("delivers packets to a structure whose only path runs through a pylon", () => {
+    const game = flat(40);
+    const l = lander(game);
+    const relay = drop(game, "pylon", l.x + 5, l.y);
+    const target = drop(game, "lance", l.x + 10, l.y);
+    expect(target.dist).toBe(Infinity);
+    let seen = false;
+    for (let t = 0; t < 120 * 30 && !target.built; t++) {
+      run(game, 1);
+      seen ||= game.packets.some((p) => p.target === target.id && p.ids.includes(relay.id));
+    }
+    expect(relay.built).toBe(true);
+    expect(seen).toBe(true);
+    expect(target.built).toBe(true);
+    expect(target.health).toBe(KINDS.lance.cost);
+  });
+
   for (const kind of ["cell", "tap"] as const) {
-    it(`delivers packets to a structure whose only path runs through a ${kind}`, () => {
+    it(`never supplies a structure that only a ${kind} reaches`, () => {
       const game = flat(40);
       const l = lander(game);
-      const relay = drop(game, kind, l.x + 5, l.y);
+      const end = drop(game, kind, l.x + 5, l.y);
       const target = drop(game, "lance", l.x + 10, l.y);
+      run(game, 120 * 30);
+      expect(end.built).toBe(true);
       expect(target.dist).toBe(Infinity);
-      let seen = false;
-      for (let t = 0; t < 120 * 30 && !target.built; t++) {
-        run(game, 1);
-        seen ||= game.packets.some((p) => p.target === target.id && p.ids.includes(relay.id));
-      }
-      expect(relay.built).toBe(true);
-      expect(seen).toBe(true);
-      expect(target.built).toBe(true);
-      expect(target.health).toBe(KINDS.lance.cost);
+      expect(target.built).toBe(false);
     });
   }
 });

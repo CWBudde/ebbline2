@@ -67,7 +67,7 @@ export const nl: Record<Key, string> = {
     "Slib welt op uit _bronnen_ en stroomt bergaf. Het tast alles aan waar het op staat. Verlies je de lander, dan is de missie verloren. Je wint door op elke bron een *Dop* te bouwen.",
   "help.grid.title": "Het net",
   "help.grid.text":
-    "Energie verlaat de lander in pakketten en reist over de verbindingen van het net. Elk gebouw stuurt pakketten door en moet binnen zes vakken van een voltooid gebouw staan; pylonen zijn de goedkope manier om verder te reiken. Tijdens het bouwen, of als een pyloon geselecteerd is, is het gebied gekleurd dat het voltooide net bereikt. Een rode stip markeert een gebouw dat het net niet bereikt. Pylonen vangen energie op van vakken binnen drie stappen die op hun eigen niveau liggen en direct zichtbaar zijn (getoond als een groen gebied); hoger terrein of rots ertussen blokkeert dat, en met slib bedekte vakken leveren niets op.",
+    "Energie verlaat de lander in pakketten en reist over de verbindingen van het net. Alleen de lander, pylonen, hoofdlijnen en versnellers sturen pakketten door, dus elk gebouw moet binnen zes vakken staan van een van hen die voltooid is; pylonen zijn de goedkope manier om verder te reiken. Een rode stip markeert een gebouw dat het net niet bereikt. Pylonen vangen energie op van vakken binnen drie stappen die op hun eigen niveau liggen en direct zichtbaar zijn (getoond als een groen gebied); hoger terrein of rots ertussen blokkeert dat, en met slib bedekte vakken leveren niets op.",
   "help.cap.title": "Een bron afdoppen",
   "help.cap.text":
     "Een dop kan pas beginnen als het vak van de bron bijna droog is; dat toont een witte ring. Tijdens de bouw houdt hij de bron dicht, maar de druk loopt op: gaat de dop verloren, dan barst alles in één keer los.",
@@ -117,7 +117,7 @@ export const nl: Record<Key, string> = {
   "key.slot12": "=",
   "key.delete": "Del",
 
-  "status.offGrid": "Niet op het net: heeft een gebouw binnen zes vakken nodig",
+  "status.offGrid": "Niet op het net: heeft een voltooide pyloon binnen zes vakken nodig",
   "status.building": "In aanbouw",
   "status.off": "Uitgeschakeld",
   "status.damaged": "Beschadigd, wordt hersteld",
@@ -297,7 +297,7 @@ export const nlContent: Content = {
       name: "Landing",
       brief: "Eén bron, vijftien vakken oostwaarts en ver onder je, en zijn poel breidt zich al uit. Leid het net naar beneden, brand de bron droog en doe er een dop op.",
       hints: [
-        "Pylonen zijn de goedkope manier om het net te verlengen. Alles moet binnen zes vakken van een voltooid gebouw staan.",
+        "Alleen pylonen verlengen het net: alles moet binnen zes vakken van de lander of een voltooide pyloon staan.",
         "Lansen branden slib weg. Zet ze op hoge grond: ze kunnen niet bergop richten.",
         "Als de bron tussen twee stoten droogvalt, zet er een dop op en houd die gevoed.",
         "De lander maakt één energie per seconde en hier zijn geen aders. Een pyloon vangt iets meer op van de vlakke grond die hij op zijn eigen hoogte kan zien. Bouw niet meer dan nodig.",

@@ -10,7 +10,7 @@
 // against it for energy.
 
 import { apply, type Command } from "../commands.ts";
-import { linkLength } from "../grid.ts";
+import { linkLength, relays } from "../grid.ts";
 import { harvestIncome, harvestPreview } from "../harvest.ts";
 import { centre, distance, span, tileAtPoint, tileOf, within, type Tile } from "../hex.ts";
 import { LANDER_INCOME, TAP_INCOME } from "../packets.ts";
@@ -38,6 +38,9 @@ const LOBBER_UPKEEP = (LOBBER.cost * TICK_HZ) / LOBBER.every;
 /** Turns off the straight line, in radians, that a pylon walk tries in this order. */
 const DETOURS = [0, 0.5, -0.5, 1, -1, 1.5, -1.5];
 
+/** What a structure has to gain on a tile before the bot brings a pylon to it rather than use one in reach. */
+const DETOUR = 2;
+
 /** A pylon put down only for its harvest has to claim at least this many tiles to pay for itself soon. */
 const HARVEST_WORTH = 12;
 
@@ -58,10 +61,10 @@ function steps(a: Tile, b: Tile): number {
   return distance(a.x, a.y, b.x, b.y);
 }
 
-/** Whether a structure placed here would link to a structure that is itself on the grid. */
+/** Whether a relay on the grid links to this structure, or would link to one placed here. */
 function reaches(game: Game, kind: Kind, x: number, y: number): boolean {
   const probe = { kind, x, y } as Structure;
-  return game.structures.some((s) => Number.isFinite(s.dist) && linkLength(probe, s) > 0);
+  return game.structures.some((s) => relays(s.kind) && Number.isFinite(s.dist) && linkLength(probe, s) > 0);
 }
 
 /** Whether any tile within `radius` steps of p stands in silt. */
@@ -74,12 +77,17 @@ function wetNear(game: Game, p: Tile, radius: number): boolean {
 }
 
 /**
- * Whether a structure of this kind can go here now, on the grid and clear of silt. Ground marked for grading stays
- * free: a grader cannot raise a tile that something stands on.
+ * Whether a structure of this kind could stand here, clear of silt, once the grid reaches the tile. Ground marked
+ * for grading stays free: a grader cannot raise a tile that something stands on.
  */
-function fits(game: Game, kind: Kind, p: Tile): boolean {
+function free(game: Game, kind: Kind, p: Tile): boolean {
   if ((game.mark[p.y * game.w + p.x] ?? -1) >= 0) return false;
-  return placeError(game, kind, p.x, p.y) === null && reaches(game, kind, p.x, p.y) && !wetNear(game, p, 1);
+  return placeError(game, kind, p.x, p.y) === null && !wetNear(game, p, 1);
+}
+
+/** Whether a structure of this kind can go here now, on the grid and clear of silt. */
+function fits(game: Game, kind: Kind, p: Tile): boolean {
+  return free(game, kind, p) && reaches(game, kind, p.x, p.y);
 }
 
 /**
@@ -108,9 +116,51 @@ function site(
   return best;
 }
 
-/** The tile within `radius` steps of `near` closest to it; equally near tiles go to the higher ground. */
-function spot(game: Game, kind: Kind, near: Tile, radius: number): Tile | undefined {
-  return site(game, kind, near, radius, (p, i) => -span(near.x, near.y, p.x, p.y) + (game.height[i] ?? 0) * 1e-3);
+/**
+ * A pylon that would bring the grid to a structure wanted at `target`: on a tile that joins the grid now and lies
+ * within link range of the target, the one that harvests most, then the one nearest the target.
+ */
+function bridge(game: Game, target: Tile): Tile | undefined {
+  return site(game, "pylon", target, LINK_RANGE, (q) =>
+    q.x === target.x && q.y === target.y
+      ? -Infinity
+      : harvestPreview(game, q.x, q.y).length * 0.05 - span(target.x, target.y, q.x, q.y) * 0.01,
+  );
+}
+
+/**
+ * What gets a structure onto the best tile within `radius` steps of `near`, by `score`: the structure itself where
+ * a relay on the grid reaches the tile, else first a pylon that brings the grid there. Only relays pass packets on,
+ * so a structure can never hang off another lance or tap. Tiles even a pylon cannot bring the grid to are passed
+ * over, and so is a tile scored -Infinity.
+ */
+function want(
+  game: Game,
+  kind: Kind,
+  near: Tile,
+  radius: number,
+  score: (p: Tile, i: number) => number,
+): Command[] | undefined {
+  const tiles: { p: Tile; value: number }[] = [];
+  within(game.w, game.h, near.x, near.y, radius, (i, _steps, x, y) => {
+    const p = { x, y };
+    if (!free(game, kind, p)) return;
+    const value = score(p, i) - (reaches(game, kind, x, y) ? 0 : DETOUR);
+    if (value > -Infinity) tiles.push({ p, value });
+  });
+  // Stable, so among equals the first tile `within` visits wins.
+  tiles.sort((a, b) => b.value - a.value);
+  for (const { p } of tiles) {
+    if (reaches(game, kind, p.x, p.y)) return order(kind, p);
+    const pylon = kind === "pylon" ? undefined : bridge(game, p);
+    if (pylon) return order("pylon", pylon);
+  }
+  return undefined;
+}
+
+/** The score for the tile closest to `near`; equally near tiles go to the higher ground. */
+function nearest(game: Game, near: Tile): (p: Tile, i: number) => number {
+  return (p, i) => -span(near.x, near.y, p.x, p.y) + (game.height[i] ?? 0) * 1e-3;
 }
 
 /**
@@ -206,9 +256,11 @@ export function think(game: Game): Command[] {
   const near = (kind: Kind, p: Tile, r: number): number =>
     all.filter((s) => s.kind === kind && steps(s, p) <= r).length;
   const onGrid = all.filter((s) => Number.isFinite(s.dist));
+  // The grid reaches on only from its relays, so they are its front.
+  const nodes = onGrid.filter((s) => relays(s.kind));
   const closest = (p: Tile): Structure | undefined => {
     let best: Structure | undefined;
-    for (const c of onGrid) {
+    for (const c of nodes) {
       if (!best || steps(c, p) < steps(best, p)) best = c;
     }
     return best;
@@ -221,10 +273,13 @@ export function think(game: Game): Command[] {
   // Only weapons that found something to fire at last time burn energy.
   const firing = (kind: Kind): number => all.filter((s) => s.kind === kind && s.built && s.target >= 0).length;
   const upkeep = firing("lance") * LANCE_UPKEEP + firing("lobber") * LOBBER_UPKEEP;
-  const backlog = all.filter((s) => !s.built && s.kind !== "cap" && Number.isFinite(s.dist)).length;
+  // A structure placed by a relay that is still unfinished waits for it: it is not on the grid yet, nor cut off.
+  const joined = (s: Structure): boolean =>
+    Number.isFinite(s.dist) || nodes.some((r) => !r.built && linkLength(r, s) > 0);
+  const backlog = all.filter((s) => !s.built && s.kind !== "cap" && joined(s)).length;
 
   // 0. Give up structures the grid no longer reaches.
-  const stranded = all.find((s) => !Number.isFinite(s.dist) && s.kind !== "lander" && game.tick > 30);
+  const stranded = all.find((s) => !joined(s) && s.kind !== "lander" && game.tick > 30);
   if (stranded && !game.gridDirty) {
     return [{ kind: "dismantle", id: stranded.id }];
   }
@@ -252,12 +307,12 @@ export function think(game: Game): Command[] {
   const hub = allowed("interceptor") && game.spitters.length > 0 ? densest(game) : undefined;
   const cover = hub ? near("interceptor", hub, 6) : 2;
   if (hub && cover === 0 && backlog < 3) {
-    const p = spot(game, "interceptor", hub, 4);
-    if (p) return order("interceptor", p);
+    const move = want(game, "interceptor", hub, 4, nearest(game, hub));
+    if (move) return move;
   }
   if (home && wetNear(game, home, 4) && near("lance", home, 6) < 3 && backlog < 3) {
-    const p = site(game, "lance", home, 6, (q) => (behind(q) ? overlook(game, q) - steps(q, home) : -Infinity));
-    if (p) return order("lance", p);
+    const move = want(game, "lance", home, 6, (q) => (behind(q) ? overlook(game, q) - steps(q, home) : -Infinity));
+    if (move) return move;
   }
   // Marking the dike costs nothing, so it comes first; the graders go back once it stands to its full height.
   const low = ring?.filter((i) => (game.height[i] ?? 0) < MAX_HEIGHT) ?? [];
@@ -271,8 +326,8 @@ export function think(game: Game): Command[] {
 
   // Graders stand well inside the dike, by the lander, where they reach all of it.
   if (home && low.length > 0 && count("grader") < GRADERS && game.energy >= KINDS.grader.cost && backlog === 0) {
-    const p = site(game, "grader", home, DIKE - 2, (q, i) => -steps(q, home) * 0.1 + (game.height[i] ?? 0) * 0.01);
-    if (p) return order("grader", p);
+    const move = want(game, "grader", home, DIKE - 2, (q, i) => -steps(q, home) * 0.1 + (game.height[i] ?? 0) * 0.01);
+    if (move) return move;
   }
 
   // 3. Tap every lode the grid reaches; walk pylons to the nearest dry one.
@@ -325,7 +380,7 @@ export function think(game: Game): Command[] {
   const harvestSite = (): Tile | undefined => {
     let best: Tile | undefined;
     let bestCount = HARVEST_WORTH - 1;
-    for (const s of onGrid) {
+    for (const s of nodes) {
       if (!s.built || (home && steps(s, home) > 14)) continue;
       within(game.w, game.h, s.x, s.y, LINK_RANGE, (_i, _d, x, y) => {
         const p = { x, y };
@@ -346,14 +401,15 @@ export function think(game: Game): Command[] {
   }
 
   if (allowed("cell") && count("tap") >= 3 && count("cell") < 2) {
-    const p = home && spot(game, "cell", { x: home.x + 2, y: home.y + 2 }, 3);
-    if (p) return order("cell", p);
+    const by = home && { x: home.x + 2, y: home.y + 2 };
+    const move = by && want(game, "cell", by, 3, nearest(game, by));
+    if (move) return move;
   }
 
   // 5. Cover the densest cluster against globs with a second interceptor.
   if (hub && count("interceptor") < 10 && cover < 2 && game.energy >= 12) {
-    const p = spot(game, "interceptor", hub, 6);
-    if (p) return order("interceptor", p);
+    const move = want(game, "interceptor", hub, 6, nearest(game, hub));
+    if (move) return move;
   }
 
   // 6. With nothing to cap, ring the lander with weapons close in: further out they would burn energy on silt
@@ -368,16 +424,16 @@ export function think(game: Game): Command[] {
     const post = heading(home, count("lance") * 2.4, 4);
     if (count("lance") < posts * 2) {
       // Behind a dike, lances go wherever they overlook the most silt; its crest overlooks everything.
-      const p = ring
-        ? site(game, "lance", home, DIKE, (q) => (behind(q) ? overlook(game, q) : -Infinity))
-        : spot(game, "lance", post, 3);
-      if (p) return order("lance", p);
+      const move = ring
+        ? want(game, "lance", home, DIKE, (q) => (behind(q) ? overlook(game, q) : -Infinity))
+        : want(game, "lance", post, 3, nearest(game, post));
+      if (move) return move;
     }
     if (allowed("lobber") && count("lobber") < posts) {
-      const p = ring
-        ? site(game, "lobber", post, 3, (q) => (steps(q, home) < DIKE ? -span(post.x, post.y, q.x, q.y) : -Infinity))
-        : spot(game, "lobber", post, 3);
-      if (p) return order("lobber", p);
+      const move = ring
+        ? want(game, "lobber", post, 3, (q) => (steps(q, home) < DIKE ? -span(post.x, post.y, q.x, q.y) : -Infinity))
+        : want(game, "lobber", post, 3, nearest(game, post));
+      if (move) return move;
     }
     return [];
   }
@@ -395,19 +451,20 @@ export function think(game: Game): Command[] {
     const flush = game.energy >= game.capacity * 0.8;
     const wave = flush ? 99 : 4 + Math.floor(game.tick / (90 * TICK_HZ));
     if (near("lance", front, 7) < wave) {
-      const aim = toward(front, vent, 3);
-      const p = site(game, "lance", aim, 5, (q) => overlook(game, q) - steps(q, vent) * 0.6);
-      if (p) return order("lance", p);
+      // Out ahead of the front toward the vent; where silt has drowned that, round the front along the shore.
+      const score = (q: Tile): number => overlook(game, q) - steps(q, vent) * 0.6;
+      const move = want(game, "lance", toward(front, vent, 3), 5, score) ?? want(game, "lance", front, LINK_RANGE + 2, score);
+      if (move) return move;
     }
     if (
       allowed("lobber") &&
       near("lobber", front, 8) < Math.min(wave, near("lance", front, 7)) / 2 &&
       upkeep + LOBBER_UPKEEP <= income
     ) {
-      const p = site(game, "lobber", toward(front, vent, -1), 5, (q) =>
+      const move = want(game, "lobber", toward(front, vent, -1), 5, (q) =>
         siltAround(game, q, KINDS.lobber.range, KINDS.lobber.minRange),
       );
-      if (p) return order("lobber", p);
+      if (move) return move;
     }
   }
   // Spare energy goes into more harvest.
@@ -416,7 +473,10 @@ export function think(game: Game): Command[] {
     if (p) return order("pylon", p);
   }
   if (gap > LINK_RANGE - 1) {
-    const p = walk(vent);
+    // The cap needs a relay within link range of the vent; the vent's pulses drown low ground, so the last pylon
+    // goes as high as it can.
+    const p =
+      site(game, "pylon", vent, LINK_RANGE, (q, i) => (game.height[i] ?? 0) - steps(q, vent) * 0.1) ?? walk(vent);
     if (p) return order("pylon", p);
   }
   return [];

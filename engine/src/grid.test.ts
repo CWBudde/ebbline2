@@ -66,14 +66,16 @@ describe("grid", () => {
     expect(far.dist).toBe(Infinity);
   });
 
-  it("routes through any built structure, not only pylons", () => {
+  it("routes through pylons only, not through any built structure", () => {
     const game = flat(40);
     const l = lander(game);
-    const relay = build(game, "lance", l.x + 5, l.y);
+    build(game, "lance", l.x + 5, l.y);
     const beyond = build(game, "lance", l.x + 10, l.y);
     rebuild(game);
+    expect(beyond.dist).toBe(Infinity);
+    const relay = build(game, "pylon", l.x + 5, l.y + 1);
+    rebuild(game);
     expect(beyond.parent).toBe(relay.id);
-    expect(beyond.dist).toBe(10);
   });
 
   it("does not route through an unfinished pylon", () => {

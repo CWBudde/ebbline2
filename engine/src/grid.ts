@@ -46,10 +46,20 @@ export function isTrunkLink(a: Structure, b: Structure): boolean {
 }
 
 /**
+ * Whether a structure of this kind passes packets on: the lander, pylons, trunks and boosters. Everything
+ * else is an end of the grid, so a line cannot be chained through, say, cells or lances.
+ */
+export function relays(kind: Structure["kind"]): boolean {
+  return kind === "lander" || kind === "pylon" || kind === "trunk" || kind === "booster";
+}
+
+/**
  * Length of the link between two structures in steps, or 0 if they do not link.
- * Any two structures within LINK_RANGE steps link; two trunks link over TRUNK_RANGE.
+ * A relay links to any structure within LINK_RANGE steps, two trunks link over TRUNK_RANGE, and two
+ * structures that are both no relays never link.
  */
 export function linkLength(a: Structure, b: Structure): number {
+  if (!relays(a.kind) && !relays(b.kind)) return 0;
   const d = distance(a.x, a.y, b.x, b.y);
   return d <= (isTrunkLink(a, b) ? TRUNK_RANGE : LINK_RANGE) ? d : 0;
 }
@@ -78,7 +88,8 @@ export function reaches(game: Game, kind: Structure["kind"], x: number, y: numbe
 
 /**
  * Recomputes every structure's distance and parent toward the lander, and the link list.
- * Every built structure relays packets onward; an unfinished one can only be the end of a route.
+ * Every built relay passes packets onward; an unfinished one, like any other structure, can only be the end
+ * of a route.
  *
  * The distance is the time a packet takes: a link costs its length, half on a trunk link, divided by
  * the boost a packet has picked up from the boosters on the way there. So routes bend through
@@ -101,7 +112,7 @@ export function rebuild(game: Game): void {
     }
     if (!u || !Number.isFinite(u.dist)) break;
     open.delete(u);
-    if (!u.built) continue;
+    if (!u.built || !relays(u.kind)) continue;
     const boost = (pace.get(u.parent) ?? 1) * (boosts(u) ? BOOST : 1);
     pace.set(u.id, boost);
     for (const v of open) {

@@ -51,7 +51,7 @@ export const en = {
     "Silt wells up from _vents_ and flows downhill. It wears down anything it stands on. Lose the lander and the mission is lost. Win by building a *Cap* on every vent.",
   "help.grid.title": "The grid",
   "help.grid.text":
-    "Energy leaves the lander as packets and travels along grid links. Every structure passes packets on, and each must stand within six tiles of a built one; Pylons are the cheap way to reach further. While you build, or with a Pylon selected, the area the finished grid reaches is tinted. A red dot marks a structure the grid does not reach. Pylons collect energy from the tiles within three steps that are on their own level and in direct view (shown as a green area); higher ground or rock in between blocks it, and silt-covered tiles yield nothing.",
+    "Energy leaves the lander as packets and travels along grid links. Only the lander, Pylons, Trunks and Boosters pass packets on, so every structure must stand within six tiles of one of them that is built; Pylons are the cheap way to reach further. A red dot marks a structure the grid does not reach. Pylons collect energy from the tiles within three steps that are on their own level and in direct view (shown as a green area); higher ground or rock in between blocks it, and silt-covered tiles yield nothing.",
   "help.cap.title": "Capping a vent",
   "help.cap.text":
     "A Cap can only be started when the vent tile is nearly dry, shown by a white ring. While it is being built it holds the vent shut, but the pressure builds up: if the Cap is lost, all of it bursts out at once.",
@@ -103,7 +103,7 @@ export const en = {
   "key.slot12": "=",
   "key.delete": "Del",
 
-  "status.offGrid": "Off the grid: needs a structure within six tiles",
+  "status.offGrid": "Off the grid: needs a built Pylon within six tiles",
   "status.building": "Under construction",
   "status.off": "Switched off",
   "status.damaged": "Damaged, repairing",

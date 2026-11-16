@@ -67,7 +67,7 @@ export const it: Record<Key, string> = {
     "La melma sgorga dagli _sfiati_ e scorre verso il basso. Logora tutto ciò su cui si posa. Se perdi il lander, perdi la missione. Vinci costruendo un *Tappo* su ogni sfiato.",
   "help.grid.title": "La rete",
   "help.grid.text":
-    "L'energia lascia il lander in pacchetti e viaggia lungo i collegamenti della rete. Ogni struttura inoltra i pacchetti e deve trovarsi entro sei caselle da un'altra già costruita; i piloni sono il modo economico per arrivare più lontano. Mentre costruisci, o con un pilone selezionato, l'area raggiunta dalla rete completa è colorata. Un punto rosso indica una struttura che la rete non raggiunge. I piloni raccolgono energia dalle caselle entro tre passi che sono al loro stesso livello e in vista diretta (mostrate come area verde); un terreno più alto o la roccia in mezzo la blocca, e le caselle coperte di melma non rendono nulla.",
+    "L'energia lascia il lander in pacchetti e viaggia lungo i collegamenti della rete. Solo il lander, i piloni, le dorsali e gli acceleratori inoltrano i pacchetti, quindi ogni struttura deve trovarsi entro sei caselle da uno di essi già costruito; i piloni sono il modo economico per arrivare più lontano. Un punto rosso indica una struttura che la rete non raggiunge. I piloni raccolgono energia dalle caselle entro tre passi che sono al loro stesso livello e in vista diretta (mostrate come area verde); un terreno più alto o la roccia in mezzo la blocca, e le caselle coperte di melma non rendono nulla.",
   "help.cap.title": "Tappare uno sfiato",
   "help.cap.text":
     "Un tappo si può iniziare solo quando la casella dello sfiato è quasi asciutta, come indica un anello bianco. Mentre è in costruzione tiene chiuso lo sfiato, ma la pressione cresce: se il tappo va perso, esce tutto in un colpo.",
@@ -118,7 +118,7 @@ export const it: Record<Key, string> = {
   "key.slot12": "ì",
   "key.delete": "Canc",
 
-  "status.offGrid": "Fuori rete: serve una struttura entro sei caselle",
+  "status.offGrid": "Fuori rete: serve un pilone completato entro sei caselle",
   "status.building": "In costruzione",
   "status.off": "Spenta",
   "status.damaged": "Danneggiata, in riparazione",
@@ -299,7 +299,7 @@ export const itContent: Content = {
       name: "Atterraggio",
       brief: "Uno sfiato, quindici caselle a est e molto più in basso, e la sua pozza si sta già allargando. Porta la rete fin laggiù, bruciane la melma e tappalo.",
       hints: [
-        "I piloni sono il modo economico per estendere la rete. Tutto deve stare entro sei caselle da una struttura completata.",
+        "Solo i piloni estendono la rete: tutto deve stare entro sei caselle dal lander o da un pilone completato.",
         "Le lance bruciano la melma. Mettile in alto: non possono mirare in salita.",
         "Quando lo sfiato si secca tra un'ondata e l'altra, piazzaci un tappo e tienilo rifornito.",
         "Il lander produce un'energia al secondo e qui non ci sono filoni. Un pilone raccoglie un po' di più dal terreno piano che vede alla sua stessa altezza. Non costruire più del necessario.",

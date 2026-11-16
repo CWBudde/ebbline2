@@ -67,7 +67,7 @@ export const de: Record<Key, string> = {
     "Schlick quillt aus _Schloten_ und fließt bergab. Er zersetzt alles, worauf er steht. Geht der Lander verloren, ist die Mission verloren. Du gewinnst, indem du auf jeden Schlot eine *Kappe* baust.",
   "help.grid.title": "Das Netz",
   "help.grid.text":
-    "Energie verlässt den Lander in Paketen und wandert über die Leitungen des Netzes. Jedes Gebäude leitet Pakete weiter und muss höchstens sechs Felder von einem fertigen Gebäude entfernt stehen; Pylonen sind der günstige Weg, weiter zu reichen. Beim Bauen, oder wenn ein Pylon ausgewählt ist, ist der Bereich eingefärbt, den das fertige Netz erreicht. Ein roter Punkt markiert ein Gebäude, das das Netz nicht erreicht. Pylonen sammeln Energie von Feldern in bis zu drei Schritten Entfernung, die auf ihrer eigenen Höhe liegen und direkt sichtbar sind (als grüne Fläche dargestellt); höheres Gelände oder Fels dazwischen blockiert das, und mit Schlick bedeckte Felder liefern nichts.",
+    "Energie verlässt den Lander in Paketen und wandert über die Leitungen des Netzes. Nur der Lander, Pylonen, Trassen und Beschleuniger leiten Pakete weiter, und jedes Gebäude muss höchstens sechs Felder von einem fertigen unter ihnen entfernt stehen; Pylonen sind der günstige Weg, weiter zu reichen. Ein roter Punkt markiert ein Gebäude, das das Netz nicht erreicht. Pylonen sammeln Energie von Feldern in bis zu drei Schritten Entfernung, die auf ihrer eigenen Höhe liegen und direkt sichtbar sind (als grüne Fläche dargestellt); höheres Gelände oder Fels dazwischen blockiert das, und mit Schlick bedeckte Felder liefern nichts.",
   "help.cap.title": "Einen Schlot verschließen",
   "help.cap.text":
     "Eine Kappe lässt sich erst beginnen, wenn das Feld des Schlots fast trocken ist; das zeigt ein weißer Ring. Im Bau hält sie den Schlot zu, doch der Druck steigt: Geht die Kappe verloren, bricht alles auf einmal hervor.",
@@ -118,7 +118,7 @@ export const de: Record<Key, string> = {
   "key.slot12": "´",
   "key.delete": "Entf",
 
-  "status.offGrid": "Nicht am Netz: braucht ein Gebäude in höchstens sechs Feldern Entfernung",
+  "status.offGrid": "Nicht am Netz: braucht einen fertigen Pylon in höchstens sechs Feldern Entfernung",
   "status.building": "Im Bau",
   "status.off": "Abgeschaltet",
   "status.damaged": "Beschädigt, wird repariert",
@@ -299,7 +299,7 @@ export const deContent: Content = {
       name: "Landung",
       brief: "Ein Schlot, fünfzehn Felder östlich und weit unter dir, und sein Becken breitet sich schon aus. Führ das Netz zu ihm hinunter, brenn ihn trocken und verschließ ihn.",
       hints: [
-        "Pylonen erweitern das Netz am günstigsten. Alles muss höchstens sechs Felder von einem fertigen Gebäude entfernt stehen.",
+        "Nur Pylonen erweitern das Netz: Alles muss höchstens sechs Felder vom Lander oder einem fertigen Pylon entfernt stehen.",
         "Lanzen brennen Schlick weg. Stell sie auf Anhöhen: Bergauf können sie nicht zielen.",
         "Läuft der Schlot zwischen zwei Schüben trocken, setz eine Kappe darauf und halt sie versorgt.",
         "Der Lander liefert eine Energie pro Sekunde, und hier gibt es keine Adern. Ein Pylon sammelt etwas mehr vom ebenen Boden, den er auf seiner eigenen Höhe sehen kann. Bau nicht mehr als nötig.",
