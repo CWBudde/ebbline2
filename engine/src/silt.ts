@@ -98,6 +98,14 @@ export function stepVents(game: Game, events: Event[]): void {
   }
 }
 
+/** Ticks between the first pulses of one vent and the next, so the vents do not pulse in unison. */
+export const VENT_STAGGER = 17;
+
+/** Whether the vent still lies dormant: it has a delay (`VentTweak.delay`) and has not pulsed yet. */
+export function ventAsleep(game: Game, vent: Vent): boolean {
+  return !vent.capped && vent.timer > vent.period + VENT_STAGGER * game.vents.length;
+}
+
 /** Whether a cap may be started on this vent now. */
 export function ventDry(game: Game, vent: Vent): boolean {
   return (game.silt[tileIndex(game, vent.x, vent.y)] ?? 0) < CAP_DRY;

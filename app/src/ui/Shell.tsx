@@ -44,6 +44,7 @@ const KEY_ROWS = [
   "speed",
   "toggle",
   "dismantle",
+  "stats",
 ] as const;
 
 const ICONS = {

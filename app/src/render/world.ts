@@ -13,6 +13,7 @@ import {
   placeError,
   span,
   tileOf,
+  ventAsleep,
   ventDry,
   type Game,
   type Structure,
@@ -232,7 +233,7 @@ export class Renderer {
     }
     game.vents.forEach((vent, n) => {
       const sprite = this.ventSprites[n];
-      if (sprite) sprite.tint = vent.capped ? 0x56666c : 0xffffff;
+      if (sprite) sprite.tint = vent.capped ? 0x56666c : ventAsleep(game, vent) ? 0x8a979c : 0xffffff;
     });
     if (!this.textures.has("spitter")) return;
     const seen = new Set<number>();
@@ -321,7 +322,11 @@ export class Renderer {
       if (vent.capped) continue;
       const { x, y } = tileToWorld(vent.x, vent.y);
       const dry = ventDry(game, vent);
-      if (ventArt) {
+      if (ventAsleep(game, vent)) {
+        // Dormant: a still, faint ring instead of the beat.
+        under.circle(x, y, TILE * 0.8).stroke({ width: 1.5, color: 0xffffff, alpha: 0.35 });
+        if (!ventArt) under.circle(x, y, TILE * 0.25).fill({ color: COLORS.silt, alpha: 0.4 });
+      } else if (ventArt) {
         // The sprite is the vent; the ring only shows its beat and whether it can take a cap.
         under.circle(x, y, TILE * (0.8 + 0.22 * pulse)).stroke({
           width: 2,

@@ -8,13 +8,17 @@ on hexagonal tiles instead of squares. Ranges are counted in steps from tile to 
 
 - [x] Hex geometry, and the engine ported to hexagons (`engine/`).
 - [x] Hex drawing and picking in the app.
-- [x] Campaign of eight missions (`c1` to `c8`), replacing the fourteen square-grid ones; the
+- [x] Campaign of ten missions (`c1` to `c10`), replacing the fourteen square-grid ones; the
       interface text of all eleven languages covers them.
 - [x] Earthy brown ground.
 - [x] Hex art: structures on hexagonal plates, the seven-tile lander, vent, spitter, lode and the
       briefing illustrations (`app/public/art/`; prompts in `art/`).
 - [x] Title scene for the hex look: a shader draws the silt sea in perspective, the painted rock
       islands stand on it, the vent smokes, and the ridge with the seven-hexagon lander is in front.
+- [x] Statistics screen: the engine samples silt, flooded tiles, energy, income by source, spending by
+      purpose, open vents and structures into the save (`history.ts`); the screen draws them as SVG charts
+      from the pause menu, the result screen, the key T and the energy readout. Its new text is still English
+      in the ten other languages (`// TODO translate`).
 
 ## Open
 

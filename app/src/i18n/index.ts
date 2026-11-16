@@ -118,6 +118,18 @@ export function num(value: number, decimals = 0): string {
   return format.format(value);
 }
 
+const percents = new Map<string, Intl.NumberFormat>();
+
+/** A share from 0 to 1 as a whole percentage in the active locale, such as 45% or 45 %. */
+export function percent(share: number): string {
+  let format = percents.get(lang.value);
+  if (!format) {
+    format = new Intl.NumberFormat(lang.value, { style: "percent", maximumFractionDigits: 0 });
+    percents.set(lang.value, format);
+  }
+  return format.format(share);
+}
+
 /** A mission time as minutes and seconds, such as 4:07. */
 export function clock(seconds: number): string {
   const whole = Math.max(0, Math.floor(seconds));

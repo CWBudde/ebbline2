@@ -304,10 +304,17 @@ export function think(game: Game): Command[] {
       );
       if (p) return p;
     }
+    // Over a sea, the line runs into the water; the hop then goes to whatever dry tile in reach lies nearest the goal.
+    if (game.level.sea !== undefined) {
+      return site(game, "pylon", from, LINK_RANGE, (q) =>
+        steps(q, goal) < gap ? -span(q.x, q.y, goal.x, goal.y) : -Infinity,
+      );
+    }
     return undefined;
   };
   lodes.sort((a, b) => steps(a, closest(a) ?? a) - steps(b, closest(b) ?? b));
-  const lode = lodes.find((p) => !wetNear(game, p, 2));
+  // Lodes on islands stand by the shore, so over a sea a dry ring round the lode has to do.
+  const lode = lodes.find((p) => !wetNear(game, p, game.level.sea === undefined ? 2 : 1));
   if (lode && backlog === 0 && steps(lode, closest(lode) ?? lode) < 20) {
     const p = walk(lode);
     if (p) return order("pylon", p);

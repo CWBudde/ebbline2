@@ -356,6 +356,14 @@ export const trContent: Content = {
       brief: "Zirvenin dört bir yanında beş baca ve üç püskürtücü. Elindeki her şeyi kullan.",
       hints: ["En uzaktaki baca beş dakika boyunca uykudadır; mattır ve halkası durgundur."],
     },
+    c9: {
+      name: "At Nalı",
+      brief: "Bir sırtın çevresinden dolanıp sana geri dönen bir vadinin başında üç güçlü baca. Balçıkları çoktan yola çıktı. Onu iniş aracından uzak tut ve bacaları kapat.",
+      hints: [
+        "Balçık dirsekten dönüp vadiden yukarı sana gelir. Greyderlerle vadiyi boydan boya kesen bir set yükselt ya da onu Bariyerler, Pompalar ve Mızraklarla durdur.",
+        "Şebeke sırttaki kayanın üzerinden uzanır. Oradaki yüksek zeminden Mızraklar vadinin iki koluna da yetişir.",
+      ],
+    },
     c10: {
       name: "Takımadalar",
       brief: "Bir balçık denizinin ortasında bir adaya indin ve dibindeki dört baca onu yükseltmeyi sürdürüyor. Şebekeyi adadan adaya taşı, her bacanın çevresinde denizi yakarak geri püskürt ve bacayı kapat.",

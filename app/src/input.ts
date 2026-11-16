@@ -10,6 +10,8 @@ export interface InputHost {
   runtime(): Runtime | undefined;
   /** Opens or closes the pause menu. */
   menu(): void;
+  /** Opens or closes the statistics. */
+  stats(): void;
   /** Whether a menu covers the map; the map then takes no input. */
   overlayOpen(): boolean;
   /** Feedback for a refused placement, with the reason if the engine gave one. */
@@ -192,9 +194,15 @@ export class Input {
       this.host.menu();
       return;
     }
-    const rt = this.host.runtime();
-    if (!rt || e.ctrlKey || e.metaKey || e.altKey) return;
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
     if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement) return;
+    // The statistics open over the game and its result alike, and the same key closes them.
+    if (e.code === "KeyT") {
+      if (!e.repeat) this.host.stats();
+      return;
+    }
+    const rt = this.host.runtime();
+    if (!rt) return;
     if (e.code in PAN_KEYS) {
       this.held.add(e.code);
       e.preventDefault();

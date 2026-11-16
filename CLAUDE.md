@@ -52,13 +52,17 @@ TypeScript source through the workspace link. Something the app needs must be ex
 - `commands.ts`: `apply(game, command)` is the only way player intent enters the game. Commands are data, so
   the same commands at the same ticks replay a game.
 - `step.ts`: `step(game)` advances one tick (30 Hz, `TICK_HZ`) in a fixed order: grid rebuild, vents,
-  spitters, silt flow (every `FLOW_EVERY`-th tick), weapons, wear, packets, win/loss. Both `apply` and `step`
-  mutate the game and return `Event[]`, which is how the app learns what happened (sounds, effects).
+  spitters, silt flow (every `FLOW_EVERY`-th tick), weapons, wear, packets, win/loss, history. Both `apply` and
+  `step` mutate the game and return `Event[]`, which is how the app learns what happened (sounds, effects).
+- `history.ts`: the course of the game for the statistics screen, sampled into `game.history` every
+  `history.every` ticks (once a second, doubling whenever `HISTORY_MAX` samples are reached). A new series is a
+  key in `History` and `SERIES` plus a line in `sample()`. Income by source and spending by purpose are booked
+  in `game.flow` by `gain()` and `spend()` in `packets.ts`.
 - `hex.ts`: the only place that knows hexagon geometry. Pointy-top hexagons in odd-r offset coordinates, tiles
   stored at index `y * w + x`, positions in tile units where touching centres are 1 apart. Neighbours,
   distances, discs and picking all go through it; do not hand-roll neighbour offsets elsewhere.
 - `rng.ts`: seeded PRNG whose state is a field of the game. Never use `Math.random` or time in the engine.
-- `terrain.ts` / `levels.ts`: `generate(level)` builds a game from a `LevelDef`; `CAMPAIGN` holds the eight
+- `terrain.ts` / `levels.ts`: `generate(level)` builds a game from a `LevelDef`; `CAMPAIGN` holds the ten
   missions and `skirmish()` makes one from seed, size and difficulty.
 - `save.ts`: versioned JSON with typed arrays as base64. `load` refuses any schema but the current one, so a
   change to the shape of `Game` means bumping `SAVE_SCHEMA` (with a line in its comment) and adding a new
@@ -85,7 +89,10 @@ Vite, PixiJS for the map canvas, Preact with signals for the DOM UI on top of it
   from the atlases in `app/public/art/`; every structure also has a code-drawn version in `art.ts` that is
   used when an image fails to load, so both must exist for a new kind. `assets.ts` knows which art is
   installed and has no Pixi or DOM imports, so the UI and tests can use it.
-- `ui/`: Preact components (`Shell.tsx` for menus and pages, `Game.tsx` for the in-game HUD, `Briefing.tsx`).
+- `ui/`: Preact components (`Shell.tsx` for menus and pages, `Game.tsx` for the in-game HUD, `Briefing.tsx`,
+  `Stats.tsx` for the statistics with SVG charts from the pure helpers in `chart.ts`). The overlays (`Overlay`
+  in `controller.ts`: menu, help, settings, briefing, stats) hold the game while open; the statistics also open
+  over the result screen, by the key T and from the energy readout (`openStats`).
 - `storage.ts`: settings, progress and the save in `localStorage`; every access may fail and the game must
   work with nothing stored.
 - `audio/`: generated music and sound, driven by engine events and a silt "tension" reading.

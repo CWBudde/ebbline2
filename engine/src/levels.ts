@@ -30,7 +30,8 @@ const NO_SPITTERS = { count: 0, period: 0, amount: 0 } as const;
 // and c1 and c2 leave it a little more room. Each mission is hard in its own way: c1 starves you of energy, c2 wakes
 // a second, stronger vent behind you, c3 is already flooded deep, c4 is distance against a fast ramp, c5 is many
 // fronts round a mesa, c6 is a vent on your doorstep while the clock runs, c7 is a barrage from one side and c8
-// is all of it at once.
+// is all of it at once. c9 sends a flood round a valley bend to the lander's door while you go for its source.
+// c10 starts in a sea that already stands deep, to be burnt back from island to island.
 export const CAMPAIGN: readonly LevelDef[] = [
   {
     // A ridge above a long valley with the vent at its bottom, its pool already spreading. No lodes: the lander's
@@ -56,13 +57,13 @@ export const CAMPAIGN: readonly LevelDef[] = [
   },
   {
     // A stepped hill between a wide plain to the north-west and a trough to the south-east, a vent in each. The
-    // far one sleeps for the first minute, then wakes half as strong again as the near one.
+    // far one sleeps for the first half minute, then wakes half as strong again as the near one.
     id: "c2",
     name: "Two Fronts",
     brief: "Two vents, on opposite sides of your hill. Tap the lodes for energy and bank it for the Caps.",
     seed: 2145,
     size: 40,
-    vents: { count: 2, period: 60, amount: 11, ramp: 0.2, each: [{}, { amount: 1.5, delay: 60 }] },
+    vents: { count: 2, period: 60, amount: 11, ramp: 0.2, each: [{}, { amount: 1.5, delay: 30 }] },
     spitters: NO_SPITTERS,
     lodes: 6,
     landform: "terraces",
@@ -72,6 +73,7 @@ export const CAMPAIGN: readonly LevelDef[] = [
     hints: [
       "Place Taps on the glowing lodes near the lander to earn energy.",
       "The bank holds thirty energy, half a Cap. Each Cell adds thirty more.",
+      "The far vent lies dormant for the first half minute, dull and with a still ring. When it wakes it is the stronger of the two.",
     ],
   },
   {
@@ -191,7 +193,55 @@ export const CAMPAIGN: readonly LevelDef[] = [
     ground: "ash",
     allowed: EVERYTHING,
     objective: { kind: "cap" },
-    hints: [],
+    hints: ["The furthest vent lies dormant for five minutes, dull and with a still ring."],
+  },
+  {
+    // A wide valley bent into a U round a high spur. The vents sit at the head of the east arm; the floor falls
+    // all the way round the bend to the end of the west arm, where the lander came down, so everything the vents
+    // give ends up at the lander unless it is stopped. The vents have run for a minute and a half when you land:
+    // their arm stands deep, the bend is full and the stream reaches the lander about ninety seconds later. The
+    // scripted player holds it off with lances by the lander while it crosses the spur and burns down the vents' arm
+    // from the rim; a human can as well raise a dike across the arm below the lander.
+    id: "c9",
+    name: "Horseshoe",
+    brief: "Three strong vents at the head of a valley that bends round a ridge and comes back down to you. Their silt is already on its way round. Keep it off the lander and cap the vents.",
+    seed: 9001,
+    size: 48,
+    vents: { count: 3, period: 60, amount: 14, ramp: 0.2 },
+    spitters: NO_SPITTERS,
+    lodes: 8,
+    landform: "horseshoe",
+    rock: 0.06,
+    flood: 90,
+    ground: "earth",
+    allowed: upTo("grader"),
+    objective: { kind: "cap" },
+    hints: [
+      "The silt comes round the bend and up the valley to you. Raise a dike across the valley with Graders, or hold it back with Baffles, Pumps and Lances.",
+      "The grid reaches over the rock on the ridge. From its high ground, Lances reach down into both arms of the valley.",
+    ],
+  },
+  {
+    // Twenty steep islands of much the same size in a sea that stands two to four deep over the floor. The lander
+    // is on one of middling size in the south-east; the vents lie on the sea floor to the west and north, and two
+    // spitters on far islands keep the globs coming, slowly.
+    id: "c10",
+    name: "Archipelago",
+    brief: "You came down on an island in a sea of silt, and four vents on its floor keep it rising. Hop the grid from island to island, burn the sea back from each vent and cap it.",
+    seed: 10017,
+    size: 64,
+    vents: { count: 4, period: 60, amount: 7.5, ramp: 0.15 },
+    spitters: { count: 2, period: 840, amount: 10 },
+    lodes: 9,
+    landform: "archipelago",
+    sea: 4,
+    ground: "sand",
+    allowed: EVERYTHING,
+    objective: { kind: "cap" },
+    hints: [
+      "The grid reaches six tiles across the sea, and most straits are narrower. Trunks span the wide ones.",
+      "The sea is all one: what you burn by a vent flows back from everywhere else. Lances on the island tops look down on all of it.",
+    ],
   },
 ];
 

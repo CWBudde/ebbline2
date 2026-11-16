@@ -1,6 +1,7 @@
 // One tick of the simulation.
 
 import { rebuild } from "./grid.ts";
+import { stepHistory } from "./history.ts";
 import { stepPackets } from "./packets.ts";
 import { flow, stepVents } from "./silt.ts";
 import { stepSpitters } from "./spitters.ts";
@@ -41,5 +42,7 @@ export function step(game: Game): Event[] {
   if (game.gridDirty) rebuild(game);
   stepPackets(game, events);
   judge(game, events);
+  // Last, so a sample sees the tick complete: this second's energy rates and the outcome.
+  stepHistory(game);
   return events;
 }

@@ -79,7 +79,7 @@ export const KINDS: Readonly<Record<Kind, KindDef>> = {
     range: 0,
     minRange: 0,
     radius: 0,
-    blurb: "Relays packets like a pylon, and every packet it passes on runs a fifth faster from then on. Boosters stack, but each one speeds a packet only once.",
+    blurb: "Relays packets like a pylon, and every packet it passes on runs a fifth faster from then on. Boosters stack, but each one speeds a packet only once. Every working Booster also makes all packets two percent faster, wherever it stands.",
   },
   tap: {
     name: "Tap",
@@ -279,9 +279,20 @@ export type Objective =
 /**
  * The overall shape of a map's terrain. "hills" is plain rolling noise; "basin" sinks the middle of the map below
  * a rim; "mesa" lifts the middle above lowlands; "ridges" folds the land into sharp crests over broad valleys;
- * "channels" cuts narrow, winding troughs between broad highlands; "terraces" flattens it into a few wide steps.
+ * "channels" cuts narrow, winding troughs between broad highlands; "terraces" flattens it into a few wide steps;
+ * "horseshoe" carves a wide U-shaped valley round a high spur that falls gently from the
+ * vents at the end of one arm to the lander at the end of the other; "archipelago" raises steep islands of
+ * similar size out of a low sea floor and puts the lander on one of middling size.
  */
-export type Landform = "hills" | "basin" | "mesa" | "ridges" | "channels" | "terraces";
+export type Landform =
+  | "hills"
+  | "basin"
+  | "mesa"
+  | "ridges"
+  | "channels"
+  | "terraces"
+  | "horseshoe"
+  | "archipelago";
 
 /** The colour scheme of the ground. Only the renderer reads it. */
 export type Ground = "earth" | "slate" | "sand" | "ash";
@@ -326,6 +337,11 @@ export interface LevelDef {
   readonly rock?: number;
   /** Seconds the vents have already been flowing when the player lands, so silt stands on the map at the start. */
   readonly flood?: number;
+  /**
+   * Height of a sea that stands on the map at the start: every tile below it is covered in silt up to it, and
+   * lodes and spitters go on ground above it.
+   */
+  readonly sea?: number;
   /** Colour scheme of the ground; "earth" when absent. */
   readonly ground?: Ground;
   readonly allowed: readonly Kind[];
@@ -338,6 +354,62 @@ export interface Stats {
   built: number;
   lost: number;
   removed: number;
+}
+
+/** Where energy comes from: the lander's own output, pylon harvest, taps on lodes and pumps skimming silt. */
+export type Source = "lander" | "pylon" | "tap" | "pump";
+export const SOURCES: readonly Source[] = ["lander", "pylon", "tap", "pump"];
+/**
+ * What energy is spent on: building new structures, repairing damaged ones (the lander mends itself from the
+ * bank) and supplying built ones with energy for their work.
+ */
+export type Purpose = "build" | "repair" | "supply";
+export const PURPOSES: readonly Purpose[] = ["build", "repair", "supply"];
+
+/** Income by source and spending by purpose; over the last full second they add up to `rateIn` and `rateOut`. */
+export interface Flow {
+  /** Energy per second over the last full second. */
+  rateIn: Record<Source, number>;
+  rateOut: Record<Purpose, number>;
+  /** Running sums of the current second. */
+  accIn: Record<Source, number>;
+  accOut: Record<Purpose, number>;
+}
+
+/**
+ * The course of the game, for the statistics screen: one value per series and sample, a sample every `every`
+ * ticks (see history.ts). Every array has the same length.
+ */
+export interface History {
+  /** Ticks between two samples; doubles each time the series are thinned out. */
+  every: number;
+  /** The tick of each sample. The last one may fall between the regular ticks: the game's final tick. */
+  tick: number[];
+  /** Silt on the whole map: the sum of the depth of every tile. */
+  silt: number[];
+  /** Tiles under silt at least `DRY` deep. */
+  flooded: number[];
+  energy: number[];
+  capacity: number[];
+  /** Energy gained and spent over the last full second (`Game.rateIn`, `rateOut`), in energy per second. */
+  rateIn: number[];
+  rateOut: number[];
+  /** `rateIn` split by source and `rateOut` by purpose (`Flow`), in energy per second. */
+  inLander: number[];
+  inPylon: number[];
+  inTap: number[];
+  inPump: number[];
+  outBuild: number[];
+  outRepair: number[];
+  outSupply: number[];
+  /** Vents not capped. */
+  vents: number[];
+  /** Finished structures standing, the lander included. */
+  structures: number[];
+  /** Structures lost to silt so far (`Stats.lost`). */
+  lost: number[];
+  /** Silt removed by lances, lobbers and pumps so far (`Stats.removed`). */
+  removed: number[];
 }
 
 export type Phase = "playing" | "won" | "lost";
@@ -386,6 +458,8 @@ export interface Game {
   rateOut: number;
   accIn: number;
   accOut: number;
+  flow: Flow;
+  history: History;
 }
 
 export type Event =
@@ -406,6 +480,12 @@ export type Event =
   | { kind: "capped"; x: number; y: number }
   | { kind: "won" }
   | { kind: "lost" };
+
+export function emptyFlow(): Flow {
+  const sources = (): Record<Source, number> => ({ lander: 0, pylon: 0, tap: 0, pump: 0 });
+  const purposes = (): Record<Purpose, number> => ({ build: 0, repair: 0, supply: 0 });
+  return { rateIn: sources(), rateOut: purposes(), accIn: sources(), accOut: purposes() };
+}
 
 export function tileIndex(game: Game, x: number, y: number): number {
   return y * game.w + x;

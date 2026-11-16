@@ -18,6 +18,7 @@ import { clock, kindBlurb, kindName, levelBrief, levelHints, levelName, num, t }
 import { ILLUSTRATION_BACKGROUND, illustrationUrl } from "../render/assets.ts";
 import { Briefing } from "./Briefing.tsx";
 import { BackButton, Cost, Help, Icon, SettingsForm, Sheet } from "./Shell.tsx";
+import { Stats } from "./Stats.tsx";
 
 /** The key shown on a build slot; the eleventh and twelfth are named by the language's keyboard. */
 function slotLabel(slot: number): string {
@@ -31,7 +32,13 @@ function TopBar({ c, rt }: { c: Controller; rt: Runtime }) {
   const net = hud.rateIn - hud.rateOut;
   return (
     <header class="topbar">
-      <div class="tb-left" title={t("hud.energy.title")}>
+      {/* The whole readout opens the statistics at the energy section. */}
+      <button
+        type="button"
+        class="tb-left"
+        title={`${t("hud.energy.title")}\n${t("hud.energy.stats")}`}
+        onClick={() => { c.openStats("none", "energy"); }}
+      >
         <div class="energy">
           <Icon name="bolt" />
           <span class="amount" data-testid="energy">{num(Math.floor(hud.energy))} / {num(hud.capacity)}</span>
@@ -42,7 +49,7 @@ function TopBar({ c, rt }: { c: Controller; rt: Runtime }) {
           <span class="in">+{num(hud.rateIn, 1)}</span>{" "}
           <span class="out">−{num(hud.rateOut, 1)}</span>
         </span>
-      </div>
+      </button>
       <div class="tb-mid">
         <div class="goal" data-testid="goal">
           {hud.remaining >= 0
@@ -433,6 +440,7 @@ function PauseMenu({ c }: { c: Controller }) {
         <div class="stack">
           <button class="btn primary" onClick={() => { c.toggleMenu(); }}>{t("pause.resume")}</button>
           <button class="btn" onClick={() => { c.saveNow(true); }}>{t("pause.save")}</button>
+          <button class="btn" onClick={() => { c.openStats("menu"); }}>{t("stats.title")}</button>
           <button class="btn" onClick={() => { c.overlay.value = "help"; }}>{t("menu.help")}</button>
           <button class="btn" onClick={() => { c.overlay.value = "settings"; }}>{t("menu.settings")}</button>
           {c.hasBriefing() && <button class="btn" onClick={() => { c.openBriefing(); }}>{t("pause.briefing")}</button>}
@@ -478,6 +486,7 @@ function EndScreen({ c, rt }: { c: Controller; rt: Runtime }) {
           <div class="stack">
             {next && <button class="btn primary" onClick={() => { c.start(next); }}>{t("end.next", { name: levelName(next) })}</button>}
             <button class={next ? "btn" : "btn primary"} onClick={() => { c.restart(); }}>{won ? t("end.again") : t("end.retry")}</button>
+            <button class="btn" onClick={() => { c.openStats("none"); }}>{t("stats.title")}</button>
             <button class="btn quiet" onClick={() => { c.quit(); }}>{t("end.menu")}</button>
           </div>
         </div>
@@ -490,10 +499,11 @@ export function Game({ c }: { c: Controller }) {
   const rt = c.runtime.value;
   if (!rt) return null;
   const over = rt.phase.value !== "playing";
+  const overlay = c.overlay.value;
   return (
     <div class="hud">
       {/* While a dialog is open the controls behind it take neither focus nor clicks. */}
-      <div class="hud-live" inert={over || c.overlay.value !== "none"}>
+      <div class="hud-live" inert={over || overlay !== "none"}>
         <TopBar c={c} rt={rt} />
         <div class="side">
           <Info c={c} rt={rt} hud={rt.hud.value} />
@@ -501,9 +511,11 @@ export function Game({ c }: { c: Controller }) {
         </div>
         <BuildBar c={c} rt={rt} />
       </div>
-      {over && <EndScreen c={c} rt={rt} />}
-      {!over && c.overlay.value === "briefing" && <Briefing key={rt.game.level.id} c={c} rt={rt} />}
-      {!over && c.overlay.value !== "none" && c.overlay.value !== "briefing" && <PauseMenu c={c} />}
+      {/* The statistics open over the result screen as well as over a running game. */}
+      {overlay === "stats" && <Stats c={c} rt={rt} />}
+      {over && overlay !== "stats" && <EndScreen c={c} rt={rt} />}
+      {!over && overlay === "briefing" && <Briefing key={rt.game.level.id} c={c} rt={rt} />}
+      {!over && overlay !== "none" && overlay !== "briefing" && overlay !== "stats" && <PauseMenu c={c} />}
     </div>
   );
 }

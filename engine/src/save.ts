@@ -8,8 +8,10 @@ import { type Game } from "./state.ts";
  * now, so they are refused rather than converted.
  * 4: pylons harvest energy (`harvest`, `harvestRev`), and the campaign got harder; saves from before are refused.
  * 5: packets carry their own speed (`boost`, `boosters`) for the booster; saves from before are refused.
+ * 6: the game keeps its course for the statistics screen (`history`) and splits its energy by source and purpose
+ *    (`flow`); saves from before are refused.
  */
-export const SAVE_SCHEMA = 5;
+export const SAVE_SCHEMA = 6;
 
 type Packed = { [K in keyof Game]: Game[K] extends ArrayBufferView ? string : Game[K] };
 

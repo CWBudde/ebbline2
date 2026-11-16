@@ -65,7 +65,9 @@ describe("terrain", () => {
           expect(d).toBeGreaterThanOrEqual(near);
           expect(d).toBeLessThanOrEqual(near + 2);
         } else {
-          expect(d).toBeGreaterThanOrEqual(level.size * 0.35);
+          // A horseshoe puts them across the spur from the lander, a little closer as the crow flies but much
+          // further round the valley.
+          expect(d).toBeGreaterThanOrEqual(level.size * (level.landform === "horseshoe" ? 0.3 : 0.35));
         }
       });
       for (const spitter of game.spitters) {
@@ -112,7 +114,24 @@ describe("level variations", () => {
     expect(hills.vents).toEqual(plain.vents);
   });
 
-  it.each(["basin", "mesa", "ridges", "channels", "terraces"] as const)(
+  it("bends a horseshoe valley from the vents in the east round to the lander low in the west, rock on the spur", () => {
+    for (const size of [48, 64]) {
+      const game = generate(variant({ landform: "horseshoe", size }));
+      const l = lander(game);
+      const ground = (x: number, y: number): number => game.height[y * game.w + x] ?? ROCK;
+      expect(l.x).toBeLessThan(size / 2);
+      for (const vent of game.vents) {
+        expect(vent.x).toBeGreaterThan(size / 2);
+        expect(ground(vent.x, vent.y)).toBeGreaterThan(ground(l.x, l.y));
+      }
+      // The spine of rock on the spur stands across the lander's row, between it and the vents.
+      let rock = false;
+      for (let x = l.x; x < size; x++) if (ground(x, l.y) === ROCK && x > size * 0.4 && x < size * 0.6) rock = true;
+      expect(rock).toBe(true);
+    }
+  });
+
+  it.each(["basin", "mesa", "ridges", "channels", "terraces", "horseshoe"] as const)(
     "shapes %s land that differs from hills and stays in range",
     (landform: Landform) => {
       const game = generate(variant({ landform }));
@@ -164,6 +183,60 @@ describe("level variations", () => {
     const one = { ...base.vents, count: 1, each: [{ delay: 30 }] };
     const game = generate(variant({ vents: one, flood: 60 }));
     expect(game.silt.reduce((a, b) => a + b, 0)).toBe(0);
+  });
+
+  it("fills a sea level up to its surface and leaves the ground above it dry", () => {
+    const game = generate(variant({ sea: 3 }));
+    game.height.forEach((h, i) => {
+      const silt = game.silt[i] ?? 0;
+      if (h === ROCK || h >= 3) expect(silt).toBe(0);
+      else expect(h + silt).toBe(3);
+    });
+    for (let i = 0; i < game.lode.length; i++) {
+      if (game.lode[i] === 1) expect(game.height[i]).toBeGreaterThan(3);
+    }
+  });
+
+  it("raises an archipelago of steep islands of similar size, the lander on a middling one", () => {
+    const sea = 4;
+    const game = generate(variant({ landform: "archipelago", sea }));
+    // Islands are groups of touching tiles above the sea floor; rock only stands on them.
+    const island = new Int32Array(game.height.length).fill(-1);
+    const sizes: number[] = [];
+    const tops: number[] = [];
+    game.height.forEach((h, start) => {
+      if ((h !== ROCK && h < sea) || island[start] !== -1) return;
+      const id = sizes.length;
+      const group = [start];
+      island[start] = id;
+      let top = 0;
+      for (let k = 0; k < group.length; k++) {
+        const t = tileOf(game.w, group[k] as number);
+        top = Math.max(top, game.height[group[k] as number] ?? 0);
+        within(game.w, game.h, t.x, t.y, 1, (j) => {
+          const g = game.height[j] ?? 0;
+          if ((g === ROCK || g >= sea) && island[j] === -1) {
+            island[j] = id;
+            group.push(j);
+          }
+        });
+      }
+      sizes.push(group.length);
+      tops.push(top);
+    });
+    for (const h of game.height) expect(h === ROCK || h <= 2 || h >= sea).toBe(true);
+    expect(sizes.length).toBeGreaterThanOrEqual(12);
+    expect(Math.max(...sizes)).toBeLessThan(Math.min(...sizes) * 4);
+    for (const top of tops) expect(top).toBeGreaterThanOrEqual(6);
+    const l = lander(game);
+    const own = sizes[island[l.y * game.w + l.x] ?? -1] ?? 0;
+    expect(own).toBeGreaterThan(Math.min(...sizes));
+    expect(own).toBeLessThan(Math.max(...sizes));
+    // The vents lie on the sea floor under the sea, the lodes on the islands.
+    for (const v of game.vents) expect(game.silt[v.y * game.w + v.x]).toBeGreaterThanOrEqual(sea - 2);
+    for (let i = 0; i < game.lode.length; i++) {
+      if (game.lode[i] === 1) expect(game.height[i]).toBeGreaterThan(sea);
+    }
   });
 
   it("changes each vent as listed, counting from the one nearest the lander", () => {

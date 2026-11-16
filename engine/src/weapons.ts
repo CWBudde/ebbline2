@@ -130,7 +130,7 @@ function pump(game: Game, s: Structure): void {
   within(game.w, game.h, s.x, s.y, KINDS.pump.range, (i) => {
     taken += take(game, i, PUMP.removes);
   });
-  if (taken > 0) gain(game, taken * PUMP.yield);
+  if (taken > 0) gain(game, taken * PUMP.yield, "pump");
 }
 
 function baffle(game: Game, s: Structure): void {

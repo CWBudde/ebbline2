@@ -31,7 +31,7 @@ import { Runtime } from "./runtime.ts";
 import { Store, type Settings } from "./storage.ts";
 
 export type Screen = "title" | "campaign" | "skirmish" | "settings" | "help" | "game";
-export type Overlay = "none" | "menu" | "help" | "settings" | "briefing";
+export type Overlay = "none" | "menu" | "help" | "settings" | "briefing" | "stats";
 
 const AUTOSAVE_MS = 30_000;
 /** How often the music reads how threatened the player is. */
@@ -74,6 +74,10 @@ export class Controller {
   /** Time since the music last read the silt, in milliseconds. */
   private sinceTension = 0;
   private noticeTimer: ReturnType<typeof setTimeout> | undefined;
+  /** Where closing the statistics returns to: the pause menu or straight to the game (or its result). */
+  private statsBack: Overlay = "none";
+  /** The section the statistics open at; the screen reads it when it opens. */
+  statsSection: "top" | "energy" = "top";
 
   constructor() {
     setLanguage(this.settings.value.language);
@@ -110,7 +114,11 @@ export class Controller {
       view: this.view,
       runtime: () => (this.overlay.value === "none" ? this.runtime.value : undefined),
       menu: () => {
-        this.toggleMenu();
+        if (this.overlay.value === "stats") this.closeStats();
+        else this.toggleMenu();
+      },
+      stats: () => {
+        this.toggleStats();
       },
       overlayOpen: () => this.overlay.value !== "none",
       deny: (why?: PlaceError) => {
@@ -327,6 +335,27 @@ export class Controller {
     const rt = this.runtime.value;
     if (!rt || rt.game.phase !== "playing") return;
     this.overlay.value = this.overlay.value === "none" ? "menu" : "none";
+  }
+
+  /**
+   * Shows the statistics of the running game, from the pause menu, the result screen or the key; the game is
+   * held while they are open. `back` is the overlay that closing them returns to.
+   */
+  openStats(back: Overlay, section: "top" | "energy" = "top"): void {
+    if (!this.runtime.value) return;
+    this.statsBack = back;
+    this.statsSection = section;
+    this.overlay.value = "stats";
+  }
+
+  closeStats(): void {
+    if (this.overlay.value === "stats") this.overlay.value = this.statsBack;
+  }
+
+  /** The statistics key: opens them over the game or its result, and closes them again. */
+  toggleStats(): void {
+    if (this.overlay.value === "stats") this.closeStats();
+    else if (this.overlay.value === "none") this.openStats("none");
   }
 
   markSeen(kind: Kind): void {

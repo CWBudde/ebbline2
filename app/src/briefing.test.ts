@@ -13,11 +13,15 @@ describe("briefingPlan", () => {
       ["survive", "baffle", "grader"],
       ["spitter", "interceptor"],
       [],
+      // c9
+      [],
+      // c10
+      [],
     ]);
   });
 
   it("numbers the mission and states its goal", () => {
-    expect(briefingPlan("c1")).toMatchObject({ number: 1, total: 8, goal: { kind: "cap", vents: 1 } });
+    expect(briefingPlan("c1")).toMatchObject({ number: 1, total: 10, goal: { kind: "cap", vents: 1 } });
     expect(briefingPlan("c2")).toMatchObject({ number: 2, goal: { kind: "cap", vents: 2 } });
     expect(briefingPlan("c6")).toMatchObject({ number: 6, goal: { kind: "survive", minutes: 10 } });
   });

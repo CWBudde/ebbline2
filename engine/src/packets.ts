@@ -1,6 +1,6 @@
 // Energy: income, and the packets that carry it from the lander to whatever asks for it.
 
-import { BOOST, PACKET_SPEED, boosts } from "./grid.ts";
+import { BOOST, boosts, packetSpeed } from "./grid.ts";
 import { harvestIncome } from "./harvest.ts";
 import { span, tileOf } from "./hex.ts";
 import { complete } from "./structures.ts";
@@ -12,40 +12,68 @@ import {
   type Event,
   type Game,
   type Packet,
+  type Purpose,
+  type Source,
   type Structure,
 } from "./state.ts";
 
 export const LANDER_INCOME = 1;
 export const TAP_INCOME = 0.6;
-/** Ticks between two packets leaving the lander. */
+/** Ticks between two dispatches from the lander. */
 export const DISPATCH_EVERY = 2;
+/** Share of the capacity above which a dispatch sends more than one packet. */
+export const SURGE_FROM = 0.75;
+/** Packets a dispatch sends on top of the first when the bank is full; it grows evenly from `SURGE_FROM`. */
+export const SURGE_PACKETS = 4;
 
-export function gain(game: Game, amount: number): void {
+/**
+ * Banks energy as far as there is room, and books what was taken to its sources in proportion to `parts`, the
+ * sources' shares of `amount` in any unit.
+ */
+function bank(game: Game, amount: number, parts: Readonly<Partial<Record<Source, number>>>): void {
   const room = game.capacity - game.energy;
   const taken = Math.min(room, amount);
   game.energy += taken;
   game.accIn += taken;
+  const sources = Object.keys(parts) as Source[];
+  const whole = sources.reduce((sum, source) => sum + (parts[source] ?? 0), 0);
+  if (whole <= 0) return;
+  const acc = game.flow.accIn;
+  for (const source of sources) acc[source] += (taken * (parts[source] ?? 0)) / whole;
 }
 
-function spend(game: Game, amount: number): void {
+export function gain(game: Game, amount: number, source: Source): void {
+  bank(game, amount, { [source]: amount });
+}
+
+function spend(game: Game, amount: number, purpose: Purpose): void {
   game.energy -= amount;
   game.accOut += amount;
+  game.flow.accOut[purpose] += amount;
   game.stats.spent += amount;
 }
 
 function stepIncome(game: Game): void {
-  let perSecond = LANDER_INCOME + harvestIncome(game);
+  const harvest = harvestIncome(game);
+  let perSecond = LANDER_INCOME + harvest;
+  let taps = 0;
   for (const s of game.structures) {
     if (s.kind === "tap" && s.built && s.active && Number.isFinite(s.dist)) {
       perSecond += TAP_INCOME;
+      taps += TAP_INCOME;
     }
   }
-  gain(game, perSecond / TICK_HZ);
+  bank(game, perSecond / TICK_HZ, { lander: LANDER_INCOME, pylon: harvest, tap: taps });
   if (game.tick % TICK_HZ === 0) {
     game.rateIn = game.accIn;
     game.rateOut = game.accOut;
     game.accIn = 0;
     game.accOut = 0;
+    const flow = game.flow;
+    flow.rateIn = { ...flow.accIn };
+    flow.rateOut = { ...flow.accOut };
+    for (const source of Object.keys(flow.accIn) as Source[]) flow.accIn[source] = 0;
+    for (const purpose of Object.keys(flow.accOut) as Purpose[]) flow.accOut[purpose] = 0;
   }
 }
 
@@ -75,9 +103,15 @@ function route(game: Game, target: Structure): Structure[] | undefined {
   return path.reverse();
 }
 
-function dispatch(game: Game): void {
-  game.dispatchWait -= 1;
-  if (game.dispatchWait > 0 || game.energy < 1) return;
+/** How many packets one dispatch sends: one, and more the fuller the bank is beyond `SURGE_FROM`. */
+export function dispatchSize(game: Game): number {
+  const share = game.capacity > 0 ? Math.min(1, game.energy / game.capacity) : 0;
+  const over = Math.max(0, share - SURGE_FROM) / (1 - SURGE_FROM);
+  return 1 + Math.floor(over * SURGE_PACKETS);
+}
+
+/** Sends one packet to the next structure in turn that wants one; false when none does. */
+function send(game: Game): boolean {
   const n = game.structures.length;
   for (let k = 0; k < n; k++) {
     const s = game.structures[(game.cursor + k) % n];
@@ -99,10 +133,22 @@ function dispatch(game: Game): void {
       boost: 1,
       boosters: [],
     });
-    spend(game, 1);
+    // A build packet for a finished structure mends it.
+    spend(game, 1, kind === "energy" ? "supply" : s.built ? "repair" : "build");
     game.cursor = (game.cursor + k + 1) % n;
+    return true;
+  }
+  return false;
+}
+
+function dispatch(game: Game): void {
+  game.dispatchWait -= 1;
+  if (game.dispatchWait > 0) return;
+  // The size is fixed before the first packet leaves, so that spending it does not shrink the dispatch.
+  const size = dispatchSize(game);
+  for (let sent = 0; sent < size && game.energy >= 1; sent++) {
+    if (!send(game)) return;
     game.dispatchWait = DISPATCH_EVERY;
-    return;
   }
 }
 
@@ -129,6 +175,7 @@ function drop(game: Game, packet: Packet): void {
 
 function move(game: Game, events: Event[]): void {
   const kept: Packet[] = [];
+  const speed = packetSpeed(game);
   for (const p of game.packets) {
     const b = p.tiles[p.seg + 1] ?? 0;
     // Packets run straight from centre to centre, so a segment is as long as the line between them.
@@ -139,7 +186,7 @@ function move(game: Game, events: Event[]): void {
       find(game, p.ids[p.seg] ?? 0)?.kind === "trunk" &&
       find(game, p.ids[p.seg + 1] ?? 0)?.kind === "trunk";
     // At most one node per tick however fast: the step below never carries the overshoot on.
-    p.t += (PACKET_SPEED * (fast ? 2 : 1) * p.boost) / Math.max(length, 0.01);
+    p.t += (speed * (fast ? 2 : 1) * p.boost) / Math.max(length, 0.01);
     if (p.t < 1) {
       kept.push(p);
       continue;
@@ -171,7 +218,7 @@ function mendLander(game: Game): void {
   const lander = find(game, game.landerId);
   if (lander && lander.health <= KINDS.lander.cost - 1) {
     lander.health += 1;
-    spend(game, 1);
+    spend(game, 1, "repair");
   }
 }
 

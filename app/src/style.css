@@ -913,6 +913,21 @@ kbd {
   min-width: 0;
 }
 
+/* The energy readout is a button that opens the statistics; it keeps the look of the bar. */
+button.tb-left {
+  margin: -4px -6px;
+  padding: 4px 6px;
+  text-align: left;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: var(--radius-small);
+}
+
+button.tb-left:hover {
+  background: var(--raised);
+  border-color: var(--line);
+}
+
 .energy {
   display: grid;
   grid-template-columns: auto auto;
@@ -1497,6 +1512,262 @@ kbd {
   font-variant-numeric: tabular-nums;
 }
 
+/* Statistics */
+
+.stats-sheet {
+  width: min(1120px, 100%);
+}
+
+.stats-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--s2) var(--s4);
+}
+
+.stats-head .kicker {
+  margin-bottom: var(--s1);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--dim);
+}
+
+.stats-time {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s2);
+  color: var(--dim);
+}
+
+.stats-time .value {
+  font-family: var(--display);
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.stats-summary {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.stats-summary dd small {
+  margin-left: var(--s2);
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--dim);
+}
+
+.charts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s3);
+}
+
+.chart-card {
+  display: grid;
+  align-content: start;
+  gap: var(--s3);
+  min-width: 0;
+  padding: var(--s3) var(--s4) var(--s3) var(--s3);
+  background: var(--sunk);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-small);
+}
+
+.chart-card h3 {
+  font-size: 19px;
+}
+
+.panel {
+  display: grid;
+  align-content: start;
+  gap: var(--s1);
+  min-width: 0;
+}
+
+.panel-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s1) var(--s3);
+}
+
+.panel h4 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--dim);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s1) var(--s3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+}
+
+.legend li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.plot {
+  min-width: 0;
+}
+
+.plot svg {
+  display: block;
+  overflow: visible;
+}
+
+.plot text {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  fill: var(--dim);
+}
+
+.plot .grid-lines line {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+:is(.plot, .swatch-line) .line {
+  fill: none;
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+:is(.plot, .swatch-line) .line.dashed {
+  stroke-dasharray: 6 4;
+  stroke-linecap: butt;
+}
+
+.plot .area {
+  stroke: none;
+  opacity: 0.2;
+}
+
+:is(.plot, .swatch-line) .silt {
+  stroke: var(--silt);
+  fill: var(--silt);
+}
+
+:is(.plot, .swatch-line) .grid {
+  stroke: var(--grid);
+  fill: var(--grid);
+}
+
+:is(.plot, .swatch-line) .amber {
+  stroke: var(--amber);
+  fill: var(--amber);
+}
+
+:is(.plot, .swatch-line) .lime {
+  stroke: var(--lime);
+  fill: var(--lime);
+}
+
+:is(.plot, .swatch-line) .bad {
+  stroke: var(--bad);
+  fill: var(--bad);
+}
+
+:is(.plot, .swatch-line) .dim {
+  stroke: var(--dim);
+  fill: var(--dim);
+}
+
+:is(.plot, .swatch-line) .line:is(.silt, .grid, .amber, .lime, .bad, .dim) {
+  fill: none;
+}
+
+.plot .line.edge {
+  stroke-width: 1.5;
+}
+
+.pattern-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.chart-column {
+  display: grid;
+  align-content: start;
+  gap: var(--s3);
+  min-width: 0;
+}
+
+.energy-card {
+  grid-column: 1 / -1;
+  scroll-margin-top: var(--s2);
+}
+
+.energy-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s4) var(--s5);
+}
+
+.breakdown {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.breakdown th,
+.breakdown td {
+  padding: 3px 0;
+  text-align: right;
+  font-weight: 400;
+}
+
+.breakdown thead th {
+  font-size: 12px;
+  color: var(--dim);
+}
+
+.breakdown tbody th {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  text-align: left;
+}
+
+.breakdown td {
+  width: 4.5em;
+}
+
+.breakdown tbody tr + tr {
+  border-top: 1px solid var(--line);
+}
+
+.swatch-band {
+  flex: none;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 /* Phones */
 
 @media (max-width: 720px) {
@@ -1521,6 +1792,16 @@ kbd {
 
   .sheet-foot {
     padding: var(--s2) var(--s4) var(--s2) var(--s1);
+  }
+
+  .stats-summary,
+  .charts,
+  .energy-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .stats-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   /* The picture becomes a banner at the top; the menu stands on solid ground below it. The banner

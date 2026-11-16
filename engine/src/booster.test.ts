@@ -1,13 +1,16 @@
 import { describe, expect, it } from "vitest";
 import { apply } from "./commands.ts";
-import { BOOST, PACKET_SPEED, rebuild } from "./grid.ts";
+import { BOOST, GLOBAL_BOOST, PACKET_SPEED, packetSpeed, rebuild } from "./grid.ts";
 import { distance, neighbour } from "./hex.ts";
 import { load, save } from "./save.ts";
 import { KINDS, tileIndex, type Game, type Packet, type Structure } from "./state.ts";
 import { build, flat, lander, run } from "./testing/fixtures.ts";
 
-/** Speed on an ordinary link six tiles long, the spacing used below: progress per tick. */
+/** Speed on an ordinary link six tiles long, the spacing used below, with no booster built: progress per tick. */
 const BASE = PACKET_SPEED / 6;
+/** The same with one and with two working boosters on the map. */
+const ONE = BASE * (1 + GLOBAL_BOOST);
+const TWO = BASE * (1 + 2 * GLOBAL_BOOST);
 
 /** Places a structure that is not built yet, the way the player does. */
 function plan(game: Game, kind: Structure["kind"], x: number, y: number): Structure {
@@ -79,9 +82,9 @@ describe("boosters", () => {
     build(game, "pylon", l.x + 12, l.y);
     const target = plan(game, "lance", l.x + 18, l.y);
     const { packet, rates } = follow(game, target);
-    expect(rates[0]).toBeCloseTo(BASE, 9);
-    expect(rates[1]).toBeCloseTo(BASE * BOOST, 9);
-    expect(rates[2]).toBeCloseTo(BASE * BOOST, 9);
+    expect(rates[0]).toBeCloseTo(ONE, 9);
+    expect(rates[1]).toBeCloseTo(ONE * BOOST, 9);
+    expect(rates[2]).toBeCloseTo(ONE * BOOST, 9);
     expect(packet.boost).toBeCloseTo(1.2, 12);
     expect(packet.boosters).toEqual([booster.id]);
   });
@@ -94,12 +97,40 @@ describe("boosters", () => {
     build(game, "pylon", l.x + 18, l.y);
     const target = plan(game, "lance", l.x + 24, l.y);
     const { packet, rates } = follow(game, target);
-    expect(rates[0]).toBeCloseTo(BASE, 9);
-    expect(rates[1]).toBeCloseTo(BASE * 1.2, 9);
-    expect(rates[2]).toBeCloseTo(BASE * 1.44, 9);
-    expect(rates[3]).toBeCloseTo(BASE * 1.44, 9);
+    expect(rates[0]).toBeCloseTo(TWO, 9);
+    expect(rates[1]).toBeCloseTo(TWO * 1.2, 9);
+    expect(rates[2]).toBeCloseTo(TWO * 1.44, 9);
+    expect(rates[3]).toBeCloseTo(TWO * 1.44, 9);
     expect(packet.boost).toBeCloseTo(1.44, 12);
     expect(packet.boosters).toEqual([a.id, b.id]);
+  });
+
+  it("raise the speed of all packets by a fiftieth each, wherever they stand", () => {
+    const game = flat(40);
+    const l = lander(game);
+    expect(packetSpeed(game)).toBe(PACKET_SPEED);
+    // Off the route to the target, on the other side of the lander.
+    build(game, "booster", l.x - 6, l.y);
+    build(game, "booster", l.x - 6, l.y + 4);
+    build(game, "pylon", l.x + 6, l.y);
+    const target = plan(game, "lance", l.x + 12, l.y);
+    const { packet, rates } = follow(game, target);
+    expect(packetSpeed(game)).toBeCloseTo(PACKET_SPEED * (1 + 2 * GLOBAL_BOOST), 12);
+    expect(rates[0]).toBeCloseTo(TWO, 9);
+    expect(rates[1]).toBeCloseTo(TWO, 9);
+    expect(packet.boost).toBe(1);
+  });
+
+  it("raise the speed of all packets only while they work", () => {
+    const game = flat(40);
+    const l = lander(game);
+    plan(game, "booster", l.x - 6, l.y);
+    const off = build(game, "booster", l.x + 6, l.y);
+    run(game, 1);
+    expect(packetSpeed(game)).toBeCloseTo(PACKET_SPEED * (1 + GLOBAL_BOOST), 12);
+    apply(game, { kind: "toggle", id: off.id });
+    run(game, 1);
+    expect(packetSpeed(game)).toBe(PACKET_SPEED);
   });
 
   it("speed a packet up only once each, even if it passes the same one again", () => {
@@ -163,10 +194,10 @@ describe("boosters", () => {
     const l = lander(game);
     const relay = build(game, "booster", l.x + 6, l.y);
     const damaged = build(game, "booster", l.x + 12, l.y);
-    damaged.health = KINDS.booster.cost - 2;
+    damaged.health = KINDS.booster.cost - 1;
     const { packet } = follow(game, damaged);
     expect(packet.seg).toBe(2);
-    expect(damaged.health).toBe(KINDS.booster.cost - 1);
+    expect(damaged.health).toBe(KINDS.booster.cost);
     expect(packet.boost).toBeCloseTo(BOOST, 12);
     expect(packet.boosters).toEqual([relay.id]);
   });

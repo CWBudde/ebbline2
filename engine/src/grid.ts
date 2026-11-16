@@ -18,12 +18,27 @@ export const PACKET_SPEED = 0.3;
 /** Factor on a packet's speed for each booster that relays it; boosts from different boosters multiply. */
 export const BOOST = 1.2;
 
+/** Share by which every working booster on the map raises the speed of all packets; these shares add up. */
+export const GLOBAL_BOOST = 0.02;
+
 /**
  * Whether a structure speeds up the packets it relays: a booster that is built, switched on and
  * connected to the lander.
  */
 export function boosts(s: Structure): boolean {
   return s.kind === "booster" && s.built && s.active && Number.isFinite(s.dist);
+}
+
+/**
+ * Packet speed on an ordinary link right now, in tile units per tick: `PACKET_SPEED`, raised by
+ * `GLOBAL_BOOST` for every working booster, wherever it stands and whether or not a packet passes it.
+ */
+export function packetSpeed(game: Game): number {
+  let working = 0;
+  for (const s of game.structures) {
+    if (boosts(s)) working += 1;
+  }
+  return PACKET_SPEED * (1 + GLOBAL_BOOST * working);
 }
 
 export function isTrunkLink(a: Structure, b: Structure): boolean {
@@ -67,7 +82,8 @@ export function reaches(game: Game, kind: Structure["kind"], x: number, y: numbe
  *
  * The distance is the time a packet takes: a link costs its length, half on a trunk link, divided by
  * the boost a packet has picked up from the boosters on the way there. So routes bend through
- * boosters where that is quicker, and run as before where there are none.
+ * boosters where that is quicker, and run as before where there are none. What every booster adds to the
+ * speed of all packets (`GLOBAL_BOOST`) is left out: it shortens every route alike and changes none.
  */
 export function rebuild(game: Game): void {
   const nodes = game.structures;

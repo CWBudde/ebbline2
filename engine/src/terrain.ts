@@ -1,8 +1,9 @@
 // Builds a fresh game from a level definition: terrain, lander, vents, spitters and lodes.
 
-import { centre, distance, span, within, type Tile } from "./hex.ts";
+import { ROW, centre, distance, extent, span, tileAtPoint, within, type Tile } from "./hex.ts";
+import { emptyHistory, sample } from "./history.ts";
 import { int, next, type RngState } from "./rng.ts";
-import { flow, stepVents } from "./silt.ts";
+import { flow, stepVents, VENT_STAGGER } from "./silt.ts";
 import {
   FLOW_EVERY,
   KINDS,
@@ -10,6 +11,7 @@ import {
   footprint,
   MAX_HEIGHT,
   ROCK,
+  emptyFlow,
   type Game,
   type Landform,
   type LevelDef,
@@ -81,9 +83,89 @@ function normalise(values: Float32Array): void {
   for (let i = 0; i < values.length; i++) values[i] = ((values[i] as number) - lo) / range;
 }
 
-/** Bends 0..1 relief into the given landform, in place; "hills" leaves it as it is. */
-function shape(relief: Float32Array, size: number, landform: Landform): void {
-  if (landform === "hills") return;
+/** Where a landform puts the lander and the vents, for the landforms that decide it themselves. */
+interface Ends {
+  /** The lander goes on one of the tiles within two steps of this one. */
+  readonly lander: Tile;
+  /** The vents take the lowest ground within `reach` steps of this one. */
+  readonly vents: Tile;
+  readonly reach: number;
+  /** 1 on every tile the landform makes rock, whatever the stone noise says. */
+  readonly rock?: Uint8Array;
+}
+
+/**
+ * The horseshoe valley, in tile units: two arms running north from a bend in the south of the map, the vents' arm
+ * to the east and the lander's to the west. Its floor falls gently from the end of the vents' arm, all the way round
+ * the bend, to the end of the lander's arm, so the silt runs round to the lander. The rims stand at the top height,
+ * and a thin spine of rock along the crest of the spur between the arms keeps a full vents' arm from spilling
+ * straight across to the lander; the grid still reaches over it.
+ */
+function horseshoe(size: number): {
+  /** Distance to the valley's middle line and how far along it, from 0 at the vents to 1 at the lander. */
+  readonly at: (px: number, py: number) => { readonly off: number; readonly along: number };
+  /** How far a point lies from the rock spine along the spur's crest, which keeps the silt from going over it. */
+  readonly spine: (px: number, py: number) => number;
+  readonly half: number;
+  readonly ends: Ends;
+} {
+  const bx = size * 0.5;
+  const by = size * ROW * 0.5;
+  const arm = size * 0.17;
+  const top = size * ROW * 0.18;
+  const half = size * 0.1;
+  const length = 2 * (by - top) + Math.PI * arm;
+  const at = (px: number, py: number): { off: number; along: number } => {
+    if (py > by) {
+      const angle = Math.atan2(py - by, px - bx);
+      return {
+        off: Math.abs(Math.hypot(px - bx, py - by) - arm),
+        along: (by - top + Math.max(0, angle) * arm) / length,
+      };
+    }
+    const y = Math.max(top, py);
+    const east = Math.hypot(px - bx - arm, py - y);
+    const west = Math.hypot(px - bx + arm, py - y);
+    return east < west
+      ? { off: east, along: (y - top) / length }
+      : { off: west, along: 1 - (y - top) / length };
+  };
+  return {
+    at,
+    spine: (px, py) => Math.hypot(px - bx, Math.max(0, py - by - (arm - half) * 0.5)),
+    half,
+    ends: {
+      lander: tileAtPoint(bx - arm, top + 1),
+      vents: tileAtPoint(bx + arm, top + half * 0.6),
+      reach: Math.round(half),
+    },
+  };
+}
+
+/**
+ * Bends 0..1 relief into the given landform, in place; "hills" leaves it as it is. Returns where the lander and
+ * the vents go, and where there must be rock, if the landform decides that.
+ */
+function shape(relief: Float32Array, size: number, landform: Landform): Ends | undefined {
+  if (landform === "hills") return undefined;
+  if (landform === "horseshoe") {
+    const valley = horseshoe(size);
+    const rock = new Uint8Array(relief.length);
+    for (let i = 0; i < relief.length; i++) {
+      const r = relief[i] as number;
+      const p = centre(i % size, Math.floor(i / size));
+      const { off, along } = valley.at(p.x, p.y);
+      if (valley.spine(p.x + (r - 0.5) * 3, p.y) < 1.2) rock[i] = 1;
+      // The noise makes the walls wander a little and roughens the floor.
+      const inside = smooth(Math.max(0, Math.min(1, (valley.half + 1.5 - off - (r - 0.5) * 4) / 3)));
+      // The rims stand at the top height, so the silt has to go round; further off, the high ground rolls a little.
+      const wall = 1 - 0.3 * r * smooth(Math.max(0, Math.min(1, (off - valley.half - 4) / 6)));
+      const floor = 0.02 + 0.4 * (1 - along) + 0.12 * (r - 0.5);
+      relief[i] = wall + (floor - wall) * inside;
+    }
+    normalise(relief);
+    return { ...valley.ends, rock };
+  }
   const mid = centre(size >> 1, size >> 1);
   for (let i = 0; i < relief.length; i++) {
     const r = relief[i] as number;
@@ -112,6 +194,100 @@ function shape(relief: Float32Array, size: number, landform: Landform): void {
     }
   }
   if (landform !== "terraces") normalise(relief);
+  return undefined;
+}
+
+/** Distance between the centres of neighbouring islands of an archipelago, in tile units, before the jitter. */
+const ISLE_SPACING = 13;
+/** Radius of the smallest island before the noise bends its shore; the largest is half as wide again. */
+const ISLE_RADIUS = 3.6;
+/** Land that comes out smaller than this many tiles is too small to count as an island and goes under again. */
+const ISLE_LEAST = 20;
+/** Where two islands come closer than this, in island radii, the sea runs between them. */
+const ISLE_STRAIT = 0.3;
+
+/**
+ * An archipelago: islands with steep shores standing out of a low sea floor, spread over the map on a jittered
+ * grid and within about a factor of three of each other in area. Each island starts as an ellipse, turned and
+ * stretched at random, whose shore the noise bends. Rewrites `relief` so that the usual tenfold scaling gives the
+ * sea floor heights 0 to 2 and the islands' tops 6 to 9 behind a shore that starts at 4, and clears `stone` on the
+ * sea floor so no rock stands in the sea. Returns the tile indices of each island.
+ */
+function archipelago(rng: RngState, relief: Float32Array, stone: Float32Array, size: number): number[][] {
+  const wobble = fractal(rng, size, Math.round(size / 5));
+  const { width, height } = extent(size, size);
+  const across = Math.max(1, Math.round(width / ISLE_SPACING));
+  const down = Math.max(1, Math.round(height / ISLE_SPACING));
+  const isles: { x: number; y: number; r: number; cos: number; sin: number; stretch: number; top: number }[] = [];
+  for (let row = 0; row < down; row++) {
+    for (let col = 0; col < across; col++) {
+      const angle = next(rng) * Math.PI;
+      isles.push({
+        x: ((col + 0.5 + (next(rng) - 0.5) * 0.6) * width) / across,
+        y: ((row + 0.5 + (next(rng) - 0.5) * 0.6) * height) / down,
+        r: ISLE_RADIUS * (1 + next(rng) * 0.5),
+        cos: Math.cos(angle),
+        sin: Math.sin(angle),
+        stretch: Math.sqrt(1 + next(rng) * 0.8),
+        top: 7 + int(rng, 3),
+      });
+    }
+  }
+  const floor = new Int8Array(size * size);
+  const land = new Int8Array(size * size);
+  for (let i = 0; i < relief.length; i++) {
+    const r = relief[i] as number;
+    floor[i] = Math.min(2, Math.floor(r * 3));
+    const p = centre(i % size, Math.floor(i / size));
+    // How far out the tile lies on the island it is most part of, in island radii: below 1 is land.
+    let reach = Infinity;
+    let other = Infinity;
+    let top = 0;
+    for (const c of isles) {
+      const dx = p.x - c.x;
+      const dy = p.y - c.y;
+      const u = (dx * c.cos + dy * c.sin) / c.stretch;
+      const v = (dy * c.cos - dx * c.sin) * c.stretch;
+      const q = Math.hypot(u, v) / c.r;
+      if (q < reach) {
+        other = reach;
+        reach = q;
+        top = c.top;
+      } else if (q < other) {
+        other = q;
+      }
+    }
+    // Where two islands would meet, a strait keeps them apart.
+    const strait = other - reach < ISLE_STRAIT;
+    reach += ((wobble[i] as number) - 0.5) * 0.9;
+    // Two steps of shore, then the island's top, which the broad noise dents by a step here and there.
+    land[i] = reach < 1 && !strait ? Math.min(top - Math.floor(r * 2), 4 + Math.floor((1 - reach) * 12)) : 0;
+  }
+  // The islands as they came out: every group of touching land tiles. Specks sink back into the sea.
+  const islands: number[][] = [];
+  const seen = new Uint8Array(size * size);
+  for (let start = 0; start < land.length; start++) {
+    if (land[start] === 0 || seen[start] === 1) continue;
+    const island = [start];
+    seen[start] = 1;
+    for (let k = 0; k < island.length; k++) {
+      const i = island[k] as number;
+      within(size, size, i % size, Math.floor(i / size), 1, (j) => {
+        if (land[j] !== 0 && seen[j] !== 1) {
+          seen[j] = 1;
+          island.push(j);
+        }
+      });
+    }
+    if (island.length >= ISLE_LEAST) islands.push(island);
+    else for (const i of island) land[i] = 0;
+  }
+  for (let i = 0; i < relief.length; i++) {
+    const h = land[i] === 0 ? (floor[i] as number) : (land[i] as number);
+    if (land[i] === 0) stone[i] = 0;
+    relief[i] = (h + 0.5) / 10;
+  }
+  return islands;
 }
 
 /** The noise level above which `share` of the values lie. */
@@ -132,31 +308,61 @@ export function generate(level: LevelDef): Game {
   const height = new Int8Array(size * size);
   const relief = fractal(rng, size, 3);
   const stone = fractal(rng, size, 8);
-  shape(relief, size, level.landform ?? "hills");
+  const ends = shape(relief, size, level.landform ?? "hills");
+  // An archipelago draws its islands over the noise that shape() left alone.
+  const isles = level.landform === "archipelago" ? archipelago(rng, relief, stone, size) : undefined;
   const rockAbove = level.rock === undefined ? 0.82 : quantile(stone, level.rock);
   for (let i = 0; i < height.length; i++) {
     height[i] =
-      (stone[i] as number) > rockAbove
+      (stone[i] as number) > rockAbove || ends?.rock?.[i] === 1
         ? ROCK
         : Math.min(MAX_HEIGHT, Math.floor((relief[i] as number) * 10));
   }
   const at = (x: number, y: number): number => height[y * size + x] as number;
 
-  // The lander takes one of the highest spots away from the edge, or middling ground near the centre.
-  let best = -1;
-  for (let y = 5; y < size - 5; y++) {
-    for (let x = 5; x < size - 5; x++) best = Math.max(best, at(x, y));
-  }
+  // The lander takes the spot its landform gives it, or else one of the highest spots away from the edge, or
+  // middling ground near the centre.
   const spots: Tile[] = [];
-  const middle = size >> 1;
-  for (let y = 5; y < size - 5; y++) {
-    for (let x = 5; x < size - 5; x++) {
-      const fits =
-        level.lowStart === true
-          ? at(x, y) === Math.ceil(best / 2) &&
-            distance(x, y, middle, middle) < size / 4
-          : at(x, y) >= best - 1;
-      if (fits) spots.push({ x, y });
+  if (ends) {
+    within(size, size, ends.lander.x, ends.lander.y, 2, (i, _steps, x, y) => {
+      if (height[i] !== ROCK) spots.push({ x, y });
+    });
+  } else if (isles) {
+    // Away from the map's edge on the island of middling size, among those with room for the lander and a ring of
+    // land round it.
+    const room = isles
+      .map((island) => {
+        const own = new Set(island);
+        const inland: Tile[] = [];
+        for (const i of island) {
+          const x = i % size;
+          const y = Math.floor(i / size);
+          let fits = height[i] !== ROCK && x >= 5 && y >= 5 && x < size - 5 && y < size - 5;
+          within(size, size, x, y, 2, (j) => {
+            if (!own.has(j)) fits = false;
+          });
+          if (fits) inland.push({ x, y });
+        }
+        return { tiles: island.length, inland };
+      })
+      .filter((island) => island.inland.length > 0)
+      .sort((a, b) => a.tiles - b.tiles);
+    spots.push(...(room[room.length >> 1]?.inland ?? []));
+  } else {
+    let best = -1;
+    for (let y = 5; y < size - 5; y++) {
+      for (let x = 5; x < size - 5; x++) best = Math.max(best, at(x, y));
+    }
+    const middle = size >> 1;
+    for (let y = 5; y < size - 5; y++) {
+      for (let x = 5; x < size - 5; x++) {
+        const fits =
+          level.lowStart === true
+            ? at(x, y) === Math.ceil(best / 2) &&
+              distance(x, y, middle, middle) < size / 4
+            : at(x, y) >= best - 1;
+        if (fits) spots.push({ x, y });
+      }
     }
   }
   const lander = spots[int(rng, spots.length)] ?? {
@@ -170,12 +376,14 @@ export function generate(level: LevelDef): Game {
   });
   const fromLander = (p: Tile): number => distance(p.x, p.y, lander.x, lander.y);
 
-  // Vents sit in the lowest ground far from the lander, spread apart.
+  // Vents sit in the lowest ground far from the lander, or where the landform puts them, spread apart.
+  const ventArea = (p: Tile): boolean =>
+    ends ? distance(p.x, p.y, ends.vents.x, ends.vents.y) <= ends.reach : fromLander(p) >= size * 0.35;
   const low: (Tile & { key: number })[] = [];
   for (let y = 3; y < size - 3; y++) {
     for (let x = 3; x < size - 3; x++) {
       const p = { x, y };
-      if (at(x, y) !== ROCK && fromLander(p) >= size * 0.35) {
+      if (at(x, y) !== ROCK && ventArea(p)) {
         low.push({ x, y, key: at(x, y) + next(rng) * 0.99 });
       }
     }
@@ -197,7 +405,7 @@ export function generate(level: LevelDef): Game {
     }
     if (first) vents.push({ x: first.x, y: first.y });
   }
-  for (let spread = size * 0.25; vents.length < level.vents.count; spread /= 2) {
+  for (let spread = ends ? ends.reach : size * 0.25; vents.length < level.vents.count; spread /= 2) {
     for (const p of low) {
       if (vents.length >= level.vents.count) break;
       if (far(p, vents, spread)) vents.push({ x: p.x, y: p.y });
@@ -210,10 +418,12 @@ export function generate(level: LevelDef): Game {
   const tweaks = vents.map((p): VentTweak => level.vents.each?.[nearest.indexOf(p)] ?? {});
 
   const taken: Tile[] = [lander, ...vents];
+  // With a sea on the map, lodes and spitters stand on land above it.
+  const ashore = (p: Tile): boolean => level.sea === undefined || at(p.x, p.y) > level.sea;
   const pick = (ok: (p: Tile) => boolean, gap: number): Tile | undefined => {
     for (let tries = 0; tries < 400; tries++) {
       const p = { x: 2 + int(rng, size - 4), y: 2 + int(rng, size - 4) };
-      if (at(p.x, p.y) !== ROCK && far(p, taken, gap) && ok(p)) {
+      if (at(p.x, p.y) !== ROCK && far(p, taken, gap) && ashore(p) && ok(p)) {
         taken.push(p);
         return p;
       }
@@ -267,7 +477,7 @@ export function generate(level: LevelDef): Game {
         amount: level.vents.amount * (tweak.amount ?? 1),
         ramp: level.vents.ramp,
         // Staggered so the vents do not pulse in unison.
-        timer: period + n * 17 + Math.round((tweak.delay ?? 0) * TICK_HZ),
+        timer: period + n * VENT_STAGGER + Math.round((tweak.delay ?? 0) * TICK_HZ),
         capped: false,
         pressure: 0,
       };
@@ -292,6 +502,8 @@ export function generate(level: LevelDef): Game {
     rateOut: 0,
     accIn: 0,
     accOut: 0,
+    flow: emptyFlow(),
+    history: emptyHistory(),
   };
   const base: Structure = {
     id: 1,
@@ -312,9 +524,18 @@ export function generate(level: LevelDef): Game {
   };
   game.structures.push(base);
   for (const i of footprint(game, "lander", lander.x, lander.y)) game.occ[i] = base.id;
+  const sea = level.sea;
+  if (sea !== undefined) {
+    // Level, as if it had been standing for long: every open tile below the surface is covered up to it.
+    height.forEach((ground, i) => {
+      if (ground !== ROCK && ground < sea) game.silt[i] = sea - ground;
+    });
+  }
   if (level.flood !== undefined) {
     preflood(game, level.flood, tweaks.map((t) => (t.delay ?? 0) > 0));
   }
+  // The first sample, so the graphs start where the game does.
+  sample(game);
   return game;
 }
 

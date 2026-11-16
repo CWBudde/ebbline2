@@ -6,7 +6,8 @@ export { placeError, type PlaceError } from "./structures.ts";
 export { BOOST, reaches, linkLength, linksAt } from "./grid.ts";
 export { globAt } from "./weapons.ts";
 export { HARVEST_RANGE, HARVEST_RATE, harvestIncome, harvestPending, harvestPreview } from "./harvest.ts";
-export { pulseAmount, ventDry } from "./silt.ts";
+export { pulseAmount, ventAsleep, ventDry } from "./silt.ts";
+export { HISTORY_EVERY, HISTORY_MAX } from "./history.ts";
 export { save, load, fingerprint, SAVE_SCHEMA } from "./save.ts";
 export {
   CAMPAIGN,
