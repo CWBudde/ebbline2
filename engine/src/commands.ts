@@ -1,5 +1,6 @@
 // Everything the player can do, as data. Applying the same commands at the same ticks replays a game.
 
+import { floorCanBeGraded } from "./movingFloor.ts";
 import { updateHarvest } from "./harvest.ts";
 import { dismantle, place } from "./structures.ts";
 import {
@@ -41,7 +42,7 @@ export function apply(game: Game, command: Command): Event[] {
       const height = Math.max(-1, Math.min(MAX_HEIGHT, Math.round(command.height)));
       for (const i of command.tiles) {
         const ground = game.height[i];
-        if (ground === undefined || ground === ROCK) continue;
+        if (ground === undefined || ground === ROCK || !floorCanBeGraded(game, i)) continue;
         game.mark[i] = ground === height ? -1 : height;
       }
       break;

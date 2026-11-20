@@ -64,6 +64,11 @@ describe("terrain", () => {
         if (n === 0 && near !== undefined) {
           expect(d).toBeGreaterThanOrEqual(near);
           expect(d).toBeLessThanOrEqual(near + 2);
+        } else if (level.landform === "shoal-bend") {
+          // The clockwise bend puts the vents south of the lander, across the wide spur.
+          expect(vent.y).toBeGreaterThan(game.h / 2);
+          expect(lander.y).toBeLessThan(game.h / 2);
+          expect(d).toBeGreaterThanOrEqual(level.size * 0.35);
         } else {
           // A horseshoe puts them across the spur from the lander, a little closer as the crow flies but much
           // further round the valley.

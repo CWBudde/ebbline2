@@ -141,6 +141,7 @@ export const tr: Record<Key, string> = {
 
   "grade.title": "Zemini işaretle",
   "grade.text": "Bir hedef yükseklik seç, sonra karoları boya. Sekiz karo içindeki bir Greyder işi yapar.",
+  "grade.moving": "Buradaki zeminin bir kısmı yükselip alçalır ve işaretlenemez: üzerinde çerçeve kırmızıya döner.",
   "grade.erase": "Sil",
 
   "pause.title": "Duraklatıldı",
@@ -370,6 +371,22 @@ export const trContent: Content = {
       hints: [
         "Şebeke denizin üzerinden altı karo öteye uzanır ve boğazların çoğu bundan dardır. Geniş olanları Ana Hatlar aşar.",
         "Deniz tek parçadır: bir bacanın yanında yaktığın balçık her yerden geri akar. Ada tepelerindeki Mızraklar denizin tamamına yukarıdan bakar.",
+      ],
+    },
+    c11: {
+      name: "Hareketli Teraslar",
+      brief: "İniş alanının çevresindeki zemin basamaklar hâlinde yükselip milin yönünü değiştiriyor. İniş aracının yanındaki sabit halkadan ilerleyip bacaları kapat.",
+      hints: [
+        "İniş platosu tek parça hâlinde yükselir. Tesviye araçları çevresindeki sabit halkada çalışabilir.",
+        "Her değişimden sonra dış teraslarda inşaata başlamadan önce milin nereye aktığına bak.",
+      ],
+    },
+    c12: {
+      name: "Hareketli Sığlıklar",
+      brief: "Mil çoktan kıvrımı dönüp bulunduğun buruna doğru akıyor. Ağı adalar üzerinden ilerlet ve kanalın yukarısındaki bacaları kapat.",
+      hints: [
+        "Burun ve adaların tepeleri aktarıcılar ve silahlar için sağlam zemin sunar.",
+        "İki sığlık farklı zamanlarda yükselip alçalır. Milin hangi kanallara yöneldiğini izle.",
       ],
     },
   },

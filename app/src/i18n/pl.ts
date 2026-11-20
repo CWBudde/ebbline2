@@ -139,6 +139,7 @@ export const pl: Record<Key, string> = {
 
   "grade.title": "Oznacz teren",
   "grade.text": "Wybierz docelową wysokość, potem maluj pola. Równiarka w odległości najwyżej ośmiu pól wykona pracę.",
+  "grade.moving": "Część terenu wznosi się tu i opada, więc nie da się jej oznaczyć: nad nią obrys robi się czerwony.",
   "grade.erase": "Wymaż",
 
   "pause.title": "Wstrzymano",
@@ -369,6 +370,22 @@ export const plContent: Content = {
       hints: [
         "Sieć sięga sześć pól ponad morzem, a większość cieśnin jest węższa. Magistrale przeskakują nad szerokimi.",
         "Morze jest jedno: to, co wypalisz przy kominie, napływa z powrotem zewsząd. Lance na szczytach wysp widzą pod sobą całe morze.",
+      ],
+    },
+    c11: {
+      name: "Ruchome tarasy",
+      brief: "Teren wokół lądowiska podnosi się tarasami i zmienia bieg mułu. Wykorzystaj stabilny pierścień przy lądowniku, by dotrzeć do ujść i je zamknąć.",
+      hints: [
+        "Płaskowyż pod lądownikiem podnosi się w całości. Równiarki mogą pracować na otaczającym go stabilnym pierścieniu.",
+        "Po każdej zmianie sprawdź, dokąd płynie muł, zanim zaczniesz budować na zewnętrznych tarasach.",
+      ],
+    },
+    c12: {
+      name: "Ruchome mielizny",
+      brief: "Muł płynie już wokół zakrętu w stronę twojego cypla. Poprowadź sieć przez wyspy i zamknij ujścia w górze kanału.",
+      hints: [
+        "Cypel i wierzchołki wysp dają stabilne podłoże pod przekaźniki i broń.",
+        "Dwie mielizny wznoszą się i opadają w różnym czasie. Obserwuj, którymi odnogami płynie muł.",
       ],
     },
   },

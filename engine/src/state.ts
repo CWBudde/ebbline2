@@ -282,7 +282,9 @@ export type Objective =
  * "channels" cuts narrow, winding troughs between broad highlands; "terraces" flattens it into a few wide steps;
  * "horseshoe" carves a wide U-shaped valley round a high spur that falls gently from the
  * vents at the end of one arm to the lander at the end of the other; "archipelago" raises steep islands of
- * similar size out of a low sea floor and puts the lander on one of middling size.
+ * similar size out of a low sea floor and puts the lander on one of middling size; "shoal-bend" turns a widened
+ * horseshoe on its side, with the lander on a headland in the north-east and the vents in the south, sets steady
+ * islands in its channel and two shoals that rise and sink in turn.
  */
 export type Landform =
   | "hills"
@@ -292,7 +294,8 @@ export type Landform =
   | "channels"
   | "terraces"
   | "horseshoe"
-  | "archipelago";
+  | "archipelago"
+  | "shoal-bend";
 
 /** The colour scheme of the ground. Only the renderer reads it. */
 export type Ground = "earth" | "slate" | "sand" | "ash";
@@ -331,6 +334,11 @@ export interface LevelDef {
   readonly lodes: number;
   /** Puts the lander on middling ground instead of the heights. */
   readonly lowStart?: boolean;
+  /**
+   * The lander stands on a plateau that rises and sinks, and waves of rising ground travel outward from it over the
+   * whole map; only the ring between the plateau and the first wave stands still.
+   */
+  readonly movingFloor?: boolean;
   /** Shape of the terrain; "hills" when absent. */
   readonly landform?: Landform;
   /** Share of the map that is rock, roughly; 0.18 when absent. */
@@ -477,6 +485,7 @@ export type Event =
   /** x, y is where the glob was hit: a position in tile units (see centre()), not a tile. */
   | { kind: "intercept"; id: number; x: number; y: number; kill: boolean }
   | { kind: "graded"; tile: number }
+  | { kind: "floorMoved" }
   | { kind: "capped"; x: number; y: number }
   | { kind: "won" }
   | { kind: "lost" };

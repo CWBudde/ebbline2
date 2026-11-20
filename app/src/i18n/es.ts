@@ -141,6 +141,7 @@ export const es: Record<Key, string> = {
   "grade.title": "Marcar terreno",
   "grade.text":
     "Elige una altura objetivo y luego pinta casillas. Una Niveladora a ocho casillas como máximo hace el trabajo.",
+  "grade.moving": "Aquí parte del terreno sube y baja, y no se puede marcar: sobre él, el contorno se vuelve rojo.",
   "grade.erase": "Borrar",
 
   "pause.title": "En pausa",
@@ -371,6 +372,22 @@ export const esContent: Content = {
       hints: [
         "La red alcanza seis casillas por encima del mar, y casi todos los estrechos son más angostos. Las Troncales cruzan los anchos.",
         "El mar es uno solo: lo que quemas junto a una fumarola se vuelve a llenar desde todas partes. Las Lanzas en lo alto de las islas lo dominan entero.",
+      ],
+    },
+    c11: {
+      name: "Terrazas móviles",
+      brief: "El terreno se alza por terrazas alrededor de la zona de aterrizaje y desvía el limo. Avanza desde el anillo estable junto al módulo y sella los respiraderos.",
+      hints: [
+        "La meseta de aterrizaje se eleva en bloque. Las niveladoras pueden trabajar en el anillo estable que la rodea.",
+        "Tras cada cambio, fíjate por dónde corre el limo antes de construir en las terrazas exteriores.",
+      ],
+    },
+    c12: {
+      name: "Bajos móviles",
+      brief: "El limo ya rodea la curva hacia tu promontorio. Extiende la red de isla en isla y sella los respiraderos aguas arriba.",
+      hints: [
+        "El promontorio y las cimas de las islas ofrecen terreno firme para relés y armas.",
+        "Dos bajos suben y bajan en momentos distintos. Observa qué canales toma el limo.",
       ],
     },
   },

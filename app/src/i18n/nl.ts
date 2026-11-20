@@ -138,6 +138,8 @@ export const nl: Record<Key, string> = {
 
   "grade.title": "Grond markeren",
   "grade.text": "Kies een doelhoogte en schilder dan vakken. Een egaliseerder binnen acht vakken doet het werk.",
+  "grade.moving":
+    "Een deel van de grond rijst en zakt hier en kan niet worden gemarkeerd: de rand wordt daarboven rood.",
   "grade.erase": "Wissen",
 
   "pause.title": "Gepauzeerd",
@@ -368,6 +370,22 @@ export const nlContent: Content = {
       hints: [
         "Het net reikt zes vakken ver over de zee, en de meeste zeestraten zijn smaller. Hoofdlijnen overbruggen de brede.",
         "De zee is één geheel: wat je bij een bron wegbrandt, stroomt van overal weer aan. Lansen op de eilandtoppen kijken over de hele zee uit.",
+      ],
+    },
+    c11: {
+      name: "Schuivende terrassen",
+      brief: "De grond rond de landingsplek komt trapsgewijs omhoog en leidt het slib om. Gebruik de vaste ring bij de lander om op te rukken en de bronnen af te sluiten.",
+      hints: [
+        "Het landingsplateau stijgt als één geheel. Egaliseerders kunnen op de vaste ring eromheen werken.",
+        "Kijk na elke verschuiving waar het slib heen stroomt voordat je op de buitenste terrassen bouwt.",
+      ],
+    },
+    c12: {
+      name: "Bewegende ondiepten",
+      brief: "Het slib stroomt al om de bocht naar je landtong. Breid het net via de eilanden uit en sluit de bronnen stroomopwaarts af.",
+      hints: [
+        "De landtong en de eilandtoppen bieden vaste grond voor relais en wapens.",
+        "Twee ondiepten komen op verschillende momenten omhoog en zakken weer. Let op welke geulen het slib neemt.",
       ],
     },
   },

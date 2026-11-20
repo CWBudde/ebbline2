@@ -2,6 +2,7 @@
 
 import { ROW, centre, distance, extent, span, tileAtPoint, within, type Tile } from "./hex.ts";
 import { emptyHistory, sample } from "./history.ts";
+import { prepareMovingGround, rotateBend, unrotateBend } from "./movingFloor.ts";
 import { int, next, type RngState } from "./rng.ts";
 import { flow, stepVents, VENT_STAGGER } from "./silt.ts";
 import {
@@ -13,7 +14,6 @@ import {
   ROCK,
   emptyFlow,
   type Game,
-  type Landform,
   type LevelDef,
   type Structure,
   type VentTweak,
@@ -99,9 +99,11 @@ interface Ends {
  * to the east and the lander's to the west. Its floor falls gently from the end of the vents' arm, all the way round
  * the bend, to the end of the lander's arm, so the silt runs round to the lander. The rims stand at the top height,
  * and a thin spine of rock along the crest of the spur between the arms keeps a full vents' arm from spilling
- * straight across to the lander; the grid still reaches over it.
+ * straight across to the lander; the grid still reaches over it. For the shoal bend the valley is a little wider
+ * and the whole layout is turned (see rotateBend), so `at` and `spine` take points of the unturned layout while the
+ * ends are tiles of the map.
  */
-function horseshoe(size: number): {
+function horseshoe(size: number, shoals: boolean): {
   /** Distance to the valley's middle line and how far along it, from 0 at the vents to 1 at the lander. */
   readonly at: (px: number, py: number) => { readonly off: number; readonly along: number };
   /** How far a point lies from the rock spine along the spur's crest, which keeps the silt from going over it. */
@@ -113,7 +115,7 @@ function horseshoe(size: number): {
   const by = size * ROW * 0.5;
   const arm = size * 0.17;
   const top = size * ROW * 0.18;
-  const half = size * 0.1;
+  const half = size * (shoals ? 0.104 : 0.1);
   const length = 2 * (by - top) + Math.PI * arm;
   const at = (px: number, py: number): { off: number; along: number } => {
     if (py > by) {
@@ -130,30 +132,47 @@ function horseshoe(size: number): {
       ? { off: east, along: (y - top) / length }
       : { off: west, along: 1 - (y - top) / length };
   };
+  const end = (x: number, y: number): Tile => {
+    const p = shoals ? rotateBend({ x, y }, size) : { x, y };
+    return tileAtPoint(p.x, p.y);
+  };
   return {
     at,
     spine: (px, py) => Math.hypot(px - bx, Math.max(0, py - by - (arm - half) * 0.5)),
     half,
     ends: {
-      lander: tileAtPoint(bx - arm, top + 1),
-      vents: tileAtPoint(bx + arm, top + half * 0.6),
+      lander: end(bx - arm, top + 1),
+      vents: end(bx + arm, top + half * 0.6),
       reach: Math.round(half),
     },
   };
 }
 
+// The islands of the shoal bend, in its unturned layout: centre x, y and radius as fractions of the map's width,
+// and the height of the top on the 0..1 relief.
+const BEND_ISLANDS = [
+  [0.335, 0.165, 0.09, 0.47], // Landing headland.
+  [0.363, 0.326, 0.064, 0.72],
+  [0.404, 0.541, 0.069, 0.80],
+  [0.558, 0.556, 0.065, 0.74],
+  [0.681, 0.399, 0.064, 0.94],
+] as const;
+
 /**
  * Bends 0..1 relief into the given landform, in place; "hills" leaves it as it is. Returns where the lander and
  * the vents go, and where there must be rock, if the landform decides that.
  */
-function shape(relief: Float32Array, size: number, landform: Landform): Ends | undefined {
+function shape(relief: Float32Array, size: number, level: LevelDef): Ends | undefined {
+  const landform = level.landform ?? "hills";
   if (landform === "hills") return undefined;
-  if (landform === "horseshoe") {
-    const valley = horseshoe(size);
+  const shoals = landform === "shoal-bend";
+  if (landform === "horseshoe" || shoals) {
+    const valley = horseshoe(size, shoals);
     const rock = new Uint8Array(relief.length);
     for (let i = 0; i < relief.length; i++) {
       const r = relief[i] as number;
-      const p = centre(i % size, Math.floor(i / size));
+      const tile = centre(i % size, Math.floor(i / size));
+      const p = shoals ? unrotateBend(tile, size) : tile;
       const { off, along } = valley.at(p.x, p.y);
       if (valley.spine(p.x + (r - 0.5) * 3, p.y) < 1.2) rock[i] = 1;
       // The noise makes the walls wander a little and roughens the floor.
@@ -161,7 +180,16 @@ function shape(relief: Float32Array, size: number, landform: Landform): Ends | u
       // The rims stand at the top height, so the silt has to go round; further off, the high ground rolls a little.
       const wall = 1 - 0.3 * r * smooth(Math.max(0, Math.min(1, (off - valley.half - 4) / 6)));
       const floor = 0.02 + 0.4 * (1 - along) + 0.12 * (r - 0.5);
-      relief[i] = wall + (floor - wall) * inside;
+      let elevation = wall + (floor - wall) * inside;
+      if (shoals) {
+        // Island shores follow the channel's existing noise so they break up the bend unevenly.
+        for (const [x, y, radius, top] of BEND_ISLANDS) {
+          const distance = Math.hypot(p.x - x * size, p.y - y * size) + (r - 0.5) * 2;
+          const shore = smooth(Math.max(0, Math.min(1, (radius * size - distance) / 2)));
+          elevation = Math.max(elevation, floor + (top - floor) * shore);
+        }
+      }
+      relief[i] = elevation;
     }
     normalise(relief);
     return { ...valley.ends, rock };
@@ -308,7 +336,7 @@ export function generate(level: LevelDef): Game {
   const height = new Int8Array(size * size);
   const relief = fractal(rng, size, 3);
   const stone = fractal(rng, size, 8);
-  const ends = shape(relief, size, level.landform ?? "hills");
+  const ends = shape(relief, size, level);
   // An archipelago draws its islands over the noise that shape() left alone.
   const isles = level.landform === "archipelago" ? archipelago(rng, relief, stone, size) : undefined;
   const rockAbove = level.rock === undefined ? 0.82 : quantile(stone, level.rock);
@@ -365,15 +393,13 @@ export function generate(level: LevelDef): Game {
       }
     }
   }
-  const lander = spots[int(rng, spots.length)] ?? {
-    x: size >> 1,
-    y: size >> 1,
-  };
+  const lander = spots[int(rng, spots.length)] ?? { x: size >> 1, y: size >> 1 };
   // The lander's own seven tiles are levelled; the two rings around them only lose their rock.
   const ground = Math.max(0, at(lander.x, lander.y));
   within(size, size, lander.x, lander.y, 3, (i, steps) => {
     if (steps <= KINDS.lander.radius || height[i] === ROCK) height[i] = ground;
   });
+  prepareMovingGround(height, size, level, lander);
   const fromLander = (p: Tile): number => distance(p.x, p.y, lander.x, lander.y);
 
   // Vents sit in the lowest ground far from the lander, or where the landform puts them, spread apart.

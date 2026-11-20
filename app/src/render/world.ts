@@ -6,6 +6,7 @@ import {
   BUILDABLE,
   KINDS,
   ROW,
+  floorCanBeGraded,
   globAt,
   harvestPending,
   harvestPreview,
@@ -30,6 +31,7 @@ import {
   bakeTerrain,
   paintSilt,
   rebakeTile,
+  repaintTerrain,
   siltLayout,
   type Materials,
   type SiltLayout,
@@ -261,8 +263,10 @@ export class Renderer {
     this.world.position.set(-view.x * view.zoom, -view.y * view.zoom);
     const px = 1 / view.zoom;
 
-    if (rt.regraded.length > 0 && this.groundCanvas) {
-      for (const tile of rt.regraded) rebakeTile(this.groundCanvas, game, tile);
+    if ((rt.floorMoved || rt.regraded.length > 0) && this.groundCanvas) {
+      if (rt.floorMoved) repaintTerrain(this.groundCanvas, game);
+      else for (const tile of rt.regraded) rebakeTile(this.groundCanvas, game, tile);
+      rt.floorMoved = false;
       rt.regraded = [];
       this.ground.texture.source.update();
     }
@@ -507,7 +511,8 @@ export class Renderer {
         }
       }
     } else if (hover && tool.kind === "grade") {
-      over.poly(hexPoints(hover.x, hover.y)).stroke({ width: 2, color: COLORS.utility });
+      const canGrade = floorCanBeGraded(game, hover.y * game.w + hover.x);
+      over.poly(hexPoints(hover.x, hover.y)).stroke({ width: 2, color: canGrade ? COLORS.utility : COLORS.bad });
     }
   }
 

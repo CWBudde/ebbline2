@@ -1,5 +1,6 @@
 export * from "./state.ts";
 export { apply, type Command } from "./commands.ts";
+export { floorCanBeGraded, hasMovingGround } from "./movingFloor.ts";
 export { step } from "./step.ts";
 export { generate } from "./terrain.ts";
 export { placeError, type PlaceError } from "./structures.ts";

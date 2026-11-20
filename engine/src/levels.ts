@@ -31,7 +31,9 @@ const NO_SPITTERS = { count: 0, period: 0, amount: 0 } as const;
 // a second, stronger vent behind you, c3 is already flooded deep, c4 is distance against a fast ramp, c5 is many
 // fronts round a mesa, c6 is a vent on your doorstep while the clock runs, c7 is a barrage from one side and c8
 // is all of it at once. c9 sends a flood round a valley bend to the lander's door while you go for its source.
-// c10 starts in a sea that already stands deep, to be burnt back from island to island.
+// c10 starts in a sea that already stands deep, to be burnt back from island to island. In c11 the ground itself
+// moves: waves of it roll outward from the lander and turn the silt this way and that. c12 sends a flood round a
+// bend again, now through a channel of islands where two shoals rise and sink.
 export const CAMPAIGN: readonly LevelDef[] = [
   {
     // A ridge above a long valley with the vent at its bottom, its pool already spreading. No lodes: the lander's
@@ -241,6 +243,52 @@ export const CAMPAIGN: readonly LevelDef[] = [
     hints: [
       "The grid reaches six tiles across the sea, and most straits are narrower. Trunks span the wide ones.",
       "The sea is all one: what you burn by a vent flows back from everywhere else. Lances on the island tops look down on all of it.",
+    ],
+  },
+  {
+    // Hills with the lander on their heights, a vent ten tiles away and two more beyond. Every eight seconds the
+    // plateau under the lander and waves of ground round it rise or sink a step; the waves travel outward and lift
+    // the silt on them, so it runs off their crests into the troughs behind. Only the ring between the plateau and
+    // the first wave stands still, and it is all the graders can work: raised, it is a dike round the lander.
+    id: "c11",
+    name: "Shifting Terraces",
+    brief: "The floor rises in terraces around your landing site, sending silt down different slopes as it moves. Use the steady ring near the lander to stage your push and cap the vents.",
+    seed: 11017,
+    size: 48,
+    vents: { count: 3, period: 60, amount: 11, ramp: 0.15, near: 10 },
+    spitters: { count: 2, period: 600, amount: 10 },
+    lodes: 8,
+    movingFloor: true,
+    ground: "slate",
+    allowed: EVERYTHING,
+    objective: { kind: "cap" },
+    hints: [
+      "The landing plateau rises as one piece. Graders can work on the steady ring just outside it.",
+      "Watch which way the silt runs after each shift before building on the outer terraces.",
+    ],
+  },
+  {
+    // The horseshoe of c9 turned on its side and widened, with steady islands in its channel. The lander stands on a
+    // headland at the end of the north arm, the vents at the head of the south arm, and the flood has run for a
+    // minute and a half. Two shoals in the channel rise and sink in turn and send the stream round the islands by
+    // different ways. The islands carry the grid and the lances across.
+    id: "c12",
+    name: "Drifting Shoals",
+    brief: "Silt is already moving around the bend toward your headland. Extend the grid across the islands and cap the vents upstream.",
+    seed: 12017,
+    size: 48,
+    vents: { count: 3, period: 60, amount: 12.5, ramp: 0.2 },
+    spitters: { count: 1, period: 840, amount: 5 },
+    lodes: 9,
+    landform: "shoal-bend",
+    rock: 0.02,
+    flood: 90,
+    ground: "sand",
+    allowed: EVERYTHING,
+    objective: { kind: "cap" },
+    hints: [
+      "The headland and island tops are steady ground for relays and weapons.",
+      "Two shoals rise and sink at different times. Watch which channels the silt takes as they shift.",
     ],
   },
 ];

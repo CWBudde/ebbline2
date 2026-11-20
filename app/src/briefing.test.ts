@@ -17,11 +17,15 @@ describe("briefingPlan", () => {
       [],
       // c10
       [],
+      // c11
+      [],
+      // c12
+      [],
     ]);
   });
 
   it("numbers the mission and states its goal", () => {
-    expect(briefingPlan("c1")).toMatchObject({ number: 1, total: 10, goal: { kind: "cap", vents: 1 } });
+    expect(briefingPlan("c1")).toMatchObject({ number: 1, total: 12, goal: { kind: "cap", vents: 1 } });
     expect(briefingPlan("c2")).toMatchObject({ number: 2, goal: { kind: "cap", vents: 2 } });
     expect(briefingPlan("c6")).toMatchObject({ number: 6, goal: { kind: "survive", minutes: 10 } });
   });

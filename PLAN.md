@@ -8,8 +8,10 @@ on hexagonal tiles instead of squares. Ranges are counted in steps from tile to 
 
 - [x] Hex geometry, and the engine ported to hexagons (`engine/`).
 - [x] Hex drawing and picking in the app.
-- [x] Campaign of ten missions (`c1` to `c10`), replacing the fourteen square-grid ones; the
-      interface text of all eleven languages covers them.
+- [x] Campaign of twelve missions (`c1` to `c12`), replacing the fourteen square-grid ones; the
+      interface text of all thirteen languages covers them.
+- [x] Moving ground (`movingFloor.ts`): waves that roll out from the lander in c11, and shoals that
+      rise and sink in turn in c12's bend.
 - [x] Earthy brown ground.
 - [x] Hex art: structures on hexagonal plates, the seven-tile lander, vent, spitter, lode and the
       briefing illustrations (`app/public/art/`; prompts in `art/`).

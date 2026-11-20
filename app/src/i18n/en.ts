@@ -124,6 +124,7 @@ export const en = {
 
   "grade.title": "Mark ground",
   "grade.text": "Pick a target height, then paint tiles. A Grader within eight tiles does the work.",
+  "grade.moving": "Some ground here rises and sinks, and it cannot be marked: the outline turns red over it.",
   "grade.erase": "Erase",
 
   "pause.title": "Paused",

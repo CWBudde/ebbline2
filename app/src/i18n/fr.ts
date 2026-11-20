@@ -141,6 +141,8 @@ export const fr: Record<Key, string> = {
   "grade.title": "Marquer le terrain",
   "grade.text":
     "Choisis une hauteur cible, puis peins les cases. Une Niveleuse à huit cases au plus fait le travail.",
+  "grade.moving":
+    "Ici, une partie du terrain monte et descend, et elle ne peut pas être marquée : au-dessus, le contour devient rouge.",
   "grade.erase": "Effacer",
 
   "pause.title": "En pause",
@@ -371,6 +373,22 @@ export const frContent: Content = {
       hints: [
         "Le réseau porte à six cases par-dessus la mer, et la plupart des détroits sont moins larges. Les Artères franchissent les plus grands.",
         "La mer ne fait qu'un : ce que tu brûles près d'un évent revient de partout ailleurs. Les Lances au sommet des îles dominent toute la mer.",
+      ],
+    },
+    c11: {
+      name: "Terrasses mouvantes",
+      brief: "Le sol se soulève par paliers autour du site d’atterrissage et dévie le limon. Appuie-toi sur l’anneau stable près du module pour coiffer les évents.",
+      hints: [
+        "Le plateau d’atterrissage se soulève d’un bloc. Les niveleuses peuvent travailler sur l’anneau stable qui l’entoure.",
+        "Après chaque mouvement, observe où coule le limon avant de construire sur les terrasses extérieures.",
+      ],
+    },
+    c12: {
+      name: "Hauts-fonds mouvants",
+      brief: "Le limon contourne déjà la crête et se dirige vers ton promontoire. Étends le réseau d’île en île et coiffe les évents en amont.",
+      hints: [
+        "Le promontoire et les sommets des îles offrent un sol stable pour les relais et les armes.",
+        "Deux hauts-fonds montent et descendent à des moments différents. Observe les chenaux que le limon emprunte.",
       ],
     },
   },

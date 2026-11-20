@@ -140,6 +140,8 @@ export const de: Record<Key, string> = {
   "grade.title": "Boden markieren",
   "grade.text":
     "Wähl eine Zielhöhe und markier dann die Felder. Ein Planierer in höchstens acht Feldern Entfernung erledigt die Arbeit.",
+  "grade.moving":
+    "Ein Teil des Bodens hebt und senkt sich hier und lässt sich nicht markieren: Darüber wird der Rahmen rot.",
   "grade.erase": "Löschen",
 
   "pause.title": "Pausiert",
@@ -370,6 +372,22 @@ export const deContent: Content = {
       hints: [
         "Das Netz reicht sechs Felder weit über das Meer, und die meisten Meerengen sind schmaler. Trassen überbrücken die breiten.",
         "Das Meer ist ein einziges: Was du an einem Schlot wegbrennst, fließt von überall her nach. Lanzen auf den Inselhöhen blicken auf alles hinab.",
+      ],
+    },
+    c11: {
+      name: "Wandernde Terrassen",
+      brief: "Der Boden um den Landeplatz hebt und senkt sich in Stufen und lenkt den Schlick um. Nutze den festen Ring am Lander und verschließ die Schlote.",
+      hints: [
+        "Das Landeplateau hebt sich als Ganzes. Planierer können auf dem festen Ring direkt daneben arbeiten.",
+        "Achte nach jeder Verschiebung darauf, wohin der Schlick fließt, bevor du auf den äußeren Terrassen baust.",
+      ],
+    },
+    c12: {
+      name: "Wandernde Untiefen",
+      brief: "Der Schlick strömt schon um die Biegung auf deine Landzunge zu. Zieh das Netz über die Inseln und verschließ die Schlote stromaufwärts.",
+      hints: [
+        "Die Landzunge und die Inselkuppen bieten festen Grund für Relais und Waffen.",
+        "Zwei Untiefen heben und senken sich zu verschiedenen Zeiten. Achte darauf, durch welche Rinnen der Schlick fließt.",
       ],
     },
   },

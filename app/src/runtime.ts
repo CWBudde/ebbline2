@@ -59,6 +59,7 @@ export class Runtime {
   fx: Fx[] = [];
   /** Tiles whose ground changed since the renderer last looked. */
   regraded: number[] = [];
+  floorMoved = false;
   private acc = 0;
   private sinceHud = 0;
 
@@ -145,6 +146,9 @@ export class Runtime {
           break;
         case "capped":
           this.sparkAt(e.x, e.y, { kind: "ring", radius: 5, color: 0xffffff, life: 1200 });
+          break;
+        case "floorMoved":
+          this.floorMoved = true;
           break;
         case "graded":
           this.regraded.push(e.tile);

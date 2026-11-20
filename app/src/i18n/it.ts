@@ -140,6 +140,7 @@ export const it: Record<Key, string> = {
   "grade.title": "Segna il terreno",
   "grade.text":
     "Scegli un'altezza obiettivo, poi segna le caselle. Una livellatrice entro otto caselle fa il lavoro.",
+  "grade.moving": "Qui parte del terreno sale e scende, e non si può segnare: sopra di esso il contorno diventa rosso.",
   "grade.erase": "Cancella",
 
   "pause.title": "In pausa",
@@ -370,6 +371,22 @@ export const itContent: Content = {
       hints: [
         "La rete arriva a sei caselle oltre il mare, e quasi tutti i bracci di mare sono più corti. Le dorsali superano quelli larghi.",
         "Il mare è uno solo: ciò che bruci vicino a uno sfiato torna a riempirsi da ogni parte. Le lance in cima alle isole lo dominano tutto.",
+      ],
+    },
+    c11: {
+      name: "Terrazze mobili",
+      brief: "Il terreno si solleva a terrazze attorno al punto di atterraggio e devia il limo. Avanza dall’anello stabile vicino al lander e sigilla gli sfiati.",
+      hints: [
+        "Il pianoro di atterraggio si solleva tutto insieme. Le livellatrici possono lavorare sull’anello stabile che lo circonda.",
+        "Dopo ogni spostamento, osserva dove scorre il limo prima di costruire sulle terrazze esterne.",
+      ],
+    },
+    c12: {
+      name: "Secche mobili",
+      brief: "Il limo ha già imboccato la curva verso il tuo promontorio. Estendi la rete da un’isola all’altra e sigilla gli sfiati a monte.",
+      hints: [
+        "Il promontorio e le sommità delle isole offrono terreno stabile per ripetitori e armi.",
+        "Due secche si alzano e si abbassano in momenti diversi. Osserva i canali che il limo imbocca.",
       ],
     },
   },

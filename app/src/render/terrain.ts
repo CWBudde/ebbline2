@@ -344,9 +344,17 @@ export function bakeTerrain(game: Game, materials: Materials = {}): HTMLCanvasEl
       hatch: hatching(ctx),
     };
     PATTERNS.set(canvas, patterns);
-    paint(ctx, game, patterns, Array.from({ length: game.w * game.h }, (_, i) => i));
+    repaintTerrain(canvas, game);
   }
   return canvas;
+}
+
+export function repaintTerrain(canvas: HTMLCanvasElement, game: Game): void {
+  const ctx = canvas.getContext("2d");
+  const patterns = PATTERNS.get(canvas);
+  if (!ctx || !patterns) return;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  paint(ctx, game, patterns, Array.from({ length: game.w * game.h }, (_, i) => i));
 }
 
 /** Redraws a tile and its six neighbours after the ground changed, and nothing outside them. */

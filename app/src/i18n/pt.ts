@@ -143,6 +143,7 @@ export const pt: Record<Key, string> = {
   "grade.title": "Marcar terreno",
   "grade.text":
     "Escolha uma altura alvo e pinte as casas. Uma niveladora a até oito casas faz o trabalho.",
+  "grade.moving": "Aqui parte do terreno sobe e desce, e não pode ser marcada: sobre ela, o contorno fica vermelho.",
   "grade.erase": "Apagar",
 
   "pause.title": "Pausado",
@@ -373,6 +374,22 @@ export const ptContent: Content = {
       hints: [
         "A rede alcança seis casas por cima do mar, e a maioria dos estreitos é mais curta. Os troncos vencem os largos.",
         "O mar é um só: o que você queima junto a uma fenda volta a encher de todos os lados. As lanças no alto das ilhas enxergam o mar inteiro lá embaixo.",
+      ],
+    },
+    c11: {
+      name: "Terraços móveis",
+      brief: "O solo sobe em terraços à volta da zona de aterragem e desvia o lodo. Avança a partir do anel estável junto ao módulo e sela as saídas.",
+      hints: [
+        "O planalto de aterragem sobe como um bloco. As niveladoras podem trabalhar no anel estável à sua volta.",
+        "Depois de cada mudança, vê para onde corre o lodo antes de construíres nos terraços exteriores.",
+      ],
+    },
+    c12: {
+      name: "Baixios móveis",
+      brief: "O lodo já contorna a curva em direção ao teu promontório. Estende a rede de ilha em ilha e sela as saídas a montante.",
+      hints: [
+        "O promontório e os pontos altos das ilhas são terreno firme para relés e armas.",
+        "Dois baixios sobem e descem em momentos diferentes. Observa por que canais corre o lodo.",
       ],
     },
   },

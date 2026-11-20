@@ -7,6 +7,7 @@ import {
   TICK_HZ,
   find,
   footprint,
+  hasMovingGround,
   type Kind,
   type Structure,
 } from "@ebbline2/engine";
@@ -294,6 +295,7 @@ function Info({ c, rt }: { c: Controller; rt: Runtime; hud: Hud }) {
       <aside class="info">
         <h3>{t("grade.title")}</h3>
         <p>{t("grade.text")}</p>
+        {hasMovingGround(level) && <p>{t("grade.moving")}</p>}
         <div class="heights">
           {Array.from({ length: 10 }, (_, height) => (
             <button
