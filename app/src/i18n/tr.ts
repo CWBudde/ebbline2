@@ -118,6 +118,7 @@ export const tr: Record<Key, string> = {
   "build.mark.title": "Greyderlerin yükselteceği ya da alçaltacağı zemini işaretle",
   "key.slot11": "*",
   "key.slot12": "-",
+  "key.slot13": ",",
   "key.delete": "Del",
 
   "status.offGrid": "Şebeke dışında: altı karo içinde tamamlanmış bir Direk gerekiyor",
@@ -125,6 +126,10 @@ export const tr: Record<Key, string> = {
   "status.off": "Kapalı",
   "status.damaged": "Hasarlı, onarılıyor",
   "status.working": "Çalışıyor",
+  "status.loading": "Uçak yükleniyor",
+  "status.inFlight": "Uçak hedefe gidiyor",
+  "status.bombing": "Uçak bombalıyor",
+  "status.returning": "Uçak geri dönüyor",
 
   "info.cost": "{cost} enerji",
   "info.range": "Menzil {range}",
@@ -195,6 +200,8 @@ export const tr: Record<Key, string> = {
     "Topaklar, beş karo içinde en çok komşusu olan yapıyı hedef alır; yani bir sonrakinin nereye düşeceğini bilirsin: orada bir Önleyici bulundur.",
   "tip.survive":
     "Enerjini uzağa erişmeye değil, iniş aracının çevresindeki savunmaya harca: bacalar her dakika güçlenir, bu yüzden en zoru son dakikalardır.",
+  "tip.airfield":
+    "Uçak, şebekeniz nerede olursa olsun, haritanın tamamındaki en kötü balçığa gider. Evde kalması için Hava Alanı'nı kapat.",
 
   "end.won": "Bacalar mühürlendi",
   "end.won.survive.title": "Dayandın",
@@ -296,6 +303,7 @@ export const trContent: Content = {
       name: "Kapak",
       blurb: "Kuru bir bacayı inşa sürerken kapalı tutar, sonra onu kalıcı olarak mühürler.",
     },
+    airfield: { name: "Hava Alanı", blurb: "Bir uçağa otuz enerji yükler. Dolunca uçak haritadaki en derin balçığa uçar, onu bombalar ve yeniden yüklenmek için döner." },
   },
   levels: {
     c1: {
@@ -371,6 +379,7 @@ export const trContent: Content = {
       hints: [
         "Şebeke denizin üzerinden altı karo öteye uzanır ve boğazların çoğu bundan dardır. Geniş olanları Ana Hatlar aşar.",
         "Deniz tek parçadır: bir bacanın yanında yaktığın balçık her yerden geri akar. Ada tepelerindeki Mızraklar denizin tamamına yukarıdan bakar.",
+        "Bir Hava Alanı'nın uçağı haritanın tamamına yetişir: her yüklendiğinde denizin en derin yerini bombalar.",
       ],
     },
     c11: {

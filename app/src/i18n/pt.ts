@@ -119,6 +119,7 @@ export const pt: Record<Key, string> = {
   "build.mark.title": "Marcar terreno para as niveladoras elevarem ou rebaixarem",
   "key.slot11": "-",
   "key.slot12": "=",
+  "key.slot13": "]",
   "key.delete": "Del",
 
   "status.offGrid": "Fora da rede: precisa de uma torre concluída a até seis casas",
@@ -126,6 +127,10 @@ export const pt: Record<Key, string> = {
   "status.off": "Desligada",
   "status.damaged": "Danificada, em reparo",
   "status.working": "Em funcionamento",
+  "status.loading": "Carregando o avião",
+  "status.inFlight": "Avião a caminho do alvo",
+  "status.bombing": "Avião bombardeando",
+  "status.returning": "Avião voltando",
 
   "info.cost": "{cost} de energia",
   "info.range": "Alcance {range}",
@@ -199,6 +204,8 @@ export const pt: Record<Key, string> = {
     "As bolotas miram a estrutura com mais vizinhas a até cinco casas, então você sabe onde a próxima vai cair: mantenha um interceptor ali.",
   "tip.survive":
     "Gaste na defesa ao redor do módulo de pouso em vez de expandir: as fendas ficam mais fortes a cada minuto, e os últimos minutos são os mais duros.",
+  "tip.airfield":
+    "O avião sempre vai atrás do pior lodo de todo o mapa, onde quer que sua rede alcance. Desligue o aeródromo para mantê-lo em casa.",
 
   "end.won": "Fendas seladas",
   "end.won.survive.title": "Você resistiu",
@@ -297,6 +304,7 @@ export const ptContent: Content = {
       name: "Tampa",
       blurb: "Segura uma fenda seca enquanto é construída e depois a sela para sempre.",
     },
+    airfield: { name: "Aeródromo", blurb: "Carrega um avião com trinta de energia. Quando está cheio, o avião voa até o lodo mais profundo do mapa, bombardeia-o e volta para carregar de novo." },
   },
   levels: {
     c1: {
@@ -374,6 +382,7 @@ export const ptContent: Content = {
       hints: [
         "A rede alcança seis casas por cima do mar, e a maioria dos estreitos é mais curta. Os troncos vencem os largos.",
         "O mar é um só: o que você queima junto a uma fenda volta a encher de todos os lados. As lanças no alto das ilhas enxergam o mar inteiro lá embaixo.",
+        "O avião de um aeródromo alcança o mapa inteiro: a cada carga, ele bombardeia a parte mais profunda do mar.",
       ],
     },
     c11: {

@@ -21,7 +21,7 @@ describe("introduced", () => {
       ["c7", { structures: ["interceptor"], spitters: true, survive: false }],
       ["c8", { structures: [], ...none }],
       ["c9", { structures: [], ...none }],
-      ["c10", { structures: [], ...none }],
+      ["c10", { structures: ["airfield"], ...none }],
       ["c11", { structures: [], ...none }],
       ["c12", { structures: [], ...none }],
     ]);

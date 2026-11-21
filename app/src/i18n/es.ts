@@ -117,6 +117,7 @@ export const es: Record<Key, string> = {
   "build.mark.title": "Marcar terreno para que las Niveladoras lo suban o lo bajen",
   "key.slot11": "'",
   "key.slot12": "¡",
+  "key.slot13": "ç",
   "key.delete": "Supr",
 
   "status.offGrid": "Fuera de la red: necesita un Pilón terminado a seis casillas como máximo",
@@ -124,6 +125,10 @@ export const es: Record<Key, string> = {
   "status.off": "Apagada",
   "status.damaged": "Dañada, en reparación",
   "status.working": "En funcionamiento",
+  "status.loading": "Cargando el avión",
+  "status.inFlight": "Avión de camino al objetivo",
+  "status.bombing": "Avión bombardeando",
+  "status.returning": "Avión de regreso",
 
   "info.cost": "{cost} de energía",
   "info.range": "Alcance {range}",
@@ -197,6 +202,8 @@ export const es: Record<Key, string> = {
     "Los pegotes apuntan a la estructura con más vecinas a cinco casillas, así que sabes dónde caerá el próximo: pon ahí un Interceptor.",
   "tip.survive":
     "Gasta en defensa alrededor del módulo en lugar de expandirte: las fumarolas se refuerzan cada minuto y los últimos son los más duros.",
+  "tip.airfield":
+    "El avión siempre va a por el peor limo de todo el mapa, esté donde esté tu red. Apaga el Aeródromo para que se quede en casa.",
 
   "end.won": "Fumarolas selladas",
   "end.won.survive.title": "Resistido",
@@ -295,6 +302,7 @@ export const esContent: Content = {
       name: "Tapón",
       blurb: "Retiene una fumarola seca mientras se construye y después la sella para siempre.",
     },
+    airfield: { name: "Aeródromo", blurb: "Carga un avión con treinta de energía. Cuando está lleno, el avión vuela hasta el limo más profundo del mapa, lo bombardea y vuelve para cargar de nuevo." },
   },
   levels: {
     c1: {
@@ -372,6 +380,7 @@ export const esContent: Content = {
       hints: [
         "La red alcanza seis casillas por encima del mar, y casi todos los estrechos son más angostos. Las Troncales cruzan los anchos.",
         "El mar es uno solo: lo que quemas junto a una fumarola se vuelve a llenar desde todas partes. Las Lanzas en lo alto de las islas lo dominan entero.",
+        "El avión de un Aeródromo alcanza todo el mapa: cada vez que se carga, bombardea la parte más profunda del mar.",
       ],
     },
     c11: {

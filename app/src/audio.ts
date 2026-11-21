@@ -142,6 +142,12 @@ export class Sound {
         this.tone({ f: 170, to: 55, type: "sine", gain: 0.13, decay: 0.24, cents: 50 });
         this.noise({ gain: 0.05, decay: 0.1, filter: { type: "lowpass", f: 700 } });
         break;
+      case "takeoff":
+        // The lob's thump, followed by a rising whoosh as the plane climbs away.
+        if (!this.due("takeoff", 0.2)) break;
+        this.tone({ f: 170, to: 55, type: "sine", gain: 0.1, decay: 0.24, cents: 50 });
+        this.noise({ gain: 0.05, decay: 0.5, filter: { type: "bandpass", f: 500, to: 2200, q: 1.2 } });
+        break;
       case "impact":
         if (!this.due("impact", 0.1)) break;
         this.noise({ gain: 0.16, decay: 0.4, filter: { type: "lowpass", f: 1400, to: 180 }, reverb: 0.3 });

@@ -130,6 +130,14 @@ export class Runtime {
           this.sparkAt(e.x, e.y, { kind: "ring", radius: e.radius + 0.5, color: 0xffa25c, life: 450 });
           this.sparkAt(e.x, e.y, { kind: "flash", radius: e.radius, color: 0xffd9a0, life: 180 });
           break;
+        case "takeoff":
+          this.sparkAt(e.x, e.y, { kind: "ring", radius: 1.4, color: 0xff7a45, life: 500 });
+          break;
+        case "landed": {
+          const s = this.game.structures.find((o) => o.id === e.id);
+          if (s) this.sparkAt(s.x, s.y, { kind: "ring", radius: 1, color: 0xff7a45, life: 350 });
+          break;
+        }
         case "destroyed":
           this.sparkAt(e.x, e.y, { kind: "ring", radius: 2, color: 0xff5470, life: 600 });
           this.sparkAt(e.x, e.y, { kind: "flash", radius: 1.2, color: 0xff5470, life: 250 });

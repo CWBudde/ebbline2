@@ -116,6 +116,7 @@ export const de: Record<Key, string> = {
   "build.mark.title": "Boden markieren, den Planierer heben oder senken sollen",
   "key.slot11": "ß",
   "key.slot12": "´",
+  "key.slot13": "#",
   "key.delete": "Entf",
 
   "status.offGrid": "Nicht am Netz: braucht einen fertigen Pylon in höchstens sechs Feldern Entfernung",
@@ -123,6 +124,10 @@ export const de: Record<Key, string> = {
   "status.off": "Abgeschaltet",
   "status.damaged": "Beschädigt, wird repariert",
   "status.working": "In Betrieb",
+  "status.loading": "Das Flugzeug wird geladen",
+  "status.inFlight": "Flugzeug fliegt hinaus",
+  "status.bombing": "Flugzeug bombardiert",
+  "status.returning": "Flugzeug kehrt zurück",
 
   "info.cost": "{cost} Energie",
   "info.range": "Reichweite {range}",
@@ -197,6 +202,8 @@ export const de: Record<Key, string> = {
     "Klumpen zielen auf das Gebäude, um das in höchstens fünf Feldern Entfernung die meisten anderen stehen. Du weißt also, wo der nächste einschlägt: Stell dort einen Abfänger hin.",
   "tip.survive":
     "Steck die Energie in die Verteidigung rund um den Lander statt in die Ausdehnung: Die Schlote werden jede Minute stärker, die letzten Minuten sind die härtesten.",
+  "tip.airfield":
+    "Das Flugzeug fliegt immer den schlimmsten Schlick der ganzen Karte an, egal wo dein Netz steht. Schalte das Flugfeld aus, um es zu Hause zu halten.",
 
   "end.won": "Schlote versiegelt",
   "end.won.survive.title": "Durchgehalten",
@@ -295,6 +302,7 @@ export const deContent: Content = {
       name: "Kappe",
       blurb: "Hält einen trockenen Schlot zu, solange sie gebaut wird, und versiegelt ihn dann endgültig.",
     },
+    airfield: { name: "Flugfeld", blurb: "Lädt ein Flugzeug mit dreißig Energie. Ist es voll, fliegt das Flugzeug zum tiefsten Schlick der Karte, bombardiert ihn und kehrt zum erneuten Laden zurück." },
   },
   levels: {
     c1: {
@@ -372,6 +380,7 @@ export const deContent: Content = {
       hints: [
         "Das Netz reicht sechs Felder weit über das Meer, und die meisten Meerengen sind schmaler. Trassen überbrücken die breiten.",
         "Das Meer ist ein einziges: Was du an einem Schlot wegbrennst, fließt von überall her nach. Lanzen auf den Inselhöhen blicken auf alles hinab.",
+        "Das Flugzeug eines Flugfelds erreicht die ganze Karte: Jedes Mal, wenn es geladen ist, bombardiert es die tiefste Stelle des Meeres.",
       ],
     },
     c11: {

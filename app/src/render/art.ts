@@ -31,6 +31,7 @@ export const ACCENT: Record<Kind, number> = {
   interceptor: COLORS.weapon,
   grader: COLORS.utility,
   cap: COLORS.cap,
+  airfield: COLORS.weapon,
 };
 
 function ngon(g: Graphics, sides: number, radius: number, turn = 0): Graphics {
@@ -150,6 +151,13 @@ export function drawStructure(kind: Kind, u: number): Graphics {
       plate();
       g.poly([-u * 0.6, u * 0.1, 0, -u * 0.5, u * 0.6, u * 0.1]).stroke({ width: line * 1.3, color: c });
       g.rect(-u * 0.6, u * 0.4, u * 1.2, u * 0.2).fill(c);
+      break;
+    case "airfield":
+      // A plate with a runway down its middle, dashed along the centre line. The parked plane is drawn over it
+      // by the renderer while it is home.
+      plate();
+      g.roundRect(-u * 0.24, -u * 0.82, u * 0.48, u * 1.64, u * 0.08).fill(0x0c171c).stroke({ width: line * 0.7, color: c });
+      for (let n = -2; n <= 2; n++) g.rect(-u * 0.035, n * u * 0.3 - u * 0.08, u * 0.07, u * 0.16).fill(c);
       break;
     case "cap":
       g.circle(0, 0, u * 0.95).fill(PLATE).stroke({ width: line * 1.6, color: c });

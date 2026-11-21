@@ -2,12 +2,15 @@
 
 import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 import {
+  AIRFIELD,
   BUILDABLE,
   KINDS,
   TICK_HZ,
   find,
   footprint,
   hasMovingGround,
+  planeOf,
+  type Game,
   type Kind,
   type Structure,
 } from "@ebbline2/engine";
@@ -21,10 +24,11 @@ import { Briefing } from "./Briefing.tsx";
 import { BackButton, Cost, Help, Icon, SettingsForm, Sheet } from "./Shell.tsx";
 import { Stats } from "./Stats.tsx";
 
-/** The key shown on a build slot; the eleventh and twelfth are named by the language's keyboard. */
+/** The key shown on a build slot; the eleventh to thirteenth are named by the language's keyboard. */
 function slotLabel(slot: number): string {
   if (slot < 10) return String((slot + 1) % 10);
-  return slot === 10 ? t("key.slot11") : t("key.slot12");
+  if (slot === 10) return t("key.slot11");
+  return slot === 11 ? t("key.slot12") : t("key.slot13");
 }
 
 function TopBar({ c, rt }: { c: Controller; rt: Runtime }) {
@@ -142,11 +146,20 @@ function BuildBar({ c, rt }: { c: Controller; rt: Runtime }) {
 const PHONE = "(max-width: 720px)";
 
 /** What a structure is doing, and how urgent that is. */
-function status(s: Structure): { text: string; tone: "good" | "warn" | "bad" | "" } {
+function status(game: Game, s: Structure): { text: string; tone: "good" | "warn" | "bad" | "" } {
   if (!Number.isFinite(s.dist)) return { text: t("status.offGrid"), tone: "bad" };
   if (!s.built) return { text: t("status.building"), tone: "warn" };
   if (!s.active) return { text: t("status.off"), tone: "" };
   if (s.health < KINDS[s.kind].cost) return { text: t("status.damaged"), tone: "warn" };
+  if (s.kind === "airfield") {
+    // An airfield is working when its plane is: in the air, or on the ground being loaded.
+    const plane = planeOf(game, s.id);
+    if (plane?.leg === "back") return { text: t("status.returning"), tone: "good" };
+    if (plane) {
+      return { text: t(plane.bombs < AIRFIELD.bombs ? "status.bombing" : "status.inFlight"), tone: "good" };
+    }
+    if (s.energy < KINDS.airfield.store) return { text: t("status.loading"), tone: "good" };
+  }
   return { text: t("status.working"), tone: "good" };
 }
 
@@ -250,7 +263,7 @@ function BuildInfo({ c, kind }: { c: Controller; kind: Kind }) {
 function SelectedInfo({ c, rt, selected }: { c: Controller; rt: Runtime; selected: Structure }) {
   const [open] = useFirstLook(c, selected.kind);
   const def = KINDS[selected.kind];
-  const state = status(selected);
+  const state = status(rt.game, selected);
   return (
     <aside class="info closable">
       <CloseButton onClick={() => { rt.selected.value = 0; }} />

@@ -116,6 +116,7 @@ export const it: Record<Key, string> = {
   "build.mark.title": "Segna il terreno che le livellatrici devono alzare o abbassare",
   "key.slot11": "'",
   "key.slot12": "ì",
+  "key.slot13": "ù",
   "key.delete": "Canc",
 
   "status.offGrid": "Fuori rete: serve un pilone completato entro sei caselle",
@@ -123,6 +124,10 @@ export const it: Record<Key, string> = {
   "status.off": "Spenta",
   "status.damaged": "Danneggiata, in riparazione",
   "status.working": "In funzione",
+  "status.loading": "Caricamento dell'aereo",
+  "status.inFlight": "Aereo in volo verso il bersaglio",
+  "status.bombing": "Aereo in bombardamento",
+  "status.returning": "Aereo di ritorno",
 
   "info.cost": "{cost} energia",
   "info.range": "Portata {range}",
@@ -196,6 +201,8 @@ export const it: Record<Key, string> = {
     "I grumi puntano alla struttura con più strutture vicine entro cinque caselle, quindi sai dove cadrà il prossimo: tieni lì un intercettore.",
   "tip.survive":
     "Spendi per difendere il lander invece che per espanderti: gli sfiati si rafforzano ogni minuto, e gli ultimi minuti sono i più duri.",
+  "tip.airfield":
+    "L'aereo punta sempre alla melma peggiore di tutta la mappa, ovunque arrivi la tua rete. Spegni il campo d'aviazione per tenerlo a terra.",
 
   "end.won": "Sfiati sigillati",
   "end.won.survive.title": "Hai resistito",
@@ -294,6 +301,7 @@ export const itContent: Content = {
       name: "Tappo",
       blurb: "Tiene chiuso uno sfiato asciutto mentre viene costruito, poi lo sigilla per sempre.",
     },
+    airfield: { name: "Campo d'aviazione", blurb: "Carica un aereo con trenta di energia. Quando è pieno, l'aereo vola fino alla melma più profonda della mappa, la bombarda e torna a ricaricarsi." },
   },
   levels: {
     c1: {
@@ -371,6 +379,7 @@ export const itContent: Content = {
       hints: [
         "La rete arriva a sei caselle oltre il mare, e quasi tutti i bracci di mare sono più corti. Le dorsali superano quelli larghi.",
         "Il mare è uno solo: ciò che bruci vicino a uno sfiato torna a riempirsi da ogni parte. Le lance in cima alle isole lo dominano tutto.",
+        "L'aereo di un campo d'aviazione raggiunge tutta la mappa: a ogni carica bombarda la parte più profonda del mare.",
       ],
     },
     c11: {

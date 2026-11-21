@@ -89,6 +89,50 @@ upward-pointing angle bracket) above a thick horizontal lime light bar in the lo
 Every machine: dark gunmetal body, steel-blue rim, only its one accent colour glowing.
 ```
 
+**S4 Airfield** (`airfield`)
+
+Attachments: the picked S2 and S3 sheets, to lock the rendering style and the plates ("Image 1 and Image 2 are the two sprite sheets of the same set: match their rendering style, materials, plate shape, plate colour, rim thickness and level of detail exactly; do not copy any of their machines or the sheet layout."). The runway is left empty: the plane is drawn in code, parked and in flight.
+
+```text
+Canvas: SQUARE 1024x1024 px, one machine only, one cell, centred.
+The machine stands on its own base plate shaped as a REGULAR pointy-top hexagon with all six sides the
+same length (a corner at the top and at the bottom, vertical flat sides left and right): about 800 px
+tall from corner to corner and 693 px wide from flat side to flat side, so its width is 0.87 of its
+height (the plate is about 4/5 of the canvas height), with a transparent margin on every side. The plate
+is dark gunmetal (#14222a) with a thick steel-blue (#33505c) rim along all six edges; the machine sits on
+top of it and stays inside it.
+AIRFIELD. A small landing pad for a drone plane, seen from straight above, with NO plane on it (the
+plane is drawn separately): one broad straight runway strip running vertically from near the top corner
+to near the bottom corner of the plate, about 1/3 of the plate wide, darker than the plate, with a row of
+short pale dashes along its centre line. Along both long edges of the runway, a row of four small round
+orange (#ff7a45) landing lights, evenly spaced. At the bottom end of the runway a thick orange chevron
+pointing up the runway. Two low dark hangar blocks with steel-blue roofs sit on the plate to the left
+and the right of the runway, inside the plate.
+Dark gunmetal body, steel-blue rim, only the orange accent glowing. Bold, few large shapes that still
+read when shrunk to 24 px.
+```
+
+**S5 Booster** (`booster`)
+
+Attachments: the picked S2 and S3 sheets, to lock the rendering style and the plates ("Image 1 and Image 2 are the two sprite sheets of the same set: match their rendering style, materials, plate shape, plate colour, rim thickness and level of detail exactly; do not copy any of their machines or the sheet layout."). The installed pick came from the second try, which added the measured fault of the first at the end of the prompt.
+
+```text
+Canvas: SQUARE 1024x1024 px, one machine only, one cell, centred.
+The machine stands on its own base plate shaped as a REGULAR pointy-top hexagon with all six sides the
+same length (a corner at the top and at the bottom, vertical flat sides left and right): about 800 px
+tall from corner to corner and 693 px wide from flat side to flat side, so its width is 0.87 of its
+height (the plate is about 4/5 of the canvas height), with a transparent margin on every side. The plate
+is dark gunmetal (#14222a) with a thick steel-blue (#33505c) rim along all six edges; the machine sits on
+top of it and stays inside it.
+BOOSTER. A packet accelerator on the power grid: a thick round raised coil housing in the middle of the
+plate, about 1/2 of the plate wide, wound with three concentric cyan (#5fe3ff) glowing rings, and two
+bold cyan chevrons on the coil's top pointing to the right, one behind the other, the front chevron
+brighter (pale yellow #fff27a at its tip). Four short dark clamp blocks hold the coil to the plate.
+Dark gunmetal body, steel-blue rim, only the cyan accent glowing. Bold, few large shapes that still read
+when shrunk to 24 px.
+The previous try painted the plate too narrow: 859 px wide for 1106 px tall (0.78). The plate must be a REGULAR hexagon, width exactly 0.87 of its height (for example 700 px wide and 805 px tall), and the coil must leave a clear band of plate between itself and the left and right rims (coil about 420 px across).
+```
+
 **F1 Features** (`vent`, `spitter`, `lode`)
 
 ```text
@@ -452,4 +496,34 @@ Middle: VENT. Not a machine: a wound in the ground, a low crater of ragged, crac
 rock with a bright magenta (#ff3fa4) glowing molten pool welling up in its mouth.
 Right: LODE. Not a machine: a cluster of chunky amber (#ffc857) glowing crystals of different sizes
 growing out of a small hexagonal patch of dark brown rock.
+```
+
+**I4 Airfield** (`airfield`)
+
+Attachments: the picked S4 sprite and the picked I1 sheet ("Image 1 shows the same machine from straight above: keep its design, runway, lights, hangars, hexagonal base and orange accent so it is recognisable; do not copy the top-down view. Image 2 is the first illustration sheet of the same set: match its view angle, rendering, base plinths and level of detail; do not copy its machines or the sheet layout.").
+
+```text
+Canvas: SQUARE 1024x1024 px, one object only, centred, about 800 px across (about 4/5 of the canvas).
+AIRFIELD. A small landing pad on a low, thick six-sided (hexagonal) base plinth of dark gunmetal with
+steel-blue edges; no square base. A broad dark runway strip crosses the plinth from the far corner to
+the near corner, with pale dashes along its centre line, a row of small orange (#ff7a45) landing lights
+along both edges and an orange chevron at its near end. Two low hangar blocks with steel-blue roofs
+stand beside the runway. On the runway sits ONE small delta-winged drone plane in dark gunmetal with
+steel-blue leading edges and an orange glowing engine at its tail, nose pointing along the runway,
+about 1/3 as long as the plinth is wide. No pilot, no markings.
+```
+
+**I5 Booster** (`booster`)
+
+Attachments: the picked S5 sprite and the picked I1 sheet ("Image 1 shows the same machine from straight above: keep its design, rings, clamps, chevrons and colours so it is recognisable; do not copy the top-down view. Image 2 is the first illustration sheet of the same set: match its view angle (about 35 degrees down, turned about 30 degrees, side walls clearly visible), rendering, base plinths and level of detail; do not copy its machines or the sheet layout."). The first try came out nearly top-down and flat; the second added that fault to the attachment line.
+
+```text
+Canvas: SQUARE 1024x1024 px, one object only, centred, about 800 px across (about 4/5 of the canvas).
+BOOSTER. A packet accelerator on the power grid: a tall, heavy machine on a low, thick six-sided
+(hexagonal) base plinth of dark gunmetal with steel-blue edges, the plinth only about 2/3 of the
+canvas wide; no square base. On the plinth stands a tall round coil drum, about as tall as it is wide,
+its side wound with three cyan (#5fe3ff) glowing rings stacked one above the other, held down by four
+chunky bolted clamp blocks that reach from the plinth up the drum's side. On the drum's top face, two
+bold glowing chevrons one behind the other, pointing the same way: the rear one cyan, the front one pale
+yellow (#fff27a). The drum's side wall is clearly visible, with panel lines and vents.
 ```

@@ -116,6 +116,7 @@ export const pl: Record<Key, string> = {
   "build.mark.title": "Oznacz teren, który równiarki mają podnieść lub obniżyć",
   "key.slot11": "-",
   "key.slot12": "=",
+  "key.slot13": "\\",
   "key.delete": "Del",
 
   "status.offGrid": "Poza siecią: potrzebny zbudowany pylon w odległości najwyżej sześciu pól",
@@ -123,6 +124,10 @@ export const pl: Record<Key, string> = {
   "status.off": "Wyłączona",
   "status.damaged": "Uszkodzona, w naprawie",
   "status.working": "Działa",
+  "status.loading": "Ładowanie samolotu",
+  "status.inFlight": "Samolot leci do celu",
+  "status.bombing": "Samolot bombarduje",
+  "status.returning": "Samolot wraca",
 
   "info.cost": "{cost} energii",
   "info.range": "Zasięg {range}",
@@ -195,6 +200,8 @@ export const pl: Record<Key, string> = {
     "Bryły celują w budowlę, wokół której w odległości najwyżej pięciu pól stoi najwięcej innych, więc wiesz, gdzie spadnie następna: postaw tam przechwytywacz.",
   "tip.survive":
     "Wydawaj na obronę wokół lądownika, a nie na zasięg: kominy z każdą minutą są silniejsze, więc ostatnie minuty są najtrudniejsze.",
+  "tip.airfield":
+    "Samolot zawsze leci na najgorszy muł na całej mapie, niezależnie od tego, dokąd sięga twoja sieć. Wyłącz lotnisko, żeby został w domu.",
 
   "end.won": "Kominy zapieczętowane",
   "end.won.survive.title": "Obrona utrzymana",
@@ -293,6 +300,7 @@ export const plContent: Content = {
       name: "Pokrywa",
       blurb: "Trzyma suchy komin zamknięty w trakcie budowy, a potem pieczętuje go na dobre.",
     },
+    airfield: { name: "Lotnisko", blurb: "Ładuje samolot trzydziestoma jednostkami energii. Gdy jest pełny, samolot leci do najgłębszego mułu na mapie, bombarduje go i wraca, by załadować się ponownie." },
   },
   levels: {
     c1: {
@@ -370,6 +378,7 @@ export const plContent: Content = {
       hints: [
         "Sieć sięga sześć pól ponad morzem, a większość cieśnin jest węższa. Magistrale przeskakują nad szerokimi.",
         "Morze jest jedno: to, co wypalisz przy kominie, napływa z powrotem zewsząd. Lance na szczytach wysp widzą pod sobą całe morze.",
+        "Samolot z lotniska sięga całej mapy: po każdym załadowaniu bombarduje najgłębszą część morza.",
       ],
     },
     c11: {

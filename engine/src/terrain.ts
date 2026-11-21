@@ -492,6 +492,7 @@ export function generate(level: LevelDef): Game {
     structures: [],
     packets: [],
     shells: [],
+    planes: [],
     globs: [],
     vents: vents.map((p, n) => {
       const tweak = tweaks[n] ?? {};

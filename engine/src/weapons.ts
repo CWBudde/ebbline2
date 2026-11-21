@@ -1,4 +1,4 @@
-// What built structures do each tick: lances, lobbers, pumps, baffles, interceptors and graders.
+// What built structures do each tick: lances, lobbers, pumps, baffles, interceptors, graders and airfields.
 
 import { centre, distance, span, tileAtPoint, within, type Point } from "./hex.ts";
 import { updateHarvest } from "./harvest.ts";
@@ -11,6 +11,7 @@ import {
   ROCK,
   type Event,
   type Game,
+  type Plane,
   type Structure,
 } from "./state.ts";
 
@@ -30,6 +31,22 @@ export const PUMP = { removes: 0.03, yield: 0.15 } as const;
 export const BAFFLE = { lift: 2, drainEvery: 90 } as const;
 export const INTERCEPTOR = { every: 15, cost: 1 } as const;
 export const GRADER = { work: 45, cost: 0.5 } as const;
+/**
+ * The plane flies `speed` tiles per tick (7.5 a second) and carries `bombs` bombs, which it drops evenly along a
+ * run of `run` tiles centred on its target. Each bomb is a lobber blast (`blast`, `removes`). The target is the
+ * tile whose surroundings within `area` steps hold the most silt; with less than `least` there, the plane stays
+ * on the ground and the airfield looks again after `idle` ticks.
+ */
+export const AIRFIELD = {
+  speed: 0.25,
+  bombs: 15,
+  run: 8,
+  area: 3,
+  blast: 2,
+  removes: 1.45,
+  least: 0.3,
+  idle: 30,
+} as const;
 
 function take(game: Game, i: number, amount: number): number {
   const depth = game.silt[i] ?? 0;
@@ -122,6 +139,112 @@ function stepShells(game: Game, events: Event[]): void {
     });
   }
   game.shells = kept;
+}
+
+/** The plane of an airfield while it is in the air. */
+export function planeOf(game: Game, base: number): Plane | undefined {
+  return game.planes.find((p) => p.base === base);
+}
+
+/**
+ * The tile whose surroundings within `AIRFIELD.area` steps hold the most silt on the whole map, nearest to the
+ * airfield on a tie; -1 when nowhere holds more than `AIRFIELD.least`.
+ */
+function pickTarget(game: Game, s: Structure): number {
+  let best = -1;
+  let bestSum: number = AIRFIELD.least;
+  let bestD = Infinity;
+  for (let y = 0; y < game.h; y++) {
+    for (let x = 0; x < game.w; x++) {
+      const i = y * game.w + x;
+      if (game.height[i] === ROCK) continue;
+      let sum = 0;
+      within(game.w, game.h, x, y, AIRFIELD.area, (j) => {
+        sum += game.silt[j] ?? 0;
+      });
+      if (sum < bestSum) continue;
+      const d = distance(s.x, s.y, x, y);
+      if (sum === bestSum && (best < 0 || d >= bestD)) continue;
+      best = i;
+      bestSum = sum;
+      bestD = d;
+    }
+  }
+  return best;
+}
+
+function airfield(game: Game, s: Structure, events: Event[]): void {
+  if (s.cooldown > 0 || s.energy < KINDS.airfield.store || planeOf(game, s.id)) return;
+  const best = pickTarget(game, s);
+  if (best < 0) {
+    s.cooldown = AIRFIELD.idle;
+    return;
+  }
+  s.energy = 0;
+  s.target = best;
+  const from = centre(s.x, s.y);
+  const to = centre(best % game.w, Math.floor(best / game.w));
+  const far = Math.hypot(to.x - from.x, to.y - from.y);
+  const every = AIRFIELD.run / AIRFIELD.bombs;
+  game.planes.push({
+    id: game.nextId++,
+    base: s.id,
+    x: from.x,
+    y: from.y,
+    tx: to.x,
+    ty: to.y,
+    heading: far > 0 ? Math.atan2(to.y - from.y, to.x - from.x) : 0,
+    leg: "out",
+    bombs: AIRFIELD.bombs,
+    // The bombs fall in the middle of equal stretches of the run; a target closer than half the run is bombed
+    // from the airfield on.
+    next: Math.max(0, far - AIRFIELD.run / 2 + every / 2),
+  });
+  events.push({ kind: "takeoff", id: s.id, x: s.x, y: s.y });
+}
+
+/** Silt does not touch a plane: it only drops its bombs and comes home, or is lost with its airfield. */
+function stepPlanes(game: Game, events: Event[]): void {
+  const kept: Plane[] = [];
+  for (const plane of game.planes) {
+    const base = game.structures.find((o) => o.id === plane.base);
+    if (!base) continue;
+    if (plane.leg === "out") {
+      plane.x += Math.cos(plane.heading) * AIRFIELD.speed;
+      plane.y += Math.sin(plane.heading) * AIRFIELD.speed;
+      plane.next -= AIRFIELD.speed;
+      while (plane.next <= 0 && plane.bombs > 0) {
+        bomb(game, plane, events);
+        plane.bombs -= 1;
+        plane.next += AIRFIELD.run / AIRFIELD.bombs;
+      }
+      if (plane.bombs === 0) plane.leg = "back";
+      kept.push(plane);
+      continue;
+    }
+    const home = centre(base.x, base.y);
+    const dx = home.x - plane.x;
+    const dy = home.y - plane.y;
+    const left = Math.hypot(dx, dy);
+    if (left <= AIRFIELD.speed) {
+      base.target = -1;
+      events.push({ kind: "landed", id: base.id });
+      continue;
+    }
+    plane.heading = Math.atan2(dy, dx);
+    plane.x += (dx / left) * AIRFIELD.speed;
+    plane.y += (dy / left) * AIRFIELD.speed;
+    kept.push(plane);
+  }
+  game.planes = kept;
+}
+
+function bomb(game: Game, plane: Plane, events: Event[]): void {
+  const at = tileAtPoint(plane.x, plane.y);
+  within(game.w, game.h, at.x, at.y, AIRFIELD.blast, (i, d) => {
+    take(game, i, AIRFIELD.removes * (1 - d / (AIRFIELD.blast + 1)));
+  });
+  events.push({ kind: "impact", x: at.x, y: at.y, radius: AIRFIELD.blast });
 }
 
 function pump(game: Game, s: Structure): void {
@@ -246,9 +369,13 @@ export function stepWeapons(game: Game, events: Event[]): void {
       case "grader":
         grader(game, s, events);
         break;
+      case "airfield":
+        airfield(game, s, events);
+        break;
       default:
         break;
     }
   }
   stepShells(game, events);
+  stepPlanes(game, events);
 }

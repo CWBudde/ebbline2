@@ -78,7 +78,7 @@ function stepIncome(game: Game): void {
 }
 
 /** What a structure is waiting for, if anything. */
-function wants(s: Structure): Packet["kind"] | undefined {
+function wants(game: Game, s: Structure): Packet["kind"] | undefined {
   if (!s.active || !Number.isFinite(s.dist) || s.kind === "lander") {
     return undefined;
   }
@@ -86,6 +86,8 @@ function wants(s: Structure): Packet["kind"] | undefined {
   // Wear leaves fractions, so anything short of full health asks for a packet.
   if (s.health + s.pendingBuild < def.cost) return "build";
   if (s.built && def.store > 0 && s.energy + s.pendingEnergy <= def.store - 1) {
+    // An airfield loads its plane on the ground; while the plane is up there is nothing to load.
+    if (s.kind === "airfield" && game.planes.some((p) => p.base === s.id)) return undefined;
     return "energy";
   }
   return undefined;
@@ -116,7 +118,7 @@ function send(game: Game): boolean {
   for (let k = 0; k < n; k++) {
     const s = game.structures[(game.cursor + k) % n];
     if (!s) continue;
-    const kind = wants(s);
+    const kind = wants(game, s);
     if (!kind) continue;
     const path = route(game, s);
     if (!path) continue;

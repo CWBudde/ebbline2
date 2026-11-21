@@ -117,6 +117,7 @@ export const fr: Record<Key, string> = {
   "build.mark.title": "Marquer le terrain que les Niveleuses doivent élever ou abaisser",
   "key.slot11": ")",
   "key.slot12": "=",
+  "key.slot13": "*",
   "key.delete": "Suppr",
 
   "status.offGrid": "Hors réseau : il faut un Pylône achevé à six cases au plus",
@@ -124,6 +125,10 @@ export const fr: Record<Key, string> = {
   "status.off": "Éteint",
   "status.damaged": "Endommagé, en réparation",
   "status.working": "En service",
+  "status.loading": "Chargement de l'avion",
+  "status.inFlight": "L'avion part vers sa cible",
+  "status.bombing": "L'avion bombarde",
+  "status.returning": "L'avion revient",
 
   "info.cost": "{cost} énergie",
   "info.range": "Portée {range}",
@@ -198,6 +203,8 @@ export const fr: Record<Key, string> = {
     "Les boules visent le bâtiment entouré du plus grand nombre d'autres à cinq cases, tu sais donc où tombera la prochaine : places-y un Intercepteur.",
   "tip.survive":
     "Investis dans la défense autour de l'atterrisseur plutôt que dans l'expansion : les évents se renforcent chaque minute, les dernières sont les plus dures.",
+  "tip.airfield":
+    "L'avion vise toujours la pire vase de toute la carte, où que s'étende ton réseau. Éteins l'Aérodrome pour le garder au sol.",
 
   "end.won": "Évents scellés",
   "end.won.survive.title": "Tenu bon",
@@ -296,6 +303,7 @@ export const frContent: Content = {
       name: "Bouchon",
       blurb: "Retient un évent sec pendant sa construction, puis le scelle pour de bon.",
     },
+    airfield: { name: "Aérodrome", blurb: "Charge un avion de trente énergie. Quand il est plein, l'avion vole jusqu'à la vase la plus profonde de la carte, la bombarde et revient se recharger." },
   },
   levels: {
     c1: {
@@ -373,6 +381,7 @@ export const frContent: Content = {
       hints: [
         "Le réseau porte à six cases par-dessus la mer, et la plupart des détroits sont moins larges. Les Artères franchissent les plus grands.",
         "La mer ne fait qu'un : ce que tu brûles près d'un évent revient de partout ailleurs. Les Lances au sommet des îles dominent toute la mer.",
+        "L'avion d'un Aérodrome couvre toute la carte : à chaque chargement, il bombarde la partie la plus profonde de la mer.",
       ],
     },
     c11: {

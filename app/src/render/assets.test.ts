@@ -15,7 +15,7 @@ import {
 
 const ART = fileURLToPath(new URL("../../public/art/", import.meta.url));
 /** Kinds with no generated art yet: the map, the build bar and the briefing show their code drawing. */
-const DRAWN_ONLY: readonly SpriteKind[] = ["booster"];
+const DRAWN_ONLY: readonly SpriteKind[] = [];
 const ALL: readonly SpriteKind[] = ["lander", ...BUILDABLE, "vent", "spitter", "lode"];
 const KINDS = ALL.filter((kind) => !DRAWN_ONLY.includes(kind));
 /** The file behind an art URL. */

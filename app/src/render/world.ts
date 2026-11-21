@@ -44,6 +44,24 @@ const at = (game: Game, i: number): { x: number; y: number } => {
 };
 
 /**
+ * A delta wing pointing along `heading` (radians, y down), `size` pixels from nose to tail, centred on (x, y).
+ * The plane of an airfield, in the air and parked.
+ */
+function plane(g: Graphics, x: number, y: number, heading: number, size: number): Graphics {
+  const cos = Math.cos(heading);
+  const sin = Math.sin(heading);
+  // Nose, wing tip, notch in the tail, other wing tip; in plane coordinates with the nose along +x.
+  const shape = [0.55, 0, -0.45, -0.5, -0.25, 0, -0.45, 0.5];
+  const points: number[] = [];
+  for (let k = 0; k < shape.length; k += 2) {
+    const px = (shape[k] ?? 0) * size;
+    const py = (shape[k + 1] ?? 0) * size;
+    points.push(x + px * cos - py * sin, y + px * sin + py * cos);
+  }
+  return g.poly(points);
+}
+
+/**
  * How large an atlas sprite is drawn, in tiles across its cell. The atlas tool fits each piece's longer side
  * to 120 of a 128 px cell (376 of 384 for the lander). A structure is a pointy-top hexagonal plate, so its
  * 120 px are the corner-to-corner height: 1.18 × 120/128 = 1.106 tiles of the hexagon's 1.155 (96 %), and its
@@ -438,6 +456,27 @@ export class Renderer {
       const lift = Math.sin(Math.PI * f) * span(shell.sx, shell.sy, shell.tx, shell.ty) * TILE * 0.3;
       over.circle(x, y, 3).fill({ color: 0x000000, alpha: 0.35 });
       over.circle(x, y - lift, 4.5).fill(COLORS.weapon);
+    }
+    const aloft = new Set(game.planes.map((p) => p.base));
+    for (const s of game.structures) {
+      if (s.kind !== "airfield" || !s.built || aloft.has(s.id)) continue;
+      // Home: parked on the runway, nose up.
+      const { x, y } = tileToWorld(s.x, s.y);
+      plane(over, x, y, -Math.PI / 2, TILE * 0.8)
+        .fill(COLORS.weapon)
+        .stroke({ width: 1.2, color: 0x0a1216, join: "round" });
+    }
+    for (const p of game.planes) {
+      const { x, y } = pointToWorld(p.x, p.y);
+      // The plane climbs as it leaves the airfield and sinks as it comes back to it.
+      const base = byId.get(p.base);
+      const home = base ? tileToWorld(base.x, base.y) : { x, y };
+      const climb = Math.min(1, Math.hypot(x - home.x, y - home.y) / (TILE * 2));
+      const lift = TILE * (0.15 + 0.6 * climb);
+      plane(over, x, y, p.heading, TILE * 0.95).fill({ color: 0x000000, alpha: 0.3 });
+      plane(over, x, y - lift, p.heading, TILE * 0.95)
+        .fill(COLORS.weapon)
+        .stroke({ width: 1.5, color: 0xfff27a, join: "round" });
     }
     for (const glob of game.globs) {
       const p = globAt(glob);

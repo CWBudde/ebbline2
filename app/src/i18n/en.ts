@@ -101,6 +101,8 @@ export const en = {
   "key.slot11": "−",
   /** The key right of that, which picks the twelfth slot. */
   "key.slot12": "=",
+  /** The key left of Enter (code Backslash), which picks the thirteenth slot. */
+  "key.slot13": "\\",
   "key.delete": "Del",
 
   "status.offGrid": "Off the grid: needs a built Pylon within six tiles",
@@ -108,6 +110,10 @@ export const en = {
   "status.off": "Switched off",
   "status.damaged": "Damaged, repairing",
   "status.working": "Working",
+  "status.loading": "Loading the plane",
+  "status.inFlight": "Plane on its way out",
+  "status.bombing": "Plane bombing",
+  "status.returning": "Plane returning",
 
   "info.cost": "{cost} energy",
   "info.range": "Range {range}",
@@ -179,6 +185,8 @@ export const en = {
     "Globs aim at the structure with the most others within five tiles, so you know where the next one lands: keep an Interceptor there.",
   "tip.survive":
     "Spend on defence around the lander rather than on reach: the vents grow stronger every minute, so the last minutes are the hardest.",
+  "tip.airfield":
+    "The plane always goes for the worst silt on the whole map, wherever your grid stands. Switch the Airfield off to keep it at home.",
 
   "end.won": "Vents sealed",
   "end.won.survive.title": "Held out",

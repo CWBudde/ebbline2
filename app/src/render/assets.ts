@@ -43,7 +43,7 @@ export const MATERIAL_URLS = {
 /** Kinds whose illustration is installed under art/illustrations/. */
 const ILLUSTRATED: ReadonlySet<IllustrationKind> = new Set<IllustrationKind>([
   "pylon", "trunk", "tap", "cell", "pump", "lance", "lobber", "baffle", "interceptor", "grader", "cap",
-  "spitter", "lander", "vent", "lode",
+  "booster", "airfield", "spitter", "lander", "vent", "lode",
 ]);
 
 /** URL of the 320 px three-quarter illustration of a kind, if one is installed. */

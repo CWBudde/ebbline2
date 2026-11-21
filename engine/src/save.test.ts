@@ -37,11 +37,11 @@ describe("saves", () => {
     expect(fingerprint(copy)).toBe(fingerprint(game));
   });
 
-  it("refuse saves from the square-tile map, from before the harvest, the booster and the history", () => {
-    expect(SAVE_SCHEMA).toBe(6);
+  it("refuse saves from the square-tile map, from before the harvest, the booster, the history and the planes", () => {
+    expect(SAVE_SCHEMA).toBe(7);
     const game = generate(level);
     advance(game, 300);
-    for (const schema of [1, 2, 3, 4, 5]) {
+    for (const schema of [1, 2, 3, 4, 5, 6]) {
       const old = JSON.parse(save(game)) as { schema: number };
       old.schema = schema;
       expect(() => load(JSON.stringify(old))).toThrow(`unsupported save schema ${schema}`);

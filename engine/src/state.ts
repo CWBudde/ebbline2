@@ -28,7 +28,8 @@ export type Kind =
   | "baffle"
   | "interceptor"
   | "grader"
-  | "cap";
+  | "cap"
+  | "airfield";
 
 export interface KindDef {
   readonly name: string;
@@ -162,6 +163,15 @@ export const KINDS: Readonly<Record<Kind, KindDef>> = {
     radius: 0,
     blurb: "Clamps a dry vent while it is built, then seals it for good.",
   },
+  airfield: {
+    name: "Airfield",
+    cost: 35,
+    store: 30,
+    range: 0,
+    minRange: 0,
+    radius: 0,
+    blurb: "Loads a plane with thirty energy. When it is full, the plane flies to the deepest silt on the map, bombs it and comes back to load again.",
+  },
 };
 
 /** Kinds the player can place, in build-bar order. */
@@ -178,6 +188,7 @@ export const BUILDABLE: readonly Kind[] = [
   "grader",
   "cap",
   "booster",
+  "airfield",
 ];
 
 export interface Structure {
@@ -252,6 +263,29 @@ export interface Shell {
   ty: number;
   t: number;
   duration: number;
+}
+
+/**
+ * An airfield's plane in the air. Unlike a shell it flies a course of its own, so it keeps its position: x, y and
+ * tx, ty are positions in tile units (see centre()), not tiles. Out to the target it holds `heading`, drops its
+ * bombs along a short run over the target, then turns and flies straight back to its airfield.
+ */
+export interface Plane {
+  id: number;
+  /** Id of the airfield it belongs to. */
+  base: number;
+  x: number;
+  y: number;
+  /** Centre of the target tile, picked at takeoff. */
+  tx: number;
+  ty: number;
+  /** Direction of flight in radians, measured like Math.atan2(dy, dx) in tile units (y grows downwards). */
+  heading: number;
+  leg: "out" | "back";
+  /** Bombs still on board. */
+  bombs: number;
+  /** Distance left to fly before the next bomb drops, in tile units. */
+  next: number;
 }
 
 export interface Packet {
@@ -447,6 +481,7 @@ export interface Game {
   structures: Structure[];
   packets: Packet[];
   shells: Shell[];
+  planes: Plane[];
   globs: Glob[];
   vents: Vent[];
   spitters: Spitter[];
@@ -478,6 +513,10 @@ export type Event =
   | { kind: "lance"; id: number; x: number; y: number }
   | { kind: "lob"; x: number; y: number }
   | { kind: "impact"; x: number; y: number; radius: number }
+  /** An airfield's plane left the ground; x, y is the airfield's tile. */
+  | { kind: "takeoff"; id: number; x: number; y: number }
+  /** A plane came home to its airfield (`id`, the airfield's id). */
+  | { kind: "landed"; id: number }
   | { kind: "pulse"; x: number; y: number }
   | { kind: "burst"; x: number; y: number }
   | { kind: "spit"; x: number; y: number; tx: number; ty: number }

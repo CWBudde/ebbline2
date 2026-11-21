@@ -16,7 +16,7 @@ describe("briefingPlan", () => {
       // c9
       [],
       // c10
-      [],
+      ["airfield"],
       // c11
       [],
       // c12

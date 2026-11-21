@@ -113,6 +113,7 @@ export const zh: Record<Key, string> = {
   "build.mark.title": "标记要让平地机抬高或降低的地面",
   "key.slot11": "-",
   "key.slot12": "=",
+  "key.slot13": "\\",
   "key.delete": "Del",
 
   "status.offGrid": "未接入电网：六格内需要一座已建成的电塔",
@@ -120,6 +121,10 @@ export const zh: Record<Key, string> = {
   "status.off": "已关闭",
   "status.damaged": "受损，修复中",
   "status.working": "运行中",
+  "status.loading": "正在给飞机装填",
+  "status.inFlight": "飞机正在出击",
+  "status.bombing": "飞机正在轰炸",
+  "status.returning": "飞机正在返航",
 
   "info.cost": "{cost} 能量",
   "info.range": "射程 {range}",
@@ -177,6 +182,8 @@ export const zh: Record<Key, string> = {
   "tip.grader": "每改变一级高度需要一秒半，建筑下方无法平整：在淤泥到来之前标好你的堤坝。",
   "tip.spitter": "泥团瞄准五格内周围建筑最多的那座建筑，所以你能预判下一发的落点：在那里放一个拦截器。",
   "tip.survive": "把能量花在着陆舱周围的防御上，而不是扩张：喷口每分钟都在变强，最后几分钟最艰难。",
+  "tip.airfield":
+    "无论你的电网在哪里，飞机总是飞向整张地图上最糟的淤泥。关闭机场可以让它留在基地。",
 
   "end.won": "喷口已封死",
   "end.won.survive.title": "坚守成功",
@@ -257,6 +264,7 @@ export const zhContent: Content = {
     interceptor: { name: "拦截器", blurb: "在空中击落泥团。" },
     grader: { name: "平地机", blurb: "逐级抬高或降低已标记的地面。" },
     cap: { name: "封盖", blurb: "建造期间压住干涸的喷口，建成后将其永久封死。" },
+    airfield: { name: "机场", blurb: "给飞机装填三十点能量。装满后，飞机飞往地图上最深的淤泥，将其轰炸，再返回重新装填。" },
   },
   levels: {
     c1: {
@@ -334,6 +342,7 @@ export const zhContent: Content = {
       hints: [
         "电网能跨海延伸六格，大多数海峡都比这窄。宽的海峡用干线塔跨过。",
         "整片海是连通的：你在喷口旁烧掉的淤泥，会从四面八方流回来。岛顶上的灼枪能俯瞰整片海。",
+        "机场的飞机能覆盖整张地图：每次装填完毕，它都会轰炸海中最深的地方。",
       ],
     },
     c11: {

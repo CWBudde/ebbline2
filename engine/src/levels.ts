@@ -16,6 +16,7 @@ const EVERYTHING: readonly Kind[] = [
   "baffle",
   "grader",
   "interceptor",
+  "airfield",
 ];
 
 /** What the campaign allows up to and including `last`. */
@@ -193,7 +194,7 @@ export const CAMPAIGN: readonly LevelDef[] = [
     lodes: 9,
     flood: 60,
     ground: "ash",
-    allowed: EVERYTHING,
+    allowed: upTo("interceptor"),
     objective: { kind: "cap" },
     hints: ["The furthest vent lies dormant for five minutes, dull and with a still ring."],
   },
@@ -243,6 +244,7 @@ export const CAMPAIGN: readonly LevelDef[] = [
     hints: [
       "The grid reaches six tiles across the sea, and most straits are narrower. Trunks span the wide ones.",
       "The sea is all one: what you burn by a vent flows back from everywhere else. Lances on the island tops look down on all of it.",
+      "An Airfield's plane reaches the whole map: each time it is loaded it bombs the deepest part of the sea.",
     ],
   },
   {

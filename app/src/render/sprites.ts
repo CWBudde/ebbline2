@@ -20,7 +20,7 @@ export interface Art {
 
 const KNOWN: ReadonlySet<string> = new Set<SpriteKind>([
   "lander", "pylon", "trunk", "tap", "cell", "pump", "lance", "lobber", "baffle", "interceptor",
-  "grader", "cap", "vent", "spitter", "lode",
+  "grader", "cap", "booster", "airfield", "vent", "spitter", "lode",
 ]);
 
 /** Largest edge of a sprite data URL in pixels. */

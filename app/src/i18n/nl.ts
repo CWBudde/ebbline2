@@ -115,6 +115,7 @@ export const nl: Record<Key, string> = {
   "build.mark.title": "Grond markeren die egaliseerders moeten ophogen of afgraven",
   "key.slot11": "-",
   "key.slot12": "=",
+  "key.slot13": "\\",
   "key.delete": "Del",
 
   "status.offGrid": "Niet op het net: heeft een voltooide pyloon binnen zes vakken nodig",
@@ -122,6 +123,10 @@ export const nl: Record<Key, string> = {
   "status.off": "Uitgeschakeld",
   "status.damaged": "Beschadigd, wordt hersteld",
   "status.working": "In bedrijf",
+  "status.loading": "Vliegtuig wordt geladen",
+  "status.inFlight": "Vliegtuig onderweg naar het doel",
+  "status.bombing": "Vliegtuig bombardeert",
+  "status.returning": "Vliegtuig keert terug",
 
   "info.cost": "{cost} energie",
   "info.range": "Bereik {range}",
@@ -195,6 +200,8 @@ export const nl: Record<Key, string> = {
     "Klodders mikken op het gebouw met de meeste andere binnen vijf vakken, dus je weet waar de volgende neerkomt: zet daar een onderschepper.",
   "tip.survive":
     "Steek je energie in verdediging rond de lander in plaats van in uitbreiding: de bronnen worden elke minuut sterker, dus de laatste minuten zijn het zwaarst.",
+  "tip.airfield":
+    "Het vliegtuig gaat altijd voor het ergste slib van de hele kaart, waar je net ook staat. Zet het vliegveld uit om het thuis te houden.",
 
   "end.won": "Bronnen afgesloten",
   "end.won.survive.title": "Volgehouden",
@@ -293,6 +300,7 @@ export const nlContent: Content = {
       name: "Dop",
       blurb: "Houdt een droge bron dicht zolang hij gebouwd wordt, en sluit hem daarna voorgoed af.",
     },
+    airfield: { name: "Vliegveld", blurb: "Laadt een vliegtuig met dertig energie. Als het vol is, vliegt het vliegtuig naar het diepste slib van de kaart, bombardeert het en komt terug om opnieuw te laden." },
   },
   levels: {
     c1: {
@@ -370,6 +378,7 @@ export const nlContent: Content = {
       hints: [
         "Het net reikt zes vakken ver over de zee, en de meeste zeestraten zijn smaller. Hoofdlijnen overbruggen de brede.",
         "De zee is één geheel: wat je bij een bron wegbrandt, stroomt van overal weer aan. Lansen op de eilandtoppen kijken over de hele zee uit.",
+        "Het vliegtuig van een vliegveld bereikt de hele kaart: elke keer dat het geladen is, bombardeert het het diepste deel van de zee.",
       ],
     },
     c11: {

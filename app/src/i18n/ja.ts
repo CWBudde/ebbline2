@@ -116,6 +116,7 @@ export const ja: Record<Key, string> = {
   "build.mark.title": "グレーダーに上げ下げさせる地面をマーク",
   "key.slot11": "-",
   "key.slot12": "^",
+  "key.slot13": "]",
   "key.delete": "Del",
 
   "status.offGrid": "グリッド外：6 マス以内に完成したパイロンが必要です",
@@ -123,6 +124,10 @@ export const ja: Record<Key, string> = {
   "status.off": "オフ",
   "status.damaged": "損傷、修理中",
   "status.working": "稼働中",
+  "status.loading": "飛行機に充填中",
+  "status.inFlight": "飛行機が出撃中",
+  "status.bombing": "飛行機が爆撃中",
+  "status.returning": "飛行機が帰還中",
 
   "info.cost": "エネルギー {cost}",
   "info.range": "射程 {range}",
@@ -183,6 +188,8 @@ export const ja: Record<Key, string> = {
   "tip.grader": "高さ 1 段ごとに 1.5 秒かかり、施設の下は整地できません。泥が来る前に堤防をマークしておきましょう。",
   "tip.spitter": "泥塊は、周囲 5 マス以内にほかの施設がいちばん多い施設を狙います。次の着弾地点は読めるので、そこにインターセプターを置きましょう。",
   "tip.survive": "拡張よりもランダー周辺の防御にエネルギーを回しましょう。噴出口は毎分強くなるので、最後の数分がいちばん厳しくなります。",
+  "tip.airfield":
+    "飛行機は、グリッドがどこにあっても、マップ全体でいちばんひどい泥を狙います。基地に留めたいときは飛行場をオフにしましょう。",
 
   "end.won": "噴出口を封印",
   "end.won.survive.title": "耐え抜いた",
@@ -263,6 +270,7 @@ export const jaContent: Content = {
     interceptor: { name: "インターセプター", blurb: "飛んでくる泥塊を撃ち落とします。" },
     grader: { name: "グレーダー", blurb: "マークした地面を 1 段ずつ上げ下げします。" },
     cap: { name: "キャップ", blurb: "建設中は乾いた噴出口を押さえ、完成すると完全に封印します。" },
+    airfield: { name: "飛行場", blurb: "飛行機にエネルギー 30 を充填します。満タンになると、飛行機はマップでいちばん深い泥へ飛んで爆撃し、戻ってまた充填します。" },
   },
   levels: {
     c1: {
@@ -340,6 +348,7 @@ export const jaContent: Content = {
       hints: [
         "グリッドは海の上でも 6 マス先まで届き、ほとんどの海峡はそれより狭いです。広い海峡はトランクで渡りましょう。",
         "海はひとつながりです。噴出口のそばで焼き払っても、ほかのあらゆる所から泥が流れ込みます。島の頂上に置いたランスなら、海全体を見下ろせます。",
+        "飛行場の飛行機はマップ全体に届きます。充填のたびに、海でいちばん深い場所を爆撃します。",
       ],
     },
     c11: {
