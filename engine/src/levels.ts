@@ -234,7 +234,7 @@ export const CAMPAIGN: readonly LevelDef[] = [
     brief: "You came down on an island in a sea of silt, and four vents on its floor keep it rising. Hop the grid from island to island, burn the sea back from each vent and cap it.",
     seed: 10017,
     size: 64,
-    vents: { count: 4, period: 60, amount: 8.25, ramp: 0.15 },
+    vents: { count: 4, period: 60, amount: 9.9, ramp: 0.15 },
     spitters: { count: 2, period: 840, amount: 10 },
     lodes: 9,
     landform: "archipelago",
@@ -258,7 +258,7 @@ export const CAMPAIGN: readonly LevelDef[] = [
     brief: "The floor rises in terraces around your landing site, sending silt down different slopes as it moves. Use the steady ring near the lander to stage your push and cap the vents.",
     seed: 11017,
     size: 48,
-    vents: { count: 3, period: 60, amount: 11, ramp: 0.15, near: 10 },
+    vents: { count: 3, period: 60, amount: 12.65, ramp: 0.15, near: 10 },
     spitters: { count: 2, period: 600, amount: 10 },
     lodes: 8,
     movingFloor: true,
@@ -280,7 +280,7 @@ export const CAMPAIGN: readonly LevelDef[] = [
     brief: "Silt is already moving around the bend toward your headland. Extend the grid across the islands and cap the vents upstream.",
     seed: 12017,
     size: 48,
-    vents: { count: 3, period: 60, amount: 12.5, ramp: 0.2 },
+    vents: { count: 3, period: 60, amount: 14.5, ramp: 0.2 },
     spitters: { count: 1, period: 840, amount: 5 },
     lodes: 9,
     landform: "shoal-bend",
@@ -296,22 +296,22 @@ export const CAMPAIGN: readonly LevelDef[] = [
   },
   {
     // One great island in a sea four deep, its crown at the top height and its shore a step above the sea; four
-    // small islets lie far out, and two spitters on the high ground. Every sixteen seconds an eighth of the land goes
-    // down a step, the drop running round the island like a clock hand, so the whole island sinks a step every 128
-    // seconds and the shore goes under first; the sea reaches the lander after about eight and a half minutes. The vents lie on
+    // small islets lie far out, and two spitters on the high ground. Every eight seconds an eighth of the land goes
+    // down a step, the drop running round the island like a clock hand, so the whole island sinks a step every 64
+    // seconds and the shore goes under first; the sea reaches the lander after about four minutes. The vents lie on
     // the sea floor round it.
     id: "c13",
     name: "Atlantis",
     brief: "You came down on the crown of a great island, and the island is going under. Four vents on the sea floor keep the sea rising while the land sinks. Cap them before the silt closes over your lander.",
     seed: 13017,
     size: 56,
-    vents: { count: 4, period: 60, amount: 8, ramp: 0.15 },
+    vents: { count: 4, period: 60, amount: 14, ramp: 0.15 },
     spitters: { count: 2, period: 840, amount: 8 },
     lodes: 9,
     landform: "atlantis",
     rock: 0.04,
     sea: 4,
-    sinking: { every: 128, floor: 2 },
+    sinking: { every: 64, floor: 2 },
     ground: "slate",
     allowed: EVERYTHING,
     objective: { kind: "cap" },

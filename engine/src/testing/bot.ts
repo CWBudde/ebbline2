@@ -1,9 +1,11 @@
 // A scripted player. Balance tests use it to show that every mission can be won, and the levels are tuned so
 // that it only just wins them: it plays like a careful, competent human.
 //
-// What it does, in order of urgency: give up cut-off structures, cap vents as soon as they can take a cap, shoot
-// down globs and guard the lander, tap lodes, put pylons on flats for their harvest, then push toward the nearest
-// open vent with lances sited on high ground that overlooks the silt, backed by lobbers on deep pools.
+// What it does, in order of urgency: give up cut-off structures and taps drowned too deep to pay for their
+// mending, cap vents as soon as they can take a cap, shoot down globs and guard the lander, put pumps by standing
+// silt where the map starts with a sea or a long flood, tap lodes, put pylons on flats for their harvest, then push
+// toward the nearest open vent with lances sited on high ground that overlooks the silt, backed by lobbers on deep
+// pools.
 //
 // When it only has to hold out, it digs in instead: graders raise a ring of ground round the lander to the top
 // height, lances and lobbers stand inside it or on its crest, and pumps on the crest skim the silt that rises
@@ -16,7 +18,7 @@ import { centre, distance, span, tileAtPoint, tileOf, within, type Tile } from "
 import { LANDER_INCOME, TAP_INCOME } from "../packets.ts";
 import { densest } from "../spitters.ts";
 import { step } from "../step.ts";
-import { placeError } from "../structures.ts";
+import { placeError, WEAR } from "../structures.ts";
 import { LANCE, LOBBER } from "../weapons.ts";
 import {
   CAP_DRY,
@@ -52,6 +54,12 @@ const DIKE = 5;
 
 /** Graders that raise the dike. */
 const GRADERS = 2;
+
+/** Pumps the bot puts by standing silt at first; one more joins every minute. */
+const PUMPS = 2;
+
+/** Seconds a level's vents have flowed before landing for its silt to count as standing, like a sea. */
+const STANDING_FLOOD = 90;
 
 /** A pump on the dike's crest has to have at least this many wet tiles in reach to be worth its cost. */
 const PUMP_WET = 5;
@@ -244,6 +252,31 @@ function crestPump(game: Game, ring: readonly number[]): Tile | undefined {
   return best;
 }
 
+/**
+ * A tile on the grid for a pump that skims the most silt: dry itself and next to it, so the first film does not take
+ * it before it is built, with at least `least` wet tiles two steps out.
+ */
+function pumpSite(game: Game, relaysOnGrid: readonly Structure[], least: number): Tile | undefined {
+  let best: Tile | undefined;
+  let bestWet = least - 1;
+  for (const r of relaysOnGrid) {
+    if (!r.built) continue;
+    within(game.w, game.h, r.x, r.y, LINK_RANGE, (_i, _d, x, y) => {
+      const p = { x, y };
+      if (!free(game, "pump", p)) return;
+      let wet = 0;
+      within(game.w, game.h, x, y, KINDS.pump.range, (j, d) => {
+        if (d === KINDS.pump.range && (game.silt[j] ?? 0) >= DRY) wet += 1;
+      });
+      if (wet > bestWet && reaches(game, "pump", x, y)) {
+        best = p;
+        bestWet = wet;
+      }
+    });
+  }
+  return best;
+}
+
 function order(structure: Kind, p: Tile): Command[] {
   return [{ kind: "place", structure, x: p.x, y: p.y }];
 }
@@ -283,6 +316,13 @@ export function think(game: Game): Command[] {
   if (stranded && !game.gridDirty) {
     return [{ kind: "dismantle", id: stranded.id }];
   }
+
+  // A tap standing so deep in silt that mending it costs more than it brings in is given up; the lode is tapped
+  // again once it runs dry.
+  const sunk = all.find(
+    (s) => s.kind === "tap" && s.built && (game.silt[s.y * game.w + s.x] ?? 0) * WEAR * TICK_HZ > TAP_INCOME,
+  );
+  if (sunk) return [{ kind: "dismantle", id: sunk.id }];
 
   // 1. Cap a vent as soon as it and the ring around it can take one: an unfinished cap clamps the vent, so from
   // then on the pool only shrinks, but silt flowing back over the cap would wear it away.
@@ -367,6 +407,14 @@ export function think(game: Game): Command[] {
     }
     return undefined;
   };
+  // Where silt stands from the start, in a sea or a long flood, pumps by it skim it and pay for themselves within
+  // half a minute. Elsewhere the lances burn it off before a pump earns its cost back.
+  const standing = game.level.sea !== undefined || (game.level.flood ?? 0) >= STANDING_FLOOD;
+  const pumpsDue = PUMPS + Math.floor(game.tick / (60 * TICK_HZ));
+  if (standing && allowed("pump") && game.energy >= KINDS.pump.cost && count("pump") < pumpsDue) {
+    const p = pumpSite(game, nodes, PUMP_WET);
+    if (p) return order("pump", p);
+  }
   lodes.sort((a, b) => steps(a, closest(a) ?? a) - steps(b, closest(b) ?? b));
   // Lodes on islands stand by the shore, so over a sea a dry ring round the lode has to do.
   const lode = lodes.find((p) => !wetNear(game, p, game.level.sea === undefined ? 2 : 1));
