@@ -46,7 +46,7 @@ export function gain(game: Game, amount: number, source: Source): void {
   bank(game, amount, { [source]: amount });
 }
 
-function spend(game: Game, amount: number, purpose: Purpose): void {
+export function spend(game: Game, amount: number, purpose: Purpose): void {
   game.energy -= amount;
   game.accOut += amount;
   game.flow.accOut[purpose] += amount;

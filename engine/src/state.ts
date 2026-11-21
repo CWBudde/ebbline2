@@ -165,7 +165,7 @@ export const KINDS: Readonly<Record<Kind, KindDef>> = {
   },
   airfield: {
     name: "Airfield",
-    cost: 35,
+    cost: 70,
     store: 30,
     range: 0,
     minRange: 0,

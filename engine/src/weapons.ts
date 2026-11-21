@@ -2,7 +2,7 @@
 
 import { centre, distance, span, tileAtPoint, within, type Point } from "./hex.ts";
 import { updateHarvest } from "./harvest.ts";
-import { gain } from "./packets.ts";
+import { gain, spend } from "./packets.ts";
 import {
   DRY,
   FLOW_EVERY,
@@ -35,7 +35,8 @@ export const GRADER = { work: 45, cost: 0.5 } as const;
  * The plane flies `speed` tiles per tick (7.5 a second) and carries `bombs` bombs, which it drops evenly along a
  * run of `run` tiles centred on its target. Each bomb is a lobber blast (`blast`, `removes`). The target is the
  * tile whose surroundings within `area` steps hold the most silt; with less than `least` there, the plane stays
- * on the ground and the airfield looks again after `idle` ticks.
+ * on the ground and the airfield looks again after `idle` ticks. Each takeoff also burns `fuel` energy from the bank;
+ * while the bank cannot pay it, the plane waits on the ground.
  */
 export const AIRFIELD = {
   speed: 0.25,
@@ -46,6 +47,7 @@ export const AIRFIELD = {
   removes: 1.45,
   least: 0.3,
   idle: 30,
+  fuel: 1,
 } as const;
 
 function take(game: Game, i: number, amount: number): number {
@@ -175,12 +177,14 @@ function pickTarget(game: Game, s: Structure): number {
 
 function airfield(game: Game, s: Structure, events: Event[]): void {
   if (s.cooldown > 0 || s.energy < KINDS.airfield.store || planeOf(game, s.id)) return;
+  if (game.energy < AIRFIELD.fuel) return;
   const best = pickTarget(game, s);
   if (best < 0) {
     s.cooldown = AIRFIELD.idle;
     return;
   }
   s.energy = 0;
+  spend(game, AIRFIELD.fuel, "supply");
   s.target = best;
   const from = centre(s.x, s.y);
   const to = centre(best % game.w, Math.floor(best / game.w));

@@ -102,6 +102,21 @@ describe("airfield", () => {
     expect(game.planes).toHaveLength(1);
   });
 
+  it("burns one energy from the bank for each takeoff, and waits while the bank is empty", () => {
+    const { game, field } = setup();
+    pool(game, 36, 36, 1, 2);
+    game.energy = 0;
+    game.capacity = 0;
+    run(game, 30);
+    expect(game.planes).toHaveLength(0);
+    expect(field.energy).toBe(KINDS.airfield.store);
+    game.capacity = 30;
+    game.energy = 10;
+    const spent = game.stats.spent;
+    expect(run(game, 1).some((e) => e.kind === "takeoff")).toBe(true);
+    expect(game.stats.spent - spent).toBeGreaterThanOrEqual(AIRFIELD.fuel);
+  });
+
   it("keeps the plane on the ground when switched off", () => {
     const { game, field } = setup();
     pool(game, 36, 36, 1, 2);
