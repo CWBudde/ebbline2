@@ -350,7 +350,16 @@ export function think(game: Game): Command[] {
     const move = want(game, "interceptor", hub, 4, nearest(game, hub));
     if (move) return move;
   }
-  if (home && wetNear(game, home, 4) && near("lance", home, 6) < 3 && backlog < 3) {
+  // Landed below a sea held off by higher ground, whatever spills over runs down to the lander: silt closing in
+  // calls for lances round it, the more the longer it keeps coming. Where the land sinks, pushing to the vents
+  // does better.
+  const guard = !home ? 0 : wetNear(game, home, 4) ? 3 : 0;
+  const below =
+    home !== undefined &&
+    game.level.sinking === undefined &&
+    (game.height[home.y * game.w + home.x] ?? 0) < (game.level.sea ?? 0);
+  const siege = home && below && wetNear(game, home, 8) ? Math.min(8, 2 + Math.floor(game.tick / (60 * TICK_HZ))) : 0;
+  if (home && near("lance", home, 6) < Math.max(guard, siege) && backlog < 3) {
     const move = want(game, "lance", home, 6, (q) => (behind(q) ? overlook(game, q) - steps(q, home) : -Infinity));
     if (move) return move;
   }

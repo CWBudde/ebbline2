@@ -319,7 +319,8 @@ export type Objective =
  * similar size out of a low sea floor and puts the lander on one of middling size; "shoal-bend" turns a widened
  * horseshoe on its side, with the lander on a headland in the north-east and the vents in the south, sets steady
  * islands in its channel and two shoals that rise and sink in turn; "atlantis" raises one great island with a high
- * crown in the middle of a low sea floor, and a few small islets far out round it.
+ * crown in the middle of a low sea floor, and a few small islets far out round it; "levee" sets the lander in a
+ * wide, low basin behind a thin ring wall, with the sea standing outside it up to a few low notches in the wall.
  */
 export type Landform =
   | "hills"
@@ -331,7 +332,8 @@ export type Landform =
   | "horseshoe"
   | "archipelago"
   | "shoal-bend"
-  | "atlantis";
+  | "atlantis"
+  | "levee";
 
 /** The colour scheme of the ground. Only the renderer reads it. */
 export type Ground = "earth" | "slate" | "sand" | "ash";

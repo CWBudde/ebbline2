@@ -407,6 +407,15 @@ export const itContent: Content = {
         "Ciò che costruisci in basso presto sarà nella melma. Metti lance e ripetitori in alto e spingiti presto verso gli sfiati.",
       ],
     },
+    c14: {
+      name: "Argine",
+      brief: "Sei atterrato in un’ampia conca bassa. Un argine sottile trattiene un mare di melma colmo fino all’orlo, e i quattro sfiati là fuori lo fanno salire ancora. Dove l’argine è più basso tracima già. Tieni il muro e sigilla gli sfiati al di là.",
+      hints: [
+        "Qui il terreno alto è l’argine: le lance sulla sua cresta dominano il mare fuori e la conca dentro.",
+        "Tre varchi nell’argine sono alla quota del mare. Tutto ciò che aggiungono gli sfiati si riversa da lì nella conca. Le livellatrici possono alzarli.",
+        "La conca si riempie dai varchi verso il tuo lander. Brucia ciò che passa prima che si allarghi.",
+      ],
+    },
   },
   skirmish: { name: "Schermaglia {seed}", brief: "Tappa ogni sfiato." },
 };

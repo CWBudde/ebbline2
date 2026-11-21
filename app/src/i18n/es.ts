@@ -408,6 +408,15 @@ export const esContent: Content = {
         "Lo que construyas abajo pronto estará en el limo. Pon lanzas y relés en terreno alto y avanza pronto hacia los respiraderos.",
       ],
     },
+    c14: {
+      name: "Dique",
+      brief: "Has aterrizado en una cuenca ancha y baja. Un dique estrecho contiene un mar de limo lleno hasta el borde, y las cuatro fumarolas de fuera lo hacen subir. Donde el dique es más bajo ya se desborda. Defiende el muro y sella las fumarolas al otro lado.",
+      hints: [
+        "Aquí el terreno alto es el dique: las lanzas en su cresta dominan el mar de fuera y la cuenca de dentro.",
+        "Tres brechas del dique están a la altura del mar. Todo lo que añaden las fumarolas se derrama por ellas hacia la cuenca. Las niveladoras pueden elevarlas.",
+        "La cuenca se llena desde las brechas hacia tu módulo. Quema lo que entra antes de que se extienda.",
+      ],
+    },
   },
   skirmish: { name: "Escaramuza {seed}", brief: "Tapona cada fumarola." },
 };

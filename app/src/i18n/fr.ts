@@ -409,6 +409,15 @@ export const frContent: Content = {
         "Ce que tu construis en bas sera bientôt dans la vase. Place lances et relais en hauteur et pousse tôt vers les évents.",
       ],
     },
+    c14: {
+      name: "Digue",
+      brief: "Tu as atterri dans une large cuvette basse. Une digue étroite retient une mer de vase pleine à ras bord, et les quatre évents au-dehors la font encore monter. Là où la digue est la plus basse, elle déborde déjà. Tiens le mur et coiffe les évents au-delà.",
+      hints: [
+        "Ici, la hauteur, c’est la digue : des lances sur sa crête dominent la mer au-dehors et la cuvette au-dedans.",
+        "Trois brèches de la digue sont au niveau de la mer. Tout ce qu’ajoutent les évents se déverse par elles dans la cuvette. Les niveleuses peuvent les rehausser.",
+        "La cuvette se remplit depuis les brèches vers ton atterrisseur. Brûle ce qui passe avant que ça s’étale.",
+      ],
+    },
   },
   skirmish: { name: "Escarmouche {seed}", brief: "Bouche chaque évent." },
 };

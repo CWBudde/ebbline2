@@ -408,6 +408,15 @@ export const deContent: Content = {
         "Was du tief baust, steht bald im Schlick. Setz Lanzen und Relais auf hohen Grund und stoß früh zu den Schloten vor.",
       ],
     },
+    c14: {
+      name: "Deich",
+      brief: "Du bist in einem weiten, flachen Becken gelandet. Ein schmaler Deich hält ein randvolles Meer aus Schlick zurück, und die vier Schlote draußen lassen es weiter steigen. Wo der Deich am niedrigsten ist, läuft es schon über. Halte den Wall und verschließ die Schlote dahinter.",
+      hints: [
+        "Der Deich ist hier der hohe Grund: Lanzen auf seiner Krone blicken auf das Meer draußen und auf das Becken drinnen hinab.",
+        "Drei Scharten im Deich liegen auf Höhe des Meeres. Was die Schlote nachliefern, läuft durch sie ins Becken. Planierer können sie erhöhen.",
+        "Das Becken füllt sich von den Scharten her zum Lander hin. Brenn weg, was durchkommt, bevor es sich ausbreitet.",
+      ],
+    },
   },
   skirmish: { name: "Gefecht {seed}", brief: "Verschließ jeden Schlot." },
 };

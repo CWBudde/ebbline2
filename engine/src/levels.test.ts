@@ -25,6 +25,7 @@ describe("introduced", () => {
       ["c11", { structures: [], ...none }],
       ["c12", { structures: [], ...none }],
       ["c13", { structures: [], ...none }],
+      ["c14", { structures: [], ...none }],
     ]);
   });
 
@@ -234,5 +235,52 @@ describe("sinking land", () => {
     for (const [i, h] of initial.entries()) {
       expect(game.height[i]).toBe(h === ROCK || h <= 2 ? h : h - 1);
     }
+  });
+});
+
+describe("the levee", () => {
+  const levee = CAMPAIGN.find((level) => level.id === "c14") as LevelDef;
+
+  it("holds the sea off a low, dry basin round the lander with a thin wall, low only at the notches", () => {
+    const game = generate(levee);
+    const home = lander(game);
+    const sea = levee.sea ?? 0;
+    expect(game.height[home.y * game.w + home.x]).toBeLessThanOrEqual(3);
+    // The basin: everything reachable from the lander over ground below the sea, all of it dry.
+    const basin = new Set([home.y * game.w + home.x]);
+    for (const i of basin) {
+      within(game.w, game.h, i % game.w, Math.floor(i / game.w), 1, (j) => {
+        const h = game.height[j] ?? 0;
+        if (h !== ROCK && h < sea) basin.add(j);
+      });
+    }
+    expect(basin.size).toBeGreaterThan(game.w * game.h * 0.25);
+    for (const i of basin) expect(game.silt[i]).toBe(0);
+    // Its rim: the tiles next to the basin that are not part of it. Most stand above the sea, a few level with it,
+    // and outside them the sea stands right up to the brim.
+    const rim = new Set<number>();
+    for (const i of basin) {
+      within(game.w, game.h, i % game.w, Math.floor(i / game.w), 1, (j) => {
+        if (!basin.has(j) && game.height[j] !== ROCK) rim.add(j);
+      });
+    }
+    const heights = [...rim].map((i) => game.height[i] ?? 0);
+    expect(Math.min(...heights)).toBe(sea);
+    expect(new Set(heights.filter((h) => h > sea)).size).toBeGreaterThan(1);
+    expect(heights.filter((h) => h === sea).length).toBeLessThan(heights.length / 8);
+    for (const v of game.vents) {
+      expect(basin.has(v.y * game.w + v.x)).toBe(false);
+      expect(game.silt[v.y * game.w + v.x]).toBeGreaterThanOrEqual(sea - 2);
+    }
+    for (const s of game.spitters) expect(game.height[s.y * game.w + s.x]).toBeGreaterThan(sea);
+  });
+
+  it("spills over its notches into the basin once the vents raise the sea", () => {
+    const game = generate(levee);
+    const home = lander(game);
+    for (let i = 0; i < 90 * TICK_HZ; i++) step(game);
+    let inside = 0;
+    within(game.w, game.h, home.x, home.y, 15, (i) => (inside += game.silt[i] ?? 0));
+    expect(inside).toBeGreaterThan(0);
   });
 });

@@ -406,6 +406,15 @@ export const plContent: Content = {
         "To, co zbudujesz nisko, wkrótce stanie w mule. Stawiaj lance i przekaźniki na wysokim terenie i wyruszaj ku ujściom wcześnie.",
       ],
     },
+    c14: {
+      name: "Wał",
+      brief: "Wylądowałeś w szerokiej, niskiej niecce. Wąski wał powstrzymuje morze mułu wypełnione po brzegi, a cztery ujścia na zewnątrz wciąż je podnoszą. Tam, gdzie wał jest najniższy, już się przelewa. Utrzymaj wał i zamknij ujścia za nim.",
+      hints: [
+        "Wysokim terenem jest tu wał: lance na jego koronie górują nad morzem na zewnątrz i nad niecką w środku.",
+        "Trzy wyrwy w wale leżą na poziomie morza. Wszystko, co dodają ujścia, przelewa się nimi do niecki. Równiarki mogą je podnieść.",
+        "Niecka wypełnia się od wyrw w stronę lądownika. Wypalaj to, co się przedostanie, zanim się rozleje.",
+      ],
+    },
   },
   skirmish: { name: "Potyczka {seed}", brief: "Zamknij każdy komin." },
 };

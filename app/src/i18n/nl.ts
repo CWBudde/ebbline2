@@ -406,6 +406,15 @@ export const nlContent: Content = {
         "Wat je laag bouwt, staat straks in het slib. Zet lansen en relais op hoge grond en trek er vroeg op uit naar de bronnen.",
       ],
     },
+    c14: {
+      name: "Dijk",
+      brief: "Je bent geland in een wijd, laag bekken. Een smalle dijk houdt een tot de rand gevulde zee van slib tegen, en de vier bronnen buiten laten haar verder stijgen. Waar de dijk het laagst is, loopt ze al over. Houd de wal en sluit de bronnen erachter af.",
+      hints: [
+        "De dijk is hier de hoge grond: lansen op de kruin kijken neer op de zee buiten en op het bekken binnen.",
+        "Drie bressen in de dijk liggen even hoog als de zee. Wat de bronnen erbij doen, loopt daardoor het bekken in. Egaliseerders kunnen ze ophogen.",
+        "Het bekken loopt vanaf de bressen vol, richting je lander. Brand weg wat erdoor komt voordat het zich verspreidt.",
+      ],
+    },
   },
   skirmish: { name: "Gevecht {seed}", brief: "Dop elke bron af." },
 };

@@ -410,6 +410,15 @@ export const ptContent: Content = {
         "O que você construir embaixo logo estará no lodo. Ponha lanças e relés em terreno alto e avance cedo até as saídas.",
       ],
     },
+    c14: {
+      name: "Dique",
+      brief: "Você pousou numa bacia larga e baixa. Um dique estreito segura um mar de lodo cheio até a borda, e as quatro saídas lá fora o fazem subir. Onde o dique é mais baixo, ele já transborda. Defenda o muro e sele as saídas além dele.",
+      hints: [
+        "Aqui o terreno alto é o dique: lanças na sua crista dominam o mar lá fora e a bacia aqui dentro.",
+        "Três brechas no dique ficam na altura do mar. Tudo o que as saídas acrescentam escorre por elas para a bacia. As niveladoras podem elevá-las.",
+        "A bacia se enche a partir das brechas em direção ao seu módulo de pouso. Queime o que passar antes que se espalhe.",
+      ],
+    },
   },
   skirmish: { name: "Escaramuça {seed}", brief: "Tampe todas as fendas." },
 };

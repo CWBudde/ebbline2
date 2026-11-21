@@ -8,8 +8,9 @@ on hexagonal tiles instead of squares. Ranges are counted in steps from tile to 
 
 - [x] Hex geometry, and the engine ported to hexagons (`engine/`).
 - [x] Hex drawing and picking in the app.
-- [x] Campaign of thirteen missions (`c1` to `c13`), replacing the fourteen square-grid ones; the
-      interface text of all thirteen languages covers them.
+- [x] Campaign of fourteen missions (`c1` to `c14`), replacing the fourteen square-grid ones; the
+      interface text of all thirteen languages covers them. c14 (Levee) holds a brim-full sea off a
+      low basin with a thin wall that spills over at its notches.
 - [x] Moving ground (`movingFloor.ts`): waves that roll out from the lander in c11, and shoals that
       rise and sink in turn in c12's bend, and the sinking island of c13 (Atlantis).
 - [x] Earthy brown ground.

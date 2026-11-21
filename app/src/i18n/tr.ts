@@ -407,6 +407,15 @@ export const trContent: Content = {
         "Alçağa kurduğun şey yakında milin içinde kalır. Mızrakları ve aktarıcıları yüksek zemine koy, bacalara erkenden doğru ilerle.",
       ],
     },
+    c14: {
+      name: "Set",
+      brief: "Geniş, alçak bir çanağa indin. İnce bir set, ağzına kadar dolu bir balçık denizini tutuyor ve dışarıdaki dört baca onu yükseltmeye devam ediyor. Setin en alçak yerlerinde taşma çoktan başladı. Seti tut ve ötesindeki bacaları kapat.",
+      hints: [
+        "Burada yüksek zemin settir: tepesindeki mızraklar hem dışarıdaki denize hem içerideki çanağa yukarıdan bakar.",
+        "Setteki üç gedik denizle aynı yükseklikte. Bacaların eklediği her şey onlardan çanağa taşar. Greyderler onları yükseltebilir.",
+        "Çanak gediklerden iniş aracına doğru dolar. İçeri gireni yayılmadan yak.",
+      ],
+    },
   },
   skirmish: { name: "Çatışma {seed}", brief: "Her bacayı kapat." },
 };

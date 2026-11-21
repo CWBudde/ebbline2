@@ -35,7 +35,8 @@ const NO_SPITTERS = { count: 0, period: 0, amount: 0 } as const;
 // c10 starts in a sea that already stands deep, to be burnt back from island to island. In c11 the ground itself
 // moves: waves of it roll outward from the lander and turn the silt this way and that. c12 sends a flood round a
 // bend again, now through a channel of islands where two shoals rise and sink. In c13 the land you stand on sinks
-// into a deep sea, and the vents have to be capped before the sea closes over the lander.
+// into a deep sea, and the vents have to be capped before the sea closes over the lander. In c14 a thin levee holds a
+// brim-full sea off a wide, low basin, and the sea spills in where the levee is lowest.
 export const CAMPAIGN: readonly LevelDef[] = [
   {
     // A ridge above a long valley with the vent at its bottom, its pool already spreading. No lodes: the lander's
@@ -319,6 +320,31 @@ export const CAMPAIGN: readonly LevelDef[] = [
       "The island sinks a step at a time, an eighth of it after the other all the way round. The shore goes under first, the crown last.",
       "Graders can raise sinking ground again, and a raised rim holds the sea off for a while. It goes on sinking with the rest.",
       "What you build low will stand in silt soon. Put lances and relays on high ground, and push out to the vents early.",
+    ],
+  },
+  {
+    // A wide basin a step or three high, the lander in its middle, ringed by a levee two tiles thick whose crest
+    // stands one to three steps above a sea six deep. At three notches the levee is level with the sea, so as soon
+    // as the vents raise it the sea spills into the basin. The vents lie on the sea floor outside, and spitters on
+    // skerries beyond the levee.
+    id: "c14",
+    name: "Levee",
+    brief: "You came down in a wide, low basin. A thin levee holds back a sea of silt filled to the brim, and the four vents outside keep it rising. Where the levee is lowest it already spills over. Hold the wall and cap the vents beyond it.",
+    seed: 14017,
+    size: 56,
+    vents: { count: 4, period: 60, amount: 9, ramp: 0.15 },
+    spitters: { count: 2, period: 840, amount: 8 },
+    lodes: 9,
+    landform: "levee",
+    rock: 0.03,
+    sea: 6,
+    ground: "earth",
+    allowed: EVERYTHING,
+    objective: { kind: "cap" },
+    hints: [
+      "The levee is the high ground here: lances on its crest look down on the sea outside and on the basin inside.",
+      "Three notches in the levee stand level with the sea. Whatever the vents add spills through them into the basin. Graders can raise them.",
+      "The basin fills from the notches toward the lander. Burn back what comes through before it spreads.",
     ],
   },
 ];

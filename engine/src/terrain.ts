@@ -357,6 +357,67 @@ function atlantis(rng: RngState, relief: Float32Array, stone: Float32Array, size
   }
 }
 
+/** Radius of the levee's ring as a share of the map's width, before the noise bends it. */
+const LEVEE_RADIUS = 0.36;
+/** How far the levee reaches either side of its line, in tiles: about two tiles thick. */
+const LEVEE_HALF = 1.05;
+/** Low places in the levee, level with the sea, where it spills over as it rises; and their half width in tiles. */
+const NOTCHES = 3;
+const NOTCH_HALF = 1.3;
+/** Rocks standing out of the sea beyond the levee, for the spitters. */
+const SKERRIES = 3;
+const SKERRY_OUT = 0.47;
+const SKERRY_RADIUS = 1.8;
+
+/**
+ * A levee: a wide, low basin in the middle of the map with only small rises, ringed by a thin wall two tiles thick
+ * whose crest stands one to three steps above `sea`, except at a few notches level with it, where the sea outside
+ * spills in as soon as it rises. Outside lies a low sea floor and a few skerries. Rewrites `relief` as atlantis does, clears `stone`
+ * outside the basin, and returns the middle of the basin for the lander.
+ */
+function levee(rng: RngState, relief: Float32Array, stone: Float32Array, size: number, sea: number): Tile {
+  const wobble = fractal(rng, size, Math.round(size / 6));
+  const crest = fractal(rng, size, Math.round(size / 4));
+  const { width, height } = extent(size, size);
+  const mid = { x: width / 2, y: height / 2 };
+  const radius = LEVEE_RADIUS * width;
+  const first = next(rng) * 2 * Math.PI;
+  const notches = Array.from(
+    { length: NOTCHES },
+    (_, n) => first + ((n + (next(rng) - 0.5) * 0.5) * 2 * Math.PI) / NOTCHES,
+  );
+  const skerries = Array.from({ length: SKERRIES }, (_, n) => {
+    const angle = first + Math.PI / NOTCHES + ((n + (next(rng) - 0.5) * 0.4) * 2 * Math.PI) / SKERRIES;
+    return { x: mid.x + Math.cos(angle) * SKERRY_OUT * width, y: mid.y + Math.sin(angle) * SKERRY_OUT * width };
+  });
+  for (let i = 0; i < relief.length; i++) {
+    const r = relief[i] as number;
+    const p = centre(i % size, Math.floor(i / size));
+    const d = Math.hypot(p.x - mid.x, p.y - mid.y);
+    const angle = Math.atan2(p.y - mid.y, p.x - mid.x);
+    const ring = d - radius * (1 + ((wobble[i] as number) - 0.5) * 0.25);
+    let h: number;
+    if (Math.abs(ring) <= LEVEE_HALF) {
+      const notched = notches.some((a) => {
+        const off = Math.abs(((angle - a + 3 * Math.PI) % (2 * Math.PI)) - Math.PI);
+        return off * d < NOTCH_HALF;
+      });
+      h = notched ? sea : Math.min(MAX_HEIGHT, sea + 1 + Math.floor((crest[i] as number) * 2.99));
+      stone[i] = 0;
+    } else if (ring < 0) {
+      h = 1 + Math.min(2, Math.floor(r * 2.6));
+    } else {
+      h = Math.min(2, Math.floor(r * 3));
+      stone[i] = 0;
+    }
+    for (const c of skerries) {
+      if (Math.hypot(p.x - c.x, p.y - c.y) < SKERRY_RADIUS) h = sea + 2;
+    }
+    relief[i] = (h + 0.5) / 10;
+  }
+  return tileAtPoint(mid.x, mid.y);
+}
+
 /** The noise level above which `share` of the values lie. */
 function quantile(values: Float32Array, share: number): number {
   const sorted = Float32Array.from(values).sort();
@@ -379,6 +440,7 @@ export function generate(level: LevelDef): Game {
   // An archipelago draws its islands over the noise that shape() left alone.
   const isles = level.landform === "archipelago" ? archipelago(rng, relief, stone, size) : undefined;
   if (level.landform === "atlantis") atlantis(rng, relief, stone, size);
+  const basin = level.landform === "levee" ? levee(rng, relief, stone, size, level.sea ?? 6) : undefined;
   const rockAbove = level.rock === undefined ? 0.82 : quantile(stone, level.rock);
   for (let i = 0; i < height.length; i++) {
     height[i] =
@@ -391,8 +453,9 @@ export function generate(level: LevelDef): Game {
   // The lander takes the spot its landform gives it, or else one of the highest spots away from the edge, or
   // middling ground near the centre.
   const spots: Tile[] = [];
-  if (ends) {
-    within(size, size, ends.lander.x, ends.lander.y, 2, (i, _steps, x, y) => {
+  const home = ends?.lander ?? basin;
+  if (home) {
+    within(size, size, home.x, home.y, 2, (i, _steps, x, y) => {
       if (height[i] !== ROCK) spots.push({ x, y });
     });
   } else if (isles) {
@@ -484,8 +547,10 @@ export function generate(level: LevelDef): Game {
   const tweaks = vents.map((p): VentTweak => level.vents.each?.[nearest.indexOf(p)] ?? {});
 
   const taken: Tile[] = [lander, ...vents];
-  // With a sea on the map, lodes and spitters stand on land above it.
-  const ashore = (p: Tile): boolean => level.sea === undefined || at(p.x, p.y) > level.sea;
+  // With a sea on the map, lodes and spitters stand on land above it, or in a dry basin below it.
+  const wet = seaCover(height, size, level.sea);
+  const ashore = (p: Tile): boolean =>
+    level.sea === undefined || at(p.x, p.y) > level.sea || (at(p.x, p.y) < level.sea && wet[p.y * size + p.x] === 0);
   const pick = (ok: (p: Tile) => boolean, gap: number): Tile | undefined => {
     for (let tries = 0; tries < 400; tries++) {
       const p = { x: 2 + int(rng, size - 4), y: 2 + int(rng, size - 4) };
@@ -593,9 +658,9 @@ export function generate(level: LevelDef): Game {
   for (const i of footprint(game, "lander", lander.x, lander.y)) game.occ[i] = base.id;
   const sea = level.sea;
   if (sea !== undefined) {
-    // Level, as if it had been standing for long: every open tile below the surface is covered up to it.
+    // Level, as if it had been standing for long: every tile the sea reaches is covered up to its surface.
     height.forEach((ground, i) => {
-      if (ground !== ROCK && ground < sea) game.silt[i] = sea - ground;
+      if (wet[i] === 1) game.silt[i] = sea - ground;
     });
   }
   if (level.flood !== undefined) {
@@ -604,6 +669,34 @@ export function generate(level: LevelDef): Game {
   // The first sample, so the graphs start where the game does.
   sample(game);
   return game;
+}
+
+/**
+ * The tiles a sea of the given height covers: open ground below its surface that it reaches from the map's edge,
+ * so a basin behind a wall above the surface stays dry. All 0 without a sea.
+ */
+function seaCover(height: Int8Array, size: number, sea: number | undefined): Uint8Array {
+  const wet = new Uint8Array(size * size);
+  if (sea === undefined) return wet;
+  const open = (i: number): boolean => height[i] !== ROCK && (height[i] as number) < sea;
+  const queue: number[] = [];
+  for (let i = 0; i < wet.length; i++) {
+    const x = i % size;
+    const y = Math.floor(i / size);
+    if ((x === 0 || y === 0 || x === size - 1 || y === size - 1) && open(i)) {
+      wet[i] = 1;
+      queue.push(i);
+    }
+  }
+  for (const i of queue) {
+    within(size, size, i % size, Math.floor(i / size), 1, (j) => {
+      if (wet[j] === 0 && open(j)) {
+        wet[j] = 1;
+        queue.push(j);
+      }
+    });
+  }
+  return wet;
 }
 
 /**
