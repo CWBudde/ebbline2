@@ -398,6 +398,15 @@ export const itContent: Content = {
         "Due secche si alzano e si abbassano in momenti diversi. Osserva i canali che il limo imbocca.",
       ],
     },
+    c13: {
+      name: "Atlantide",
+      brief: "Sei atterrato sulla sommità di una grande isola, e l’isola sta affondando. Quattro sfiati sul fondo del mare fanno salire il mare mentre la terra scende. Sigillali prima che la melma si richiuda sul tuo lander.",
+      hints: [
+        "L’isola affonda un gradino alla volta, un ottavo dopo l’altro tutto intorno. La riva va sotto per prima, la sommità per ultima.",
+        "Le livellatrici possono rialzare il terreno affondato, e un bordo rialzato tiene lontano il mare per un po’. Continua comunque ad affondare con il resto.",
+        "Ciò che costruisci in basso presto sarà nella melma. Metti lance e ripetitori in alto e spingiti presto verso gli sfiati.",
+      ],
+    },
   },
   skirmish: { name: "Schermaglia {seed}", brief: "Tappa ogni sfiato." },
 };

@@ -318,6 +318,45 @@ function archipelago(rng: RngState, relief: Float32Array, stone: Float32Array, s
   return islands;
 }
 
+/** Radius of Atlantis as a share of the map's width, before the noise bends its shore. */
+const ATLANTIS_RADIUS = 0.3;
+/** Islets round Atlantis: how many, how far out from the middle as a share of the width, and their radius. */
+const ISLETS = 4;
+const ISLET_OUT = 0.43;
+const ISLET_RADIUS = 2.6;
+
+/**
+ * Atlantis: one great island in the middle of the map, whose shore stands at 5 and climbs a step every two or three
+ * tiles to a crown at the top height, and a few small islets far out round it. Rewrites `relief` so that the usual
+ * tenfold scaling gives the sea floor heights 0 to 2, and clears `stone` on the sea floor so no rock stands in it.
+ */
+function atlantis(rng: RngState, relief: Float32Array, stone: Float32Array, size: number): void {
+  const wobble = fractal(rng, size, Math.round(size / 6));
+  const { width, height } = extent(size, size);
+  const mid = { x: width / 2, y: height / 2 };
+  const radius = ATLANTIS_RADIUS * width;
+  const first = next(rng) * 2 * Math.PI;
+  const islets = Array.from({ length: ISLETS }, (_, n) => {
+    const angle = first + ((n + (next(rng) - 0.5) * 0.4) * 2 * Math.PI) / ISLETS;
+    return { x: mid.x + Math.cos(angle) * ISLET_OUT * width, y: mid.y + Math.sin(angle) * ISLET_OUT * width };
+  });
+  for (let i = 0; i < relief.length; i++) {
+    const r = relief[i] as number;
+    const bend = (wobble[i] as number) - 0.5;
+    const p = centre(i % size, Math.floor(i / size));
+    const floor = Math.min(2, Math.floor(r * 3));
+    let h = floor;
+    const reach = Math.hypot(p.x - mid.x, p.y - mid.y) / radius + bend * 0.35;
+    if (reach < 1) h = Math.min(MAX_HEIGHT, 5 + Math.floor((1 - reach) * 6.5 + (r - 0.5) * 1.5));
+    for (const c of islets) {
+      const out = Math.hypot(p.x - c.x, p.y - c.y) / ISLET_RADIUS + bend * 0.5;
+      if (out < 1) h = Math.max(h, out < 0.5 ? 6 : 5);
+    }
+    if (h === floor) stone[i] = 0;
+    relief[i] = (h + 0.5) / 10;
+  }
+}
+
 /** The noise level above which `share` of the values lie. */
 function quantile(values: Float32Array, share: number): number {
   const sorted = Float32Array.from(values).sort();
@@ -339,6 +378,7 @@ export function generate(level: LevelDef): Game {
   const ends = shape(relief, size, level);
   // An archipelago draws its islands over the noise that shape() left alone.
   const isles = level.landform === "archipelago" ? archipelago(rng, relief, stone, size) : undefined;
+  if (level.landform === "atlantis") atlantis(rng, relief, stone, size);
   const rockAbove = level.rock === undefined ? 0.82 : quantile(stone, level.rock);
   for (let i = 0; i < height.length; i++) {
     height[i] =

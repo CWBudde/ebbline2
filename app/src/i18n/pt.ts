@@ -401,6 +401,15 @@ export const ptContent: Content = {
         "Dois baixios sobem e descem em momentos diferentes. Observa por que canais corre o lodo.",
       ],
     },
+    c13: {
+      name: "Atlântida",
+      brief: "Você pousou no topo de uma grande ilha, e a ilha está afundando. Quatro saídas no fundo do mar fazem o mar subir enquanto a terra afunda. Sele-as antes que o lodo se feche sobre o seu módulo de pouso.",
+      hints: [
+        "A ilha afunda um nível de cada vez, um oitavo após o outro, em toda a volta. A margem vai primeiro, o topo por último.",
+        "As niveladoras podem elevar de novo o terreno afundado, e uma borda elevada segura o mar por um tempo. Ela continua afundando junto com o resto.",
+        "O que você construir embaixo logo estará no lodo. Ponha lanças e relés em terreno alto e avance cedo até as saídas.",
+      ],
+    },
   },
   skirmish: { name: "Escaramuça {seed}", brief: "Tampe todas as fendas." },
 };

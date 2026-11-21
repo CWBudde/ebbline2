@@ -2,7 +2,7 @@
 
 import { rebuild } from "./grid.ts";
 import { stepHistory } from "./history.ts";
-import { stepMovingFloor } from "./movingFloor.ts";
+import { stepMovingFloor, stepSinking } from "./movingFloor.ts";
 import { stepPackets } from "./packets.ts";
 import { flow, stepVents } from "./silt.ts";
 import { stepSpitters } from "./spitters.ts";
@@ -31,7 +31,7 @@ export function step(game: Game): Event[] {
   const events: Event[] = [];
   if (game.phase !== "playing") return events;
   game.tick += 1;
-  if (stepMovingFloor(game)) events.push({ kind: "floorMoved" });
+  if (stepMovingFloor(game) || stepSinking(game)) events.push({ kind: "floorMoved" });
   if (game.gridDirty) rebuild(game);
   stepVents(game, events);
   stepSpitters(game, events);

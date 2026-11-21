@@ -34,7 +34,8 @@ const NO_SPITTERS = { count: 0, period: 0, amount: 0 } as const;
 // is all of it at once. c9 sends a flood round a valley bend to the lander's door while you go for its source.
 // c10 starts in a sea that already stands deep, to be burnt back from island to island. In c11 the ground itself
 // moves: waves of it roll outward from the lander and turn the silt this way and that. c12 sends a flood round a
-// bend again, now through a channel of islands where two shoals rise and sink.
+// bend again, now through a channel of islands where two shoals rise and sink. In c13 the land you stand on sinks
+// into a deep sea, and the vents have to be capped before the sea closes over the lander.
 export const CAMPAIGN: readonly LevelDef[] = [
   {
     // A ridge above a long valley with the vent at its bottom, its pool already spreading. No lodes: the lander's
@@ -291,6 +292,33 @@ export const CAMPAIGN: readonly LevelDef[] = [
     hints: [
       "The headland and island tops are steady ground for relays and weapons.",
       "Two shoals rise and sink at different times. Watch which channels the silt takes as they shift.",
+    ],
+  },
+  {
+    // One great island in a sea four deep, its crown at the top height and its shore a step above the sea; four
+    // small islets lie far out, and two spitters on the high ground. Every sixteen seconds an eighth of the land goes
+    // down a step, the drop running round the island like a clock hand, so the whole island sinks a step every 128
+    // seconds and the shore goes under first; the sea reaches the lander after about eight and a half minutes. The vents lie on
+    // the sea floor round it.
+    id: "c13",
+    name: "Atlantis",
+    brief: "You came down on the crown of a great island, and the island is going under. Four vents on the sea floor keep the sea rising while the land sinks. Cap them before the silt closes over your lander.",
+    seed: 13017,
+    size: 56,
+    vents: { count: 4, period: 60, amount: 8, ramp: 0.15 },
+    spitters: { count: 2, period: 840, amount: 8 },
+    lodes: 9,
+    landform: "atlantis",
+    rock: 0.04,
+    sea: 4,
+    sinking: { every: 128, floor: 2 },
+    ground: "slate",
+    allowed: EVERYTHING,
+    objective: { kind: "cap" },
+    hints: [
+      "The island sinks a step at a time, an eighth of it after the other all the way round. The shore goes under first, the crown last.",
+      "Graders can raise sinking ground again, and a raised rim holds the sea off for a while. It goes on sinking with the rest.",
+      "What you build low will stand in silt soon. Put lances and relays on high ground, and push out to the vents early.",
     ],
   },
 ];

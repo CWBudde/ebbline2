@@ -62,7 +62,7 @@ TypeScript source through the workspace link. Something the app needs must be ex
   stored at index `y * w + x`, positions in tile units where touching centres are 1 apart. Neighbours,
   distances, discs and picking all go through it; do not hand-roll neighbour offsets elsewhere.
 - `rng.ts`: seeded PRNG whose state is a field of the game. Never use `Math.random` or time in the engine.
-- `terrain.ts` / `levels.ts`: `generate(level)` builds a game from a `LevelDef`; `CAMPAIGN` holds the ten
+- `terrain.ts` / `levels.ts`: `generate(level)` builds a game from a `LevelDef`; `CAMPAIGN` holds the
   missions and `skirmish()` makes one from seed, size and difficulty.
 - `save.ts`: versioned JSON with typed arrays as base64. `load` refuses any schema but the current one, so a
   change to the shape of `Game` means bumping `SAVE_SCHEMA` (with a line in its comment) and adding a new

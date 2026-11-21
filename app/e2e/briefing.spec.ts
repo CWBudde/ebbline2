@@ -25,7 +25,7 @@ async function openSecondMission(page: Page): Promise<void> {
 test("the first mission opens on a briefing that explains the whole starting roster", async ({ page }) => {
   await openFirstMission(page);
   const briefing = page.getByTestId("briefing");
-  await expect(briefing).toContainText("Mission 1 of 12");
+  await expect(briefing).toContainText("Mission 1 of 13");
   await expect(briefing.getByRole("heading", { name: "Landfall" })).toBeVisible();
   await expect(briefing.getByTestId("briefing-goal")).toHaveText("Objective Build a Cap on the vent.");
   await expect(briefing.locator("[data-subject]")).toHaveCount(3);
@@ -47,7 +47,7 @@ test("the first mission opens on a briefing that explains the whole starting ros
 test("the briefing of mission 2 names Tap and Cell and holds the game until Deploy", async ({ page }) => {
   await openSecondMission(page);
   const briefing = page.getByTestId("briefing");
-  await expect(briefing).toContainText("Mission 2 of 12");
+  await expect(briefing).toContainText("Mission 2 of 13");
   await expect(briefing.getByRole("heading", { name: "Two Fronts" })).toBeVisible();
   await expect(briefing.getByTestId("briefing-goal")).toContainText("each of the 2 vents");
   await expect(briefing.locator("[data-subject]")).toHaveCount(2);

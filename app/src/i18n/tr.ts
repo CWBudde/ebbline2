@@ -398,6 +398,15 @@ export const trContent: Content = {
         "İki sığlık farklı zamanlarda yükselip alçalır. Milin hangi kanallara yöneldiğini izle.",
       ],
     },
+    c13: {
+      name: "Atlantis",
+      brief: "Büyük bir adanın tepesine indin ve ada batıyor. Deniz tabanındaki dört baca, kara çökerken denizi yükseltmeye devam ediyor. Mil iniş aracının üstünü kapatmadan onları kapat.",
+      hints: [
+        "Ada basamak basamak batıyor, sekizde biri ardından sekizde biri, çepeçevre. Kıyı ilk, tepe en son sulara gömülür.",
+        "Greyderler batan zemini yeniden yükseltebilir, yükseltilmiş bir kenar denizi bir süre uzak tutar. Ama o da geri kalanla birlikte batmaya devam eder.",
+        "Alçağa kurduğun şey yakında milin içinde kalır. Mızrakları ve aktarıcıları yüksek zemine koy, bacalara erkenden doğru ilerle.",
+      ],
+    },
   },
   skirmish: { name: "Çatışma {seed}", brief: "Her bacayı kapat." },
 };

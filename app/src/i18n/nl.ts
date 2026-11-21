@@ -397,6 +397,15 @@ export const nlContent: Content = {
         "Twee ondiepten komen op verschillende momenten omhoog en zakken weer. Let op welke geulen het slib neemt.",
       ],
     },
+    c13: {
+      name: "Atlantis",
+      brief: "Je bent geland op de top van een groot eiland, en het eiland zinkt. Vier bronnen op de zeebodem laten de zee stijgen terwijl het land zakt. Sluit ze af voordat het slib zich boven je lander sluit.",
+      hints: [
+        "Het eiland zakt trede voor trede, een achtste na het andere, helemaal rondom. De oever verdwijnt als eerste, de top als laatste.",
+        "Egaliseerders kunnen gezakte grond weer ophogen, en een opgehoogde rand houdt de zee een tijdje tegen. Hij zakt wel mee met de rest.",
+        "Wat je laag bouwt, staat straks in het slib. Zet lansen en relais op hoge grond en trek er vroeg op uit naar de bronnen.",
+      ],
+    },
   },
   skirmish: { name: "Gevecht {seed}", brief: "Dop elke bron af." },
 };

@@ -318,7 +318,8 @@ export type Objective =
  * vents at the end of one arm to the lander at the end of the other; "archipelago" raises steep islands of
  * similar size out of a low sea floor and puts the lander on one of middling size; "shoal-bend" turns a widened
  * horseshoe on its side, with the lander on a headland in the north-east and the vents in the south, sets steady
- * islands in its channel and two shoals that rise and sink in turn.
+ * islands in its channel and two shoals that rise and sink in turn; "atlantis" raises one great island with a high
+ * crown in the middle of a low sea floor, and a few small islets far out round it.
  */
 export type Landform =
   | "hills"
@@ -329,7 +330,8 @@ export type Landform =
   | "terraces"
   | "horseshoe"
   | "archipelago"
-  | "shoal-bend";
+  | "shoal-bend"
+  | "atlantis";
 
 /** The colour scheme of the ground. Only the renderer reads it. */
 export type Ground = "earth" | "slate" | "sand" | "ash";
@@ -373,6 +375,11 @@ export interface LevelDef {
    * whole map; only the ring between the plateau and the first wave stands still.
    */
   readonly movingFloor?: boolean;
+  /**
+   * The land sinks: every `every` seconds each tile above `floor` goes down a step, an eighth of the map after the
+   * other round its middle, so the drop runs round like a clock hand. Graders can raise it again.
+   */
+  readonly sinking?: { readonly every: number; readonly floor: number };
   /** Shape of the terrain; "hills" when absent. */
   readonly landform?: Landform;
   /** Share of the map that is rock, roughly; 0.18 when absent. */

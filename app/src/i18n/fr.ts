@@ -400,6 +400,15 @@ export const frContent: Content = {
         "Deux hauts-fonds montent et descendent à des moments différents. Observe les chenaux que le limon emprunte.",
       ],
     },
+    c13: {
+      name: "Atlantide",
+      brief: "Tu as atterri au sommet d’une grande île, et l’île sombre. Quatre évents au fond de la mer font monter l’eau tandis que la terre s’enfonce. Coiffe-les avant que la vase ne se referme sur ton atterrisseur.",
+      hints: [
+        "L’île s’enfonce niveau par niveau, un huitième après l’autre sur tout le pourtour. Le rivage disparaît en premier, le sommet en dernier.",
+        "Les niveleuses peuvent relever un terrain enfoncé, et un rebord surélevé retient la mer un moment. Il continue pourtant de s’enfoncer avec le reste.",
+        "Ce que tu construis en bas sera bientôt dans la vase. Place lances et relais en hauteur et pousse tôt vers les évents.",
+      ],
+    },
   },
   skirmish: { name: "Escarmouche {seed}", brief: "Bouche chaque évent." },
 };

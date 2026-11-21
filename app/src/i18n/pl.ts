@@ -397,6 +397,15 @@ export const plContent: Content = {
         "Dwie mielizny wznoszą się i opadają w różnym czasie. Obserwuj, którymi odnogami płynie muł.",
       ],
     },
+    c13: {
+      name: "Atlantyda",
+      brief: "Wylądowałeś na szczycie wielkiej wyspy, a wyspa tonie. Cztery ujścia na dnie morza podnoszą morze, gdy ląd opada. Zamknij je, zanim muł zamknie się nad twoim lądownikiem.",
+      hints: [
+        "Wyspa opada stopień po stopniu, jedna ósma po drugiej, dookoła. Brzeg znika pod wodą pierwszy, szczyt ostatni.",
+        "Równiarki mogą znów podnieść opadły teren, a podniesiony brzeg na jakiś czas powstrzymuje morze. Opada jednak razem z resztą.",
+        "To, co zbudujesz nisko, wkrótce stanie w mule. Stawiaj lance i przekaźniki na wysokim terenie i wyruszaj ku ujściom wcześnie.",
+      ],
+    },
   },
   skirmish: { name: "Potyczka {seed}", brief: "Zamknij każdy komin." },
 };

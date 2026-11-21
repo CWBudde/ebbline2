@@ -399,6 +399,15 @@ export const esContent: Content = {
         "Dos bajos suben y bajan en momentos distintos. Observa qué canales toma el limo.",
       ],
     },
+    c13: {
+      name: "Atlántida",
+      brief: "Has aterrizado en la cima de una gran isla, y la isla se hunde. Cuatro fumarolas del lecho marino hacen subir el mar mientras la tierra se hunde. Séllalas antes de que el limo se cierre sobre tu módulo.",
+      hints: [
+        "La isla se hunde un nivel cada vez, un octavo tras otro, todo alrededor. La orilla se hunde primero, la cima la última.",
+        "Las niveladoras pueden volver a elevar el terreno hundido, y un borde elevado contiene el mar durante un tiempo. Pero sigue hundiéndose con el resto.",
+        "Lo que construyas abajo pronto estará en el limo. Pon lanzas y relés en terreno alto y avanza pronto hacia los respiraderos.",
+      ],
+    },
   },
   skirmish: { name: "Escaramuza {seed}", brief: "Tapona cada fumarola." },
 };

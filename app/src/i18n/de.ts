@@ -399,6 +399,15 @@ export const deContent: Content = {
         "Zwei Untiefen heben und senken sich zu verschiedenen Zeiten. Achte darauf, durch welche Rinnen der Schlick fließt.",
       ],
     },
+    c13: {
+      name: "Atlantis",
+      brief: "Du bist auf dem Scheitel einer großen Insel gelandet, und die Insel geht unter. Vier Schlote am Meeresboden lassen das Meer steigen, während das Land sinkt. Verschließ sie, bevor der Schlick sich über deinem Lander schließt.",
+      hints: [
+        "Die Insel sinkt Stufe um Stufe, ein Achtel nach dem anderen rundherum. Das Ufer geht zuerst unter, der Scheitel zuletzt.",
+        "Planierer können gesunkenen Boden wieder heben, und ein erhöhter Rand hält das Meer eine Weile zurück. Er sinkt aber mit dem Rest weiter.",
+        "Was du tief baust, steht bald im Schlick. Setz Lanzen und Relais auf hohen Grund und stoß früh zu den Schloten vor.",
+      ],
+    },
   },
   skirmish: { name: "Gefecht {seed}", brief: "Verschließ jeden Schlot." },
 };

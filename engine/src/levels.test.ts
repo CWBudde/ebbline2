@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { distance, tileAtPoint, within } from "./hex.ts";
 import { CAMPAIGN, introduced, skirmish } from "./levels.ts";
-import { floorCanBeGraded, rotateBend } from "./movingFloor.ts";
+import { floorCanBeGraded, rotateBend, sinkSector } from "./movingFloor.ts";
 import { load, save } from "./save.ts";
 import { step } from "./step.ts";
 import { BUILDABLE, MAX_HEIGHT, ROCK, TICK_HZ, type Game, type LevelDef } from "./state.ts";
@@ -24,6 +24,7 @@ describe("introduced", () => {
       ["c10", { structures: ["airfield"], ...none }],
       ["c11", { structures: [], ...none }],
       ["c12", { structures: [], ...none }],
+      ["c13", { structures: [], ...none }],
     ]);
   });
 
@@ -177,5 +178,61 @@ describe("moving ground", () => {
 
     advance(game, 32);
     expect(game.height).toEqual(initial);
+  });
+});
+
+describe("sinking land", () => {
+  const atlantis = CAMPAIGN.find((level) => level.id === "c13") as LevelDef;
+  const advance = (game: Game, seconds: number): void => {
+    for (let i = 0; i < seconds * TICK_HZ; i++) step(game);
+  };
+
+  it("puts the lander on a great island in a sea, with the vents on its floor and spitters ashore", () => {
+    const game = generate(atlantis);
+    const home = lander(game);
+    expect(game.height[home.y * game.w + home.x]).toBeGreaterThanOrEqual(8);
+    for (const v of game.vents) expect(game.height[v.y * game.w + v.x]).toBeLessThanOrEqual(2);
+    expect(game.spitters).toHaveLength(atlantis.spitters.count);
+    for (const s of game.spitters) expect(game.height[s.y * game.w + s.x]).toBeGreaterThan(4);
+    // The island: land reachable from the lander over ground above the sea.
+    const land = new Set([home.y * game.w + home.x]);
+    for (const i of land) {
+      within(game.w, game.h, i % game.w, Math.floor(i / game.w), 1, (j) => {
+        if ((game.height[j] ?? 0) > 4) land.add(j);
+      });
+    }
+    expect(land.size).toBeGreaterThan(game.w * game.h * 0.2);
+  });
+
+  it("lowers one eighth of the land after the other, keeps rock, the sea floor and the lander level, and resumes from a save", () => {
+    const game = generate(atlantis);
+    const home = lander(game);
+    const initial = game.height.slice();
+    const sectors = Array.from(initial.keys(), (i) => sinkSector(game, i));
+    within(game.w, game.h, home.x, home.y, 1, (i) => {
+      expect(sectors[i]).toBe(sectors[home.y * game.w + home.x]);
+    });
+    expect(new Set(sectors).size).toBe(8);
+
+    const sector = (atlantis.sinking?.every ?? 0) / 8;
+    advance(game, sector - 1);
+    expect(game.height).toEqual(initial);
+    advance(game, 1);
+    const first = sectors[initial.findIndex((h, i) => h > 2 && game.height[i] !== h)];
+    expect(first).toBeDefined();
+    for (const [i, h] of initial.entries()) {
+      const sinks = h !== ROCK && h > 2 && sectors[i] === first;
+      expect(game.height[i]).toBe(sinks ? h - 1 : h);
+    }
+
+    const resumed = load(save(game));
+    advance(game, 7 * sector + 1);
+    advance(resumed, 7 * sector + 1);
+    expect(resumed.height).toEqual(game.height);
+
+    // After a whole round every piece of land is a step lower.
+    for (const [i, h] of initial.entries()) {
+      expect(game.height[i]).toBe(h === ROCK || h <= 2 ? h : h - 1);
+    }
   });
 });

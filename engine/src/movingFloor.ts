@@ -1,9 +1,10 @@
 // Ground that moves. With `movingFloor`, waves of rising ground travel outward from the lander, over the terrain
 // the level generated; on the shoal bend, two shoals in the channel rise and sink in turn. Every SHIFT_EVERY ticks
-// each moving tile goes up or down by the change in its lift, so the silt on it rises and falls with it.
+// each moving tile goes up or down by the change in its lift, so the silt on it rises and falls with it. With
+// `sinking`, the land goes down a step at a time instead, an eighth of the map after the other, and does not come back.
 
 import { centre, distance, ROW, tileOf, type Point, type Tile } from "./hex.ts";
-import { find, MAX_HEIGHT, ROCK, TICK_HZ, type Game, type LevelDef } from "./state.ts";
+import { find, KINDS, MAX_HEIGHT, ROCK, TICK_HZ, type Game, type LevelDef } from "./state.ts";
 
 /** Rings round the lander that rise and sink as one piece with it. */
 const PLATEAU_RADIUS = 3;
@@ -124,4 +125,45 @@ export function stepMovingFloor(game: Game): boolean {
   });
   game.gridDirty = true;
   return true;
+}
+
+/** The sinking land drops an eighth of the map at a time. */
+const SECTORS = 8;
+
+/** Ticks between two sinking sectors. */
+function sinkEvery(level: LevelDef): number {
+  return Math.max(1, Math.round(((level.sinking?.every ?? 0) * TICK_HZ) / SECTORS));
+}
+
+/**
+ * Which eighth of the map a tile sinks with, by its bearing from the middle of the map. The lander's own tiles go
+ * with its centre, so it stays level.
+ */
+export function sinkSector(game: Game, i: number): number {
+  const home = find(game, game.landerId);
+  let { x, y } = tileOf(game.w, i);
+  if (home && distance(home.x, home.y, x, y) <= KINDS.lander.radius) ({ x, y } = home);
+  const mid = centre(game.w >> 1, game.h >> 1);
+  const p = centre(x, y);
+  const turn = Math.atan2(p.y - mid.y, p.x - mid.x) / (2 * Math.PI) + 0.5;
+  return Math.min(SECTORS - 1, Math.floor(turn * SECTORS));
+}
+
+/**
+ * Lowers the next sector of sinking land by a step when it is due; the sector follows from the tick, so a loaded save
+ * carries on in step. Rock and ground at or below the level's floor stay where they are.
+ */
+export function stepSinking(game: Game): boolean {
+  const sinking = game.level.sinking;
+  const every = sinkEvery(game.level);
+  if (!sinking || game.tick % every !== 0) return false;
+  const sector = (game.tick / every - 1) % SECTORS;
+  let moved = false;
+  for (const [i, ground] of game.height.entries()) {
+    if (ground === ROCK || ground <= sinking.floor || sinkSector(game, i) !== sector) continue;
+    game.height[i] = ground - 1;
+    moved = true;
+  }
+  if (moved) game.gridDirty = true;
+  return moved;
 }
