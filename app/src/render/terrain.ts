@@ -452,20 +452,27 @@ export function siltLayout(w: number, h: number): SiltLayout {
 }
 
 /**
- * Paints the silt depths into an image laid out by `layout`. Pools get soft shores with a pale rim; `phase`
- * (radians, any size) moves a slow shimmer across deeper silt and may stay fixed for a still picture.
+ * Fills the shimmer's sine tables along both axes and both diagonals for `phase`, so no pixel needs a sine
+ * of its own.
  */
-export function paintSilt(image: ImageData, silt: Float32Array, layout: SiltLayout, phase: number): void {
-  const data = image.data;
-  const { width, height, tiles, weights, waveX, waveY, waveD, waveU } = layout;
-  // The shimmer is built from sine tables along both axes and both diagonals, so no pixel needs a
-  // sine of its own.
+function fillWaves(layout: SiltLayout, phase: number): void {
+  const { width, height, waveX, waveY, waveD, waveU } = layout;
   for (let n = 0; n < width; n++) waveX[n] = Math.sin(n * 0.47 + phase);
   for (let n = 0; n < height; n++) waveY[n] = Math.sin(n * 0.39 - phase * 0.7);
   for (let n = 0; n < width + height; n++) {
     waveD[n] = Math.sin(n * 0.23 + phase * 1.3);
     waveU[n] = Math.sin(n * 0.17 - phase * 0.9);
   }
+}
+
+/**
+ * Paints the silt depths into an image laid out by `layout`. Pools get soft shores with a pale rim; `phase`
+ * (radians, any size) moves a slow shimmer across deeper silt and may stay fixed for a still picture.
+ */
+export function paintSilt(image: ImageData, silt: Float32Array, layout: SiltLayout, phase: number): void {
+  const data = image.data;
+  const { width, height, tiles, weights, waveX, waveY, waveD, waveU } = layout;
+  fillWaves(layout, phase);
   let q = 0;
   let o = 0;
   for (let gy = 0; gy < height; gy++) {
@@ -502,4 +509,52 @@ export function paintSilt(image: ImageData, silt: Float32Array, layout: SiltLayo
       data[o + 3] = shore * Math.min(240, 120 + depth * 110);
     }
   }
+}
+
+/**
+ * Paints the balm depths into an image laid out by `layout`, in balm blue (#9ad4ff) with a darker edge
+ * (#4f8fb8) at the shore, so a pool reads as water beside the magenta silt and apart from the grid's cyan.
+ * Balm is thinner than silt: it is drawn more transparent and with a slower, gentler shimmer.
+ * Returns whether any pixel holds balm, so the caller can stop repainting an empty layer.
+ */
+export function paintBalm(image: ImageData, balm: Float32Array, layout: SiltLayout, phase: number): boolean {
+  const data = image.data;
+  const { width, height, tiles, weights, waveX, waveY, waveD, waveU } = layout;
+  fillWaves(layout, phase * 0.6);
+  let any = false;
+  let q = 0;
+  let o = 0;
+  for (let gy = 0; gy < height; gy++) {
+    const wy = waveY[gy] ?? 0;
+    for (let gx = 0; gx < width; gx++, q += 3, o += 4) {
+      const a = tiles[q] ?? -1;
+      if (a < 0) {
+        data[o + 3] = 0;
+        continue;
+      }
+      const depth =
+        (balm[a] ?? 0) * (weights[q] ?? 0) +
+        (balm[tiles[q + 1] ?? a] ?? 0) * (weights[q + 1] ?? 0) +
+        (balm[tiles[q + 2] ?? a] ?? 0) * (weights[q + 2] ?? 0);
+      if (depth < 0.02) {
+        data[o + 3] = 0;
+        continue;
+      }
+      any = true;
+      // The dark edge blue at the shore turns to balm blue over the first step and stays it in the deep, so
+      // a pool keeps its colour instead of paling to white.
+      const body = Math.min(1, (depth - 0.02) / 1.2);
+      const shore = Math.min(1, (depth - 0.02) / 0.1);
+      const wave =
+        0.4 * (waveX[gx] ?? 0) * wy +
+        0.5 * (waveD[gx + gy] ?? 0) +
+        0.5 * (waveU[gx - gy + height] ?? 0);
+      const lift = wave * (5 + 9 * body);
+      data[o] = Math.max(0, Math.min(255, 0x4f + (0x9a - 0x4f) * body + lift));
+      data[o + 1] = Math.max(0, Math.min(255, 0x8f + (0xd4 - 0x8f) * body + lift));
+      data[o + 2] = Math.max(0, Math.min(255, 0xb8 + (0xff - 0xb8) * body + lift * 0.4));
+      data[o + 3] = shore * Math.min(130, 95 + depth * 12);
+    }
+  }
+  return any;
 }

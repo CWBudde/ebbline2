@@ -1,4 +1,4 @@
-// Silt: flow over the terrain and the vents that feed it.
+// Silt and balm: flow over the terrain, the vents that feed the silt, and the balm that cancels it.
 
 import { DIRECTIONS, neighbourIndices } from "./hex.ts";
 import {
@@ -25,39 +25,132 @@ export const FILM = 0.01;
 const around = new Int32Array(DIRECTIONS);
 
 /**
- * One flow step. Every tile gives part of its surface-level difference to each lower neighbour,
- * computed from the state before the step and applied to a second buffer. The map edge is closed.
+ * Share of the balm on a tile that fades away per flow step: one and a half percent of it every second, so a pool
+ * left standing is mostly gone within a minute or two.
  */
-export function flow(game: Game): void {
+export const BALM_FADE = 0.003;
+
+/** Balm is thinner than silt: it spreads this many times per flow step, so it runs downhill and floods faster. */
+export const BALM_SPREADS = 2;
+
+/**
+ * Moves one fluid for one flow step: every tile gives part of its surface-level difference to each lower
+ * neighbour, computed from the state before the step and applied to `to`. The surface stands on the ground, the
+ * baffle field, the fluid itself and `other`, the other fluid. The map edge is closed.
+ */
+function spread(game: Game, from: Float32Array, to: Float32Array, other: Float32Array): void {
   const { w, h, height, baffle } = game;
-  const from = game.silt;
-  const to = game.siltNext;
   to.set(from);
   for (let y = 0; y < h; y++) {
     for (let x = 0; x < w; x++) {
       const i = y * w + x;
       const depth = from[i] as number;
       if (depth <= 0) continue;
-      const level = (height[i] as number) + (baffle[i] as number) + depth;
+      const level = (height[i] as number) + (baffle[i] as number) + depth + (other[i] as number);
       neighbourIndices(w, h, x, y, around);
       for (let n = 0; n < DIRECTIONS; n++) {
         const j = around[n] as number;
         if (j < 0) continue;
         const ground = height[j] as number;
         if (ground === ROCK) continue;
-        const other = ground + (baffle[j] as number) + (from[j] as number);
-        if (level <= other) continue;
-        const moved = Math.min(level - other, depth) * FLOW_RATE;
+        const surface = ground + (baffle[j] as number) + (from[j] as number) + (other[j] as number);
+        if (level <= surface) continue;
+        const moved = Math.min(level - surface, depth) * FLOW_RATE;
         to[i] = (to[i] as number) - moved;
         to[j] = (to[j] as number) + moved;
       }
     }
   }
-  for (let i = 0; i < to.length; i++) {
-    if ((to[i] as number) < FILM) to[i] = 0;
+}
+
+/**
+ * Share of the lesser of two fluids on neighbouring tiles that cancels out per flow step where balm touches silt.
+ * Without it a balm pool and the silt beside it would stand level and leave each other alone. At most a sixth, so
+ * no tile gives away more than it holds to its six neighbours.
+ */
+export const CONTACT = 0.13;
+
+/**
+ * Where balm touches silt on a neighbouring tile, part of the lesser of the two cancels out (CONTACT), worked out
+ * from the state before the pass. Uses the scratch buffers and swaps them in; returns the silt removed.
+ */
+function touch(game: Game): number {
+  const { w, h } = game;
+  const silt = game.silt;
+  const balm = game.balm;
+  const siltOut = game.siltNext;
+  const balmOut = game.balmNext;
+  siltOut.set(silt);
+  balmOut.set(balm);
+  let cancelled = 0;
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const i = y * w + x;
+      const b = balm[i] as number;
+      if (b <= 0) continue;
+      neighbourIndices(w, h, x, y, around);
+      for (let n = 0; n < DIRECTIONS; n++) {
+        const j = around[n] as number;
+        if (j < 0) continue;
+        const s = silt[j] as number;
+        if (s <= 0) continue;
+        const m = Math.min(b, s) * CONTACT;
+        siltOut[j] = (siltOut[j] as number) - m;
+        balmOut[i] = (balmOut[i] as number) - m;
+        cancelled += m;
+      }
+    }
   }
-  game.silt = to;
-  game.siltNext = from;
+  game.silt = siltOut;
+  game.siltNext = silt;
+  game.balm = balmOut;
+  game.balmNext = balm;
+  return cancelled;
+}
+
+/**
+ * One flow step: the silt flows, then the balm over the silt as it now stands. Balm cancels silt one for one, on
+ * its own tile and, a part per step, on the tiles next to it (see touch). The silt removed counts in
+ * `stats.removed`. Then the balm fades a little, and films of either thinner than FILM dry up.
+ */
+export function flow(game: Game): void {
+  spread(game, game.silt, game.siltNext, game.balm);
+  const before = game.silt;
+  game.silt = game.siltNext;
+  game.siltNext = before;
+  let cancelled = 0;
+  let wet = false;
+  for (const b of game.balm) {
+    if (b > 0) {
+      wet = true;
+      break;
+    }
+  }
+  if (wet) {
+    for (let pass = 0; pass < BALM_SPREADS; pass++) {
+      spread(game, game.balm, game.balmNext, game.silt);
+      const old = game.balm;
+      game.balm = game.balmNext;
+      game.balmNext = old;
+    }
+    cancelled += touch(game);
+  }
+  const { silt, balm } = game;
+  for (let i = 0; i < silt.length; i++) {
+    let s = silt[i] as number;
+    if (wet) {
+      let b = balm[i] as number;
+      if (b > 0) {
+        const m = Math.min(s, b);
+        s -= m;
+        b = (b - m) * (1 - BALM_FADE);
+        cancelled += m;
+        balm[i] = b < FILM ? 0 : b;
+      }
+    }
+    silt[i] = s < FILM ? 0 : s;
+  }
+  game.stats.removed += cancelled;
 }
 
 /** The unfinished, connected cap that is clamping a vent, if any. */

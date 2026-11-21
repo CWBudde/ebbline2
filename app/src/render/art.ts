@@ -14,6 +14,9 @@ export const COLORS = {
   harvest: 0x4fd67a,
   cap: 0xf4f7f8,
   silt: 0xff3fa4,
+  /** Balm blue and its darker edge (art/style.md). */
+  balm: 0x9ad4ff,
+  balmEdge: 0x4f8fb8,
   bad: 0xff5470,
 } as const;
 
@@ -32,6 +35,7 @@ export const ACCENT: Record<Kind, number> = {
   grader: COLORS.utility,
   cap: COLORS.cap,
   airfield: COLORS.weapon,
+  spring: COLORS.balm,
 };
 
 function ngon(g: Graphics, sides: number, radius: number, turn = 0): Graphics {
@@ -158,6 +162,18 @@ export function drawStructure(kind: Kind, u: number): Graphics {
       plate();
       g.roundRect(-u * 0.24, -u * 0.82, u * 0.48, u * 1.64, u * 0.08).fill(0x0c171c).stroke({ width: line * 0.7, color: c });
       for (let n = -2; n <= 2; n++) g.rect(-u * 0.035, n * u * 0.3 - u * 0.08, u * 0.07, u * 0.16).fill(c);
+      break;
+    case "spring":
+      // A plate with a round housing around a pale blue bowl of balm, a highlight on its far side.
+      plate();
+      g.circle(0, 0, u * 0.74).fill(0x0c171c).stroke({ width: line, color: RIM });
+      g.circle(0, 0, u * 0.56).fill(COLORS.balmEdge);
+      g.circle(0, 0, u * 0.44).fill(c);
+      g.arc(0, 0, u * 0.32, -Math.PI * 0.85, -Math.PI * 0.35).stroke({ width: line * 0.8, color: 0xe6f6ff, cap: "round" });
+      for (let n = 0; n < 3; n++) {
+        const a = (n / 3) * Math.PI * 2 + Math.PI / 2;
+        g.circle(Math.cos(a) * u * 0.66, Math.sin(a) * u * 0.66, u * 0.07).fill(c);
+      }
       break;
     case "cap":
       g.circle(0, 0, u * 0.95).fill(PLATE).stroke({ width: line * 1.6, color: c });

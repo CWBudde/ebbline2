@@ -13,7 +13,7 @@ test("a German browser gets the game in German", async ({ page }) => {
   await expect(page.getByRole("button", { name: /Gewinn die Mission davor/ }).first()).toBeDisabled();
   await page.getByRole("button", { name: /Landung/ }).click();
   const briefing = page.getByTestId("briefing");
-  await expect(briefing).toContainText("Mission 1 von 14");
+  await expect(briefing).toContainText("Mission 1 von 15");
   await expect(briefing.getByTestId("briefing-goal")).toHaveText("Ziel Bau eine Kappe auf den Schlot.");
   await expect(briefing.locator("[data-subject=lance]")).toContainText("Lanze");
   await page.getByRole("button", { name: "Einsatz starten" }).click();
@@ -30,7 +30,7 @@ test("a German browser gets the game in German", async ({ page }) => {
     for (const vent of window.ebbline?.runtime.value?.game.vents ?? []) vent.capped = true;
   });
   await page.getByRole("button", { name: /Weiter: Zwei Fronten/ }).click();
-  await expect(briefing).toContainText("Mission 2 von 14");
+  await expect(briefing).toContainText("Mission 2 von 15");
   await expect(briefing.getByTestId("briefing-goal")).toHaveText("Ziel Bau auf jeden der 2 Schlote eine Kappe.");
   await expect(briefing.locator("[data-subject=tap]")).toContainText("Zapfer");
   await expect(briefing.locator("[data-subject=tap]")).toContainText("0,6 Energie pro Sekunde");

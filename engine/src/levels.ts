@@ -17,6 +17,7 @@ const EVERYTHING: readonly Kind[] = [
   "grader",
   "interceptor",
   "airfield",
+  "spring",
 ];
 
 /** What the campaign allows up to and including `last`. */
@@ -36,7 +37,8 @@ const NO_SPITTERS = { count: 0, period: 0, amount: 0 } as const;
 // moves: waves of it roll outward from the lander and turn the silt this way and that. c12 sends a flood round a
 // bend again, now through a channel of islands where two shoals rise and sink. In c13 the land you stand on sinks
 // into a deep sea, and the vents have to be capped before the sea closes over the lander. In c14 a thin levee holds a
-// brim-full sea off a wide, low basin, and the sea spills in where the levee is lowest.
+// brim-full sea off a wide, low basin, and the sea spills in where the levee is lowest. c15 brings the Spring: a sea
+// floods the foot of a long slope and climbs it, and balm poured down the slope cancels it.
 export const CAMPAIGN: readonly LevelDef[] = [
   {
     // A ridge above a long valley with the vent at its bottom, its pool already spreading. No lodes: the lander's
@@ -235,13 +237,13 @@ export const CAMPAIGN: readonly LevelDef[] = [
     brief: "You came down on an island in a sea of silt, and four vents on its floor keep it rising. Hop the grid from island to island, burn the sea back from each vent and cap it.",
     seed: 10017,
     size: 64,
-    vents: { count: 4, period: 60, amount: 9.9, ramp: 0.15 },
+    vents: { count: 4, period: 60, amount: 9.4, ramp: 0.15 },
     spitters: { count: 2, period: 840, amount: 10 },
     lodes: 9,
     landform: "archipelago",
     sea: 4,
     ground: "sand",
-    allowed: EVERYTHING,
+    allowed: upTo("airfield"),
     objective: { kind: "cap" },
     hints: [
       "The grid reaches six tiles across the sea, and most straits are narrower. Trunks span the wide ones.",
@@ -264,7 +266,7 @@ export const CAMPAIGN: readonly LevelDef[] = [
     lodes: 8,
     movingFloor: true,
     ground: "slate",
-    allowed: EVERYTHING,
+    allowed: upTo("airfield"),
     objective: { kind: "cap" },
     hints: [
       "The landing plateau rises as one piece. Graders can work on the steady ring just outside it.",
@@ -288,7 +290,7 @@ export const CAMPAIGN: readonly LevelDef[] = [
     rock: 0.02,
     flood: 90,
     ground: "sand",
-    allowed: EVERYTHING,
+    allowed: upTo("airfield"),
     objective: { kind: "cap" },
     hints: [
       "The headland and island tops are steady ground for relays and weapons.",
@@ -314,7 +316,7 @@ export const CAMPAIGN: readonly LevelDef[] = [
     sea: 4,
     sinking: { every: 64, floor: 2 },
     ground: "slate",
-    allowed: EVERYTHING,
+    allowed: upTo("airfield"),
     objective: { kind: "cap" },
     hints: [
       "The island sinks a step at a time, an eighth of it after the other all the way round. The shore goes under first, the crown last.",
@@ -339,12 +341,37 @@ export const CAMPAIGN: readonly LevelDef[] = [
     rock: 0.03,
     sea: 6,
     ground: "earth",
-    allowed: EVERYTHING,
+    allowed: upTo("airfield"),
     objective: { kind: "cap" },
     hints: [
       "The levee is the high ground here: lances on its crest look down on the sea outside and on the basin inside.",
       "Three notches in the levee stand level with the sea. Whatever the vents add spills through them into the basin. Graders can raise them.",
       "The basin fills from the notches toward the lander. Burn back what comes through before it spreads.",
+    ],
+  },
+  {
+    // A long slope from the top height at the north edge down to the floor at the south edge, with four shallow
+    // gullies winding down it. A sea six deep covers three fifths of it and reaches up the gullies; the vents
+    // lie on its floor by the south edge, and the lander came down at the top. Balm poured into the gullies' heads
+    // runs down them into the sea.
+    id: "c15",
+    name: "Hillside",
+    brief: "You came down near the top of a long slope. Below you, a wide sea of silt has flooded the lower land and is climbing toward the lander. Springs make balm, which runs downhill and cancels silt where it meets it. Build them on the slope, let the balm run into the sea, and cap the vents at the bottom.",
+    seed: 15017,
+    size: 56,
+    vents: { count: 3, period: 60, amount: 20, ramp: 0.15 },
+    spitters: { count: 1, period: 840, amount: 8 },
+    lodes: 9,
+    landform: "slope",
+    rock: 0.03,
+    sea: 6,
+    ground: "earth",
+    allowed: EVERYTHING,
+    objective: { kind: "cap" },
+    hints: [
+      "Balm flows like silt. A Spring just above the shore pours it straight into the sea; one in a hollow only fills the hollow.",
+      "The gullies carry balm down the slope in streams. Put Springs at their heads.",
+      "Balm fades when it stands still. Keep the Springs running and push the shore down the slope until the vents are dry enough to cap.",
     ],
   },
 ];

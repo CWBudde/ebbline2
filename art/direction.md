@@ -133,6 +133,30 @@ when shrunk to 24 px.
 The previous try painted the plate too narrow: 859 px wide for 1106 px tall (0.78). The plate must be a REGULAR hexagon, width exactly 0.87 of its height (for example 700 px wide and 805 px tall), and the coil must leave a clear band of plate between itself and the left and right rims (coil about 420 px across).
 ```
 
+**S6 Spring** (`spring`)
+
+Attachments: the picked S2 and S3 sheets, to lock the rendering style and the plates ("Image 1 and Image 2 are the two sprite sheets of the same set: match their rendering style, materials, plate shape, plate colour, rim thickness and level of detail exactly; do not copy any of their machines or the sheet layout."). The glass is painted unlit and flat (measured #8bcafb); the balm on the map is drawn in code in balm blue `#9ad4ff`.
+
+```text
+Canvas: SQUARE 1024x1024 px, one machine only, one cell, centred.
+The machine stands on its own base plate shaped as a REGULAR pointy-top hexagon with all six sides the
+same length (a corner at the top and at the bottom, vertical flat sides left and right): about 800 px
+tall from corner to corner and 693 px wide from flat side to flat side, so its width is 0.87 of its
+height (the plate is about 4/5 of the canvas height), with a transparent margin on every side. The plate
+is dark gunmetal (#14222a) with a thick steel-blue (#33505c) rim along all six edges; the machine sits on
+top of it and stays inside it.
+SPRING. A wellhead that turns energy into balm, a pale blue fluid: a squat, perfectly round housing in
+the middle of the plate, about 1/2 of the plate wide (about 380 px across), leaving a clear band of
+plate between itself and the rims. Its top is a thick raised collar ring with six evenly spaced bolts,
+and inside the collar a large round bowl of pale blue (#9ad4ff) glass, about 240 px across, with three
+short dark spout lips notched into the inner edge of the collar at equal spacing, where the balm will
+spill over. Three short dark feed pipes run from the housing outward to the plate rim. The glass is
+painted unlit: a clean, flat pale blue disc with a soft darker blue (#4f8fb8) rim, no glow, no halo,
+no light rays around it.
+Dark gunmetal body, steel-blue rim, only the pale blue accent. Bold, few large shapes that still read
+when shrunk to 24 px. Rotationally symmetric seen from above; nothing like a fan, turbine or blades.
+```
+
 **F1 Features** (`vent`, `spitter`, `lode`)
 
 ```text
@@ -526,4 +550,21 @@ its side wound with three cyan (#5fe3ff) glowing rings stacked one above the oth
 chunky bolted clamp blocks that reach from the plinth up the drum's side. On the drum's top face, two
 bold glowing chevrons one behind the other, pointing the same way: the rear one cyan, the front one pale
 yellow (#fff27a). The drum's side wall is clearly visible, with panel lines and vents.
+```
+
+**I6 Spring** (`spring`)
+
+Attachments: the picked S6 sprite and the picked I1 sheet ("Image 1 shows the same machine from straight above: keep its design, collar, bolts, spout lips, feed pipes and pale blue bowl so it is recognisable; do not copy the top-down view. Image 2 is the first illustration sheet of the same set: match its view angle (about 35 degrees down, turned about 30 degrees, side walls clearly visible), rendering, base plinths and level of detail; do not copy its machines or the sheet layout."). The first try painted the plinth filling the canvas under a small low drum, seen steeply; the second named that fault at the end of the attachment line ("The previous try painted the plinth filling the whole canvas (about 1000 px wide) with a small low drum on it, seen rather steeply from above; this time the plinth is only about 680 px wide, the drum about 460 px across and clearly taller, its side wall a broad visible band, and the view lower like Image 2.").
+
+```text
+Canvas: SQUARE 1024x1024 px, one object only, centred, about 800 px across (about 4/5 of the canvas).
+SPRING. A wellhead that turns energy into balm, a pale blue fluid: a squat, heavy round housing on a
+low, thick six-sided (hexagonal) base plinth of dark gunmetal with steel-blue edges, the plinth only
+about 2/3 of the canvas wide; no square base. The housing is a short round drum, a little wider than it
+is tall, its side wall clearly visible with panel lines. On top a thick raised collar ring with six
+bolts, and inside it a round bowl brimming with pale blue (#9ad4ff) balm, a smooth calm surface with a
+soft darker blue (#4f8fb8) edge. Three short spout lips notched into the collar at equal spacing, a
+thin trickle of pale blue balm running from one of them down the drum's side. Three short dark feed
+pipes run from the drum down to the corners of the plinth. The balm is painted unlit: no glow, no halo,
+no light rays.
 ```

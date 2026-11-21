@@ -118,6 +118,7 @@ export const fr: Record<Key, string> = {
   "key.slot11": ")",
   "key.slot12": "=",
   "key.slot13": "*",
+  "key.slot14": "ù",
   "key.delete": "Suppr",
 
   "status.offGrid": "Hors réseau : il faut un Pylône achevé à six cases au plus",
@@ -129,6 +130,7 @@ export const fr: Record<Key, string> = {
   "status.inFlight": "L'avion part vers sa cible",
   "status.bombing": "L'avion bombarde",
   "status.returning": "L'avion revient",
+  "status.waitingEnergy": "En attente d'énergie",
 
   "info.cost": "{cost} énergie",
   "info.range": "Portée {range}",
@@ -205,6 +207,8 @@ export const fr: Record<Key, string> = {
     "Investis dans la défense autour de l'atterrisseur plutôt que dans l'expansion : les évents se renforcent chaque minute, les dernières sont les plus dures.",
   "tip.airfield":
     "L'avion vise toujours la pire vase de toute la carte, où que s'étende ton réseau. Éteins l'Aérodrome pour le garder au sol.",
+  "tip.spring":
+    "Une Source n'aide que là où son baume peut couler en descendant vers la vase. Construis-la en amont du rivage, pas dedans.",
 
   "end.won": "Évents scellés",
   "end.won.survive.title": "Tenu bon",
@@ -283,7 +287,7 @@ export const frContent: Content = {
       blurb: "Relaie les paquets comme un Pylône, et chaque paquet qui le traverse va ensuite un cinquième plus vite. Les Accélérateurs se cumulent, mais un même Accélérateur n'accélère jamais deux fois le même paquet. De plus, chaque Accélérateur en service rend tous les paquets deux pour cent plus rapides, où qu'il se trouve.",
     },
     tap: { name: "Extracteur", blurb: "Tire une énergie régulière d'un filon. Ne va que sur un filon." },
-    cell: { name: "Batterie", blurb: "Stocke trente énergie de plus." },
+    cell: { name: "Batterie", blurb: "Stocke trente énergie de plus. Chaque Batterie permet aussi à l’atterrisseur d’envoyer un paquet de plus à la fois, et davantage quand la réserve est presque pleine." },
     pump: {
       name: "Pompe",
       blurb: "Écrème la vase peu profonde à proximité et en tire un peu d'énergie.",
@@ -304,6 +308,7 @@ export const frContent: Content = {
       blurb: "Retient un évent sec pendant sa construction, puis le scelle pour de bon.",
     },
     airfield: { name: "Aérodrome", blurb: "Charge un avion de trente énergie. Quand il est plein, l'avion vole jusqu'à la vase la plus profonde de la carte, la bombarde et revient se recharger." },
+    spring: { name: "Source", blurb: "Transforme l'énergie en baume, un fluide bleu clair qui coule en descendant et annule la vase là où les deux se rencontrent. Construis-la au-dessus de la vase, pas dedans." },
   },
   levels: {
     c1: {
@@ -416,6 +421,15 @@ export const frContent: Content = {
         "Ici, la hauteur, c’est la digue : des lances sur sa crête dominent la mer au-dehors et la cuvette au-dedans.",
         "Trois brèches de la digue sont au niveau de la mer. Tout ce qu’ajoutent les évents se déverse par elles dans la cuvette. Les niveleuses peuvent les rehausser.",
         "La cuvette se remplit depuis les brèches vers ton atterrisseur. Brûle ce qui passe avant que ça s’étale.",
+      ],
+    },
+    c15: {
+      name: "Versant",
+      brief: "Tu es descendu près du sommet d’un long versant. En dessous, une vaste mer de vase a noyé les basses terres et monte vers l’atterrisseur. Les Sources produisent du baume, qui coule en descendant et annule la vase là où il la rencontre. Construis-les sur le versant, laisse le baume couler jusqu’à la mer et coiffe les évents tout en bas.",
+      hints: [
+        "Le baume coule comme la vase. Une Source juste au-dessus du rivage le déverse droit dans la mer ; une Source dans un creux ne fait que remplir le creux.",
+        "Les ravines portent le baume en filets le long du versant. Place des Sources à leur tête.",
+        "Le baume s’évanouit quand il stagne. Garde les Sources en marche et repousse le rivage le long du versant jusqu’à ce que les évents soient assez secs pour être coiffés.",
       ],
     },
   },

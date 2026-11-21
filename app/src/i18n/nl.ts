@@ -116,6 +116,7 @@ export const nl: Record<Key, string> = {
   "key.slot11": "-",
   "key.slot12": "=",
   "key.slot13": "\\",
+  "key.slot14": "'",
   "key.delete": "Del",
 
   "status.offGrid": "Niet op het net: heeft een voltooide pyloon binnen zes vakken nodig",
@@ -127,6 +128,7 @@ export const nl: Record<Key, string> = {
   "status.inFlight": "Vliegtuig onderweg naar het doel",
   "status.bombing": "Vliegtuig bombardeert",
   "status.returning": "Vliegtuig keert terug",
+  "status.waitingEnergy": "Wacht op energie",
 
   "info.cost": "{cost} energie",
   "info.range": "Bereik {range}",
@@ -202,6 +204,8 @@ export const nl: Record<Key, string> = {
     "Steek je energie in verdediging rond de lander in plaats van in uitbreiding: de bronnen worden elke minuut sterker, dus de laatste minuten zijn het zwaarst.",
   "tip.airfield":
     "Het vliegtuig gaat altijd voor het ergste slib van de hele kaart, waar je net ook staat. Zet het vliegveld uit om het thuis te houden.",
+  "tip.spring":
+    "Een fontein helpt alleen waar haar balsem bergaf in het slib kan stromen. Bouw haar bergopwaarts van de oever, niet erin.",
 
   "end.won": "Bronnen afgesloten",
   "end.won.survive.title": "Volgehouden",
@@ -280,7 +284,7 @@ export const nlContent: Content = {
       blurb: "Geeft pakketten door zoals een pyloon, en elk pakket dat erlangs komt gaat daarna een vijfde sneller. Versnellers stapelen, maar dezelfde versneller versnelt een pakket nooit twee keer. Elke werkende versneller maakt bovendien alle pakketten twee procent sneller, waar hij ook staat.",
     },
     tap: { name: "Tap", blurb: "Tapt gestaag energie uit een ader. Past alleen op een ader." },
-    cell: { name: "Accu", blurb: "Slaat dertig energie extra op." },
+    cell: { name: "Accu", blurb: "Slaat dertig energie extra op. Elke accu laat de lander ook één pakket meer tegelijk versturen, en nog meer als de voorraad bijna vol is." },
     pump: {
       name: "Pomp",
       blurb: "Schept ondiep slib in de buurt af en maakt er een beetje energie van.",
@@ -301,6 +305,7 @@ export const nlContent: Content = {
       blurb: "Houdt een droge bron dicht zolang hij gebouwd wordt, en sluit hem daarna voorgoed af.",
     },
     airfield: { name: "Vliegveld", blurb: "Laadt een vliegtuig met dertig energie. Als het vol is, vliegt het vliegtuig naar het diepste slib van de kaart, bombardeert het en komt terug om opnieuw te laden." },
+    spring: { name: "Fontein", blurb: "Zet energie om in balsem, een lichtblauwe vloeistof die bergaf stroomt en slib opheft waar de twee elkaar raken. Bouw haar boven het slib, niet erin." },
   },
   levels: {
     c1: {
@@ -413,6 +418,15 @@ export const nlContent: Content = {
         "De dijk is hier de hoge grond: lansen op de kruin kijken neer op de zee buiten en op het bekken binnen.",
         "Drie bressen in de dijk liggen even hoog als de zee. Wat de bronnen erbij doen, loopt daardoor het bekken in. Egaliseerders kunnen ze ophogen.",
         "Het bekken loopt vanaf de bressen vol, richting je lander. Brand weg wat erdoor komt voordat het zich verspreidt.",
+      ],
+    },
+    c15: {
+      name: "Helling",
+      brief: "Je bent geland bij de top van een lange helling. Onder je heeft een wijde zee van slib het lagere land overspoeld en ze klimt naar de lander toe. Fonteinen maken balsem, die bergaf stroomt en slib opheft waar hij het raakt. Bouw ze op de helling, laat de balsem de zee in lopen en sluit de bronnen onderaan af.",
+      hints: [
+        "Balsem stroomt zoals slib. Een fontein net boven de oever giet hem rechtstreeks de zee in; een fontein in een kuil vult alleen de kuil.",
+        "De geulen voeren balsem in stromen de helling af. Zet fonteinen aan hun kop.",
+        "Balsem vervaagt als hij stilstaat. Houd de fonteinen draaiende en duw de oever de helling af tot de bronnen droog genoeg zijn om af te sluiten.",
       ],
     },
   },

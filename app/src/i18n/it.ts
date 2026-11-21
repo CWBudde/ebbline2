@@ -117,6 +117,7 @@ export const it: Record<Key, string> = {
   "key.slot11": "'",
   "key.slot12": "ì",
   "key.slot13": "ù",
+  "key.slot14": "à",
   "key.delete": "Canc",
 
   "status.offGrid": "Fuori rete: serve un pilone completato entro sei caselle",
@@ -128,6 +129,7 @@ export const it: Record<Key, string> = {
   "status.inFlight": "Aereo in volo verso il bersaglio",
   "status.bombing": "Aereo in bombardamento",
   "status.returning": "Aereo di ritorno",
+  "status.waitingEnergy": "In attesa di energia",
 
   "info.cost": "{cost} energia",
   "info.range": "Portata {range}",
@@ -203,6 +205,8 @@ export const it: Record<Key, string> = {
     "Spendi per difendere il lander invece che per espanderti: gli sfiati si rafforzano ogni minuto, e gli ultimi minuti sono i più duri.",
   "tip.airfield":
     "L'aereo punta sempre alla melma peggiore di tutta la mappa, ovunque arrivi la tua rete. Spegni il campo d'aviazione per tenerlo a terra.",
+  "tip.spring":
+    "Una sorgente aiuta solo dove il suo balsamo può scorrere in discesa fino alla melma. Costruiscila a monte della riva, non dentro.",
 
   "end.won": "Sfiati sigillati",
   "end.won.survive.title": "Hai resistito",
@@ -281,7 +285,7 @@ export const itContent: Content = {
       blurb: "Ritrasmette i pacchetti come un pilone, e ogni pacchetto che lo attraversa viaggia poi un quinto più veloce. Gli acceleratori si sommano, ma lo stesso acceleratore non accelera mai due volte un pacchetto. Inoltre ogni acceleratore in funzione rende tutti i pacchetti più veloci del due per cento, ovunque si trovi.",
     },
     tap: { name: "Estrattore", blurb: "Estrae energia costante da un filone. Va solo su un filone." },
-    cell: { name: "Cella", blurb: "Immagazzina trenta energia in più." },
+    cell: { name: "Cella", blurb: "Immagazzina trenta energia in più. Ogni cella permette anche al lander di inviare un pacchetto in più alla volta, e ancora di più quando la riserva è quasi piena." },
     pump: {
       name: "Pompa",
       blurb: "Aspira la melma bassa nei dintorni e ne ricava un po' di energia.",
@@ -302,6 +306,7 @@ export const itContent: Content = {
       blurb: "Tiene chiuso uno sfiato asciutto mentre viene costruito, poi lo sigilla per sempre.",
     },
     airfield: { name: "Campo d'aviazione", blurb: "Carica un aereo con trenta di energia. Quando è pieno, l'aereo vola fino alla melma più profonda della mappa, la bombarda e torna a ricaricarsi." },
+    spring: { name: "Sorgente", blurb: "Trasforma l'energia in balsamo, un fluido azzurro che scorre in discesa e annulla la melma dove i due si incontrano. Costruiscila sopra la melma, non dentro." },
   },
   levels: {
     c1: {
@@ -414,6 +419,15 @@ export const itContent: Content = {
         "Qui il terreno alto è l’argine: le lance sulla sua cresta dominano il mare fuori e la conca dentro.",
         "Tre varchi nell’argine sono alla quota del mare. Tutto ciò che aggiungono gli sfiati si riversa da lì nella conca. Le livellatrici possono alzarli.",
         "La conca si riempie dai varchi verso il tuo lander. Brucia ciò che passa prima che si allarghi.",
+      ],
+    },
+    c15: {
+      name: "Pendio",
+      brief: "Sei atterrato vicino alla cima di un lungo pendio. Più in basso, un ampio mare di melma ha allagato la terra bassa e sale verso il lander. Le sorgenti producono balsamo, che scorre in discesa e annulla la melma dove la incontra. Costruiscile sul pendio, lascia che il balsamo scorra fino al mare e sigilla gli sfiati in fondo.",
+      hints: [
+        "Il balsamo scorre come la melma. Una sorgente appena sopra la riva lo versa dritto nel mare; una in un avvallamento riempie solo l’avvallamento.",
+        "I canaloni portano il balsamo giù per il pendio in rivoli. Metti le sorgenti alla loro testata.",
+        "Il balsamo svanisce se resta fermo. Tieni le sorgenti in funzione e spingi la riva giù per il pendio finché gli sfiati non sono abbastanza asciutti da essere sigillati.",
       ],
     },
   },

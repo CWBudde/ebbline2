@@ -4,6 +4,7 @@ import { BOOST, boosts, packetSpeed } from "./grid.ts";
 import { harvestIncome } from "./harvest.ts";
 import { span, tileOf } from "./hex.ts";
 import { complete } from "./structures.ts";
+import { BASE_CAPACITY } from "./terrain.ts";
 import {
   KINDS,
   TICK_HZ,
@@ -21,9 +22,12 @@ export const LANDER_INCOME = 1;
 export const TAP_INCOME = 0.6;
 /** Ticks between two dispatches from the lander. */
 export const DISPATCH_EVERY = 2;
-/** Share of the capacity above which a dispatch sends more than one packet. */
+/** Share of the capacity above which a dispatch sends extra packets. */
 export const SURGE_FROM = 0.75;
-/** Packets a dispatch sends on top of the first when the bank is full; it grows evenly from `SURGE_FROM`. */
+/**
+ * Packets a dispatch sends on top of its steady size when the bank is full, for each `BASE_CAPACITY` of capacity: a
+ * lander alone surges by four, each Cell adds four more. It grows evenly from `SURGE_FROM`.
+ */
 export const SURGE_PACKETS = 4;
 
 /**
@@ -105,11 +109,16 @@ function route(game: Game, target: Structure): Structure[] | undefined {
   return path.reverse();
 }
 
-/** How many packets one dispatch sends: one, and more the fuller the bank is beyond `SURGE_FROM`. */
+/**
+ * How many packets one dispatch sends. However low the bank, it sends one for each `BASE_CAPACITY` of capacity: one
+ * from the lander alone and one more for each Cell. Beyond `SURGE_FROM` it sends more the fuller the bank is, up to
+ * a surge that also grows with the capacity.
+ */
 export function dispatchSize(game: Game): number {
+  const steady = Math.max(1, Math.floor(game.capacity / BASE_CAPACITY));
   const share = game.capacity > 0 ? Math.min(1, game.energy / game.capacity) : 0;
   const over = Math.max(0, share - SURGE_FROM) / (1 - SURGE_FROM);
-  return 1 + Math.floor(over * SURGE_PACKETS);
+  return steady + Math.floor(over * SURGE_PACKETS * (game.capacity / BASE_CAPACITY));
 }
 
 /** Sends one packet to the next structure in turn that wants one; false when none does. */

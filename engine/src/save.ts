@@ -11,8 +11,9 @@ import { type Game } from "./state.ts";
  * 6: the game keeps its course for the statistics screen (`history`) and splits its energy by source and purpose
  *    (`flow`); saves from before are refused.
  * 7: airfields send planes (`planes`); saves from before are refused.
+ * 8: springs pour balm, a second fluid (`balm`, `balmNext`); saves from before are refused.
  */
-export const SAVE_SCHEMA = 7;
+export const SAVE_SCHEMA = 8;
 
 type Packed = { [K in keyof Game]: Game[K] extends ArrayBufferView ? string : Game[K] };
 
@@ -20,6 +21,8 @@ const ARRAYS = {
   height: Int8Array,
   silt: Float32Array,
   siltNext: Float32Array,
+  balm: Float32Array,
+  balmNext: Float32Array,
   lode: Uint8Array,
   mark: Int8Array,
   occ: Int32Array,
@@ -66,6 +69,8 @@ export function load(text: string): Game {
     height: new Int8Array(unpack(packed.height)),
     silt: new Float32Array(unpack(packed.silt)),
     siltNext: new Float32Array(unpack(packed.siltNext)),
+    balm: new Float32Array(unpack(packed.balm)),
+    balmNext: new Float32Array(unpack(packed.balmNext)),
     lode: new Uint8Array(unpack(packed.lode)),
     mark: new Int8Array(unpack(packed.mark)),
     occ: new Int32Array(unpack(packed.occ)),

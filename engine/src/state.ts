@@ -29,7 +29,8 @@ export type Kind =
   | "interceptor"
   | "grader"
   | "cap"
-  | "airfield";
+  | "airfield"
+  | "spring";
 
 export interface KindDef {
   readonly name: string;
@@ -98,7 +99,7 @@ export const KINDS: Readonly<Record<Kind, KindDef>> = {
     range: 0,
     minRange: 0,
     radius: 0,
-    blurb: "Stores thirty more energy.",
+    blurb: "Stores thirty more energy. Each Cell also lets the lander send one more packet at a time, and more still when the bank is nearly full.",
   },
   pump: {
     name: "Pump",
@@ -172,6 +173,15 @@ export const KINDS: Readonly<Record<Kind, KindDef>> = {
     radius: 0,
     blurb: "Loads a plane with thirty energy. When it is full, the plane flies to the deepest silt on the map, bombs it and comes back to load again.",
   },
+  spring: {
+    name: "Spring",
+    cost: 60,
+    store: 1,
+    range: 0,
+    minRange: 0,
+    radius: 0,
+    blurb: "Turns energy into balm, a light blue fluid that runs downhill and cancels silt where the two meet. Build it above the silt, not in it.",
+  },
 };
 
 /** Kinds the player can place, in build-bar order. */
@@ -189,6 +199,7 @@ export const BUILDABLE: readonly Kind[] = [
   "cap",
   "booster",
   "airfield",
+  "spring",
 ];
 
 export interface Structure {
@@ -320,7 +331,9 @@ export type Objective =
  * horseshoe on its side, with the lander on a headland in the north-east and the vents in the south, sets steady
  * islands in its channel and two shoals that rise and sink in turn; "atlantis" raises one great island with a high
  * crown in the middle of a low sea floor, and a few small islets far out round it; "levee" sets the lander in a
- * wide, low basin behind a thin ring wall, with the sea standing outside it up to a few low notches in the wall.
+ * wide, low basin behind a thin ring wall, with the sea standing outside it up to a few low notches in the wall;
+ * "slope" tilts the whole map from a high north edge, where the lander stands, down to a low south edge, with
+ * shallow gullies running down it.
  */
 export type Landform =
   | "hills"
@@ -333,7 +346,8 @@ export type Landform =
   | "archipelago"
   | "shoal-bend"
   | "atlantis"
-  | "levee";
+  | "levee"
+  | "slope";
 
 /** The colour scheme of the ground. Only the renderer reads it. */
 export type Ground = "earth" | "slate" | "sand" | "ash";
@@ -459,7 +473,7 @@ export interface History {
   structures: number[];
   /** Structures lost to silt so far (`Stats.lost`). */
   lost: number[];
-  /** Silt removed by lances, lobbers and pumps so far (`Stats.removed`). */
+  /** Silt removed by lances, lobbers, pumps, planes and balm so far (`Stats.removed`). */
   removed: number[];
 }
 
@@ -476,6 +490,13 @@ export interface Game {
   silt: Float32Array;
   /** Scratch buffer for the flow step. */
   siltNext: Float32Array;
+  /**
+   * Depth of balm per tile: the springs' fluid. It flows like silt over the same surface (ground, baffle field,
+   * silt and balm together), cancels silt where the two meet and fades as it stands; it harms nothing.
+   */
+  balm: Float32Array;
+  /** Scratch buffer for the flow step. */
+  balmNext: Float32Array;
   lode: Uint8Array;
   /** Grader target height per tile, or -1. */
   mark: Int8Array;
@@ -527,6 +548,8 @@ export type Event =
   /** A plane came home to its airfield (`id`, the airfield's id). */
   | { kind: "landed"; id: number }
   | { kind: "pulse"; x: number; y: number }
+  /** A spring (`id`) poured a gush of balm onto its tile x, y. */
+  | { kind: "gush"; id: number; x: number; y: number }
   | { kind: "burst"; x: number; y: number }
   | { kind: "spit"; x: number; y: number; tx: number; ty: number }
   | { kind: "splash"; x: number; y: number }

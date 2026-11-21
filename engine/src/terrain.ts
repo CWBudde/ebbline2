@@ -418,6 +418,49 @@ function levee(rng: RngState, relief: Float32Array, stone: Float32Array, size: n
   return tileAtPoint(mid.x, mid.y);
 }
 
+/** Gullies running down the slope, how far down the slope their heads lie, their half width in tiles and depth. */
+const GULLIES = 4;
+const GULLY_HEAD = 0.2;
+const GULLY_HALF = 2.2;
+const GULLY_DEPTH = 2;
+/** Height of the slope at its top edge and its foot, before the noise and the gullies. */
+const SLOPE_TOP = 9.8;
+const SLOPE_FOOT = 0.2;
+
+/**
+ * A slope: the ground falls steadily from the top height at the north edge to the floor at the south edge, a step
+ * every five or six rows, with the noise bending the steps. Shallow gullies, two steps deep and four or five tiles
+ * wide, wind down it from a fifth of the way down to the foot, so what is poured near their heads runs down them in
+ * streams. Rewrites `relief` as atlantis does, clears `stone` in the gullies and below `sea`, and returns the
+ * middle of the top edge for the lander.
+ */
+function slope(rng: RngState, relief: Float32Array, stone: Float32Array, size: number, sea: number): Tile {
+  const wobble = fractal(rng, size, Math.round(size / 6));
+  const { width, height } = extent(size, size);
+  const gullies = Array.from({ length: GULLIES }, (_, n) => ({
+    x: ((n + 0.5 + (next(rng) - 0.5) * 0.4) * width) / GULLIES,
+    phase: next(rng) * 2 * Math.PI,
+    swing: 1.5 + next(rng) * 2,
+  }));
+  for (let i = 0; i < relief.length; i++) {
+    const r = relief[i] as number;
+    const p = centre(i % size, Math.floor(i / size));
+    const down = p.y / height;
+    const base = SLOPE_TOP + (SLOPE_FOOT - SLOPE_TOP) * down + ((wobble[i] as number) - 0.5) * 1.4 + (r - 0.5) * 0.6;
+    let cut = 0;
+    for (const g of gullies) {
+      const mid = g.x + Math.sin(down * 2 * Math.PI * 1.3 + g.phase) * g.swing;
+      const inside = smooth(Math.max(0, Math.min(1, (GULLY_HALF + 0.5 - Math.abs(p.x - mid)) / 1.5)));
+      const head = smooth(Math.max(0, Math.min(1, (down - GULLY_HEAD) / 0.08)));
+      cut = Math.max(cut, GULLY_DEPTH * inside * head);
+    }
+    const h = Math.max(0, Math.min(MAX_HEIGHT, Math.floor(base - cut)));
+    if (cut > 0.5 || h < sea) stone[i] = 0;
+    relief[i] = (h + 0.5) / 10;
+  }
+  return tileAtPoint(width / 2, 5 * ROW);
+}
+
 /** The noise level above which `share` of the values lie. */
 function quantile(values: Float32Array, share: number): number {
   const sorted = Float32Array.from(values).sort();
@@ -440,7 +483,12 @@ export function generate(level: LevelDef): Game {
   // An archipelago draws its islands over the noise that shape() left alone.
   const isles = level.landform === "archipelago" ? archipelago(rng, relief, stone, size) : undefined;
   if (level.landform === "atlantis") atlantis(rng, relief, stone, size);
-  const basin = level.landform === "levee" ? levee(rng, relief, stone, size, level.sea ?? 6) : undefined;
+  const basin =
+    level.landform === "levee"
+      ? levee(rng, relief, stone, size, level.sea ?? 6)
+      : level.landform === "slope"
+        ? slope(rng, relief, stone, size, level.sea ?? 4)
+        : undefined;
   const rockAbove = level.rock === undefined ? 0.82 : quantile(stone, level.rock);
   for (let i = 0; i < height.length; i++) {
     height[i] =
@@ -588,6 +636,8 @@ export function generate(level: LevelDef): Game {
     height,
     silt: new Float32Array(size * size),
     siltNext: new Float32Array(size * size),
+    balm: new Float32Array(size * size),
+    balmNext: new Float32Array(size * size),
     lode,
     mark: new Int8Array(size * size).fill(-1),
     occ: new Int32Array(size * size),

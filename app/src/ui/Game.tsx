@@ -24,11 +24,12 @@ import { Briefing } from "./Briefing.tsx";
 import { BackButton, Cost, Help, Icon, SettingsForm, Sheet } from "./Shell.tsx";
 import { Stats } from "./Stats.tsx";
 
-/** The key shown on a build slot; the eleventh to thirteenth are named by the language's keyboard. */
+/** The key shown on a build slot; the eleventh to fourteenth are named by the language's keyboard. */
 function slotLabel(slot: number): string {
   if (slot < 10) return String((slot + 1) % 10);
   if (slot === 10) return t("key.slot11");
-  return slot === 11 ? t("key.slot12") : t("key.slot13");
+  if (slot === 11) return t("key.slot12");
+  return slot === 12 ? t("key.slot13") : t("key.slot14");
 }
 
 function TopBar({ c, rt }: { c: Controller; rt: Runtime }) {
@@ -160,6 +161,8 @@ function status(game: Game, s: Structure): { text: string; tone: "good" | "warn"
     }
     if (s.energy < KINDS.airfield.store) return { text: t("status.loading"), tone: "good" };
   }
+  // A spring pours only from a full store; until the grid has filled it, it waits.
+  if (s.kind === "spring" && s.energy < KINDS.spring.store) return { text: t("status.waitingEnergy"), tone: "warn" };
   return { text: t("status.working"), tone: "good" };
 }
 
@@ -385,8 +388,11 @@ function Minimap({ c, rt }: { c: Controller; rt: Runtime }) {
     const ground = groundOf(game);
     for (let i = 0; i < colours.length; i++) {
       const depth = game.silt[i] ?? 0;
+      const balm = game.balm[i] ?? 0;
       const h = game.height[i] ?? -1;
-      const [r, g, b] = depth >= 0.05 ? [255, 63, 164] : h < 0 ? [15, 14, 13] : groundColor(h, ground);
+      // Silt in magenta over balm in balm blue over the ground.
+      const [r, g, b] =
+        depth >= 0.05 ? [255, 63, 164] : balm >= 0.05 ? [154, 212, 255] : h < 0 ? [15, 14, 13] : groundColor(h, ground);
       colours[i] = rgba(r, g, b);
     }
     const structure = rgba(95, 227, 255);

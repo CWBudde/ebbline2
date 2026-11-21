@@ -117,6 +117,7 @@ export const pl: Record<Key, string> = {
   "key.slot11": "-",
   "key.slot12": "=",
   "key.slot13": "\\",
+  "key.slot14": "'",
   "key.delete": "Del",
 
   "status.offGrid": "Poza siecią: potrzebny zbudowany pylon w odległości najwyżej sześciu pól",
@@ -128,6 +129,7 @@ export const pl: Record<Key, string> = {
   "status.inFlight": "Samolot leci do celu",
   "status.bombing": "Samolot bombarduje",
   "status.returning": "Samolot wraca",
+  "status.waitingEnergy": "Czeka na energię",
 
   "info.cost": "{cost} energii",
   "info.range": "Zasięg {range}",
@@ -202,6 +204,8 @@ export const pl: Record<Key, string> = {
     "Wydawaj na obronę wokół lądownika, a nie na zasięg: kominy z każdą minutą są silniejsze, więc ostatnie minuty są najtrudniejsze.",
   "tip.airfield":
     "Samolot zawsze leci na najgorszy muł na całej mapie, niezależnie od tego, dokąd sięga twoja sieć. Wyłącz lotnisko, żeby został w domu.",
+  "tip.spring":
+    "Źródło pomaga tylko tam, gdzie jego balsam może spłynąć w dół do mułu. Buduj je powyżej brzegu, nie w nim.",
 
   "end.won": "Kominy zapieczętowane",
   "end.won.survive.title": "Obrona utrzymana",
@@ -280,7 +284,7 @@ export const plContent: Content = {
       blurb: "Przekazuje pakiety jak pylon, a każdy pakiet, który przez niego przejdzie, porusza się odtąd o jedną piątą szybciej. Przyspieszacze się sumują, ale ten sam przyspieszacz nigdy nie przyspiesza pakietu dwa razy. Każdy działający przyspieszacz przyspiesza ponadto wszystkie pakiety o dwa procent, gdziekolwiek stoi.",
     },
     tap: { name: "Odwiert", blurb: "Stale czerpie energię z żyły. Pasuje tylko na żyłę." },
-    cell: { name: "Ogniwo", blurb: "Mieści trzydzieści dodatkowych jednostek energii." },
+    cell: { name: "Ogniwo", blurb: "Mieści trzydzieści dodatkowych jednostek energii. Każde ogniwo pozwala też lądownikowi wysyłać naraz o jeden pakiet więcej, a gdy zapas jest prawie pełny, jeszcze więcej." },
     pump: {
       name: "Pompa",
       blurb: "Odsysa płytki muł w pobliżu i zamienia go w odrobinę energii.",
@@ -301,6 +305,7 @@ export const plContent: Content = {
       blurb: "Trzyma suchy komin zamknięty w trakcie budowy, a potem pieczętuje go na dobre.",
     },
     airfield: { name: "Lotnisko", blurb: "Ładuje samolot trzydziestoma jednostkami energii. Gdy jest pełny, samolot leci do najgłębszego mułu na mapie, bombarduje go i wraca, by załadować się ponownie." },
+    spring: { name: "Źródło", blurb: "Zamienia energię w balsam, jasnoniebieski płyn, który spływa w dół i niweluje muł tam, gdzie się spotkają. Buduj je nad mułem, nie w nim." },
   },
   levels: {
     c1: {
@@ -413,6 +418,15 @@ export const plContent: Content = {
         "Wysokim terenem jest tu wał: lance na jego koronie górują nad morzem na zewnątrz i nad niecką w środku.",
         "Trzy wyrwy w wale leżą na poziomie morza. Wszystko, co dodają ujścia, przelewa się nimi do niecki. Równiarki mogą je podnieść.",
         "Niecka wypełnia się od wyrw w stronę lądownika. Wypalaj to, co się przedostanie, zanim się rozleje.",
+      ],
+    },
+    c15: {
+      name: "Zbocze",
+      brief: "Wylądowałeś blisko szczytu długiego zbocza. Poniżej szerokie morze mułu zalało niżej położony teren i wspina się ku lądownikowi. Źródła wytwarzają balsam, który spływa w dół i niweluje muł tam, gdzie go spotka. Buduj je na zboczu, pozwól balsamowi spłynąć do morza i zamknij ujścia na dole.",
+      hints: [
+        "Balsam płynie jak muł. Źródło tuż nad brzegiem wlewa go prosto do morza; źródło w zagłębieniu wypełnia tylko zagłębienie.",
+        "Żleby niosą balsam w dół zbocza strumieniami. Stawiaj źródła u ich początków.",
+        "Balsam zanika, gdy stoi w miejscu. Utrzymuj źródła w ruchu i spychaj brzeg w dół zbocza, aż ujścia będą dość suche, by je zamknąć.",
       ],
     },
   },

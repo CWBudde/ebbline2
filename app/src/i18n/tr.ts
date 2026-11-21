@@ -119,6 +119,7 @@ export const tr: Record<Key, string> = {
   "key.slot11": "*",
   "key.slot12": "-",
   "key.slot13": ",",
+  "key.slot14": "İ",
   "key.delete": "Del",
 
   "status.offGrid": "Şebeke dışında: altı karo içinde tamamlanmış bir Direk gerekiyor",
@@ -130,6 +131,7 @@ export const tr: Record<Key, string> = {
   "status.inFlight": "Uçak hedefe gidiyor",
   "status.bombing": "Uçak bombalıyor",
   "status.returning": "Uçak geri dönüyor",
+  "status.waitingEnergy": "Enerji bekliyor",
 
   "info.cost": "{cost} enerji",
   "info.range": "Menzil {range}",
@@ -202,6 +204,8 @@ export const tr: Record<Key, string> = {
     "Enerjini uzağa erişmeye değil, iniş aracının çevresindeki savunmaya harca: bacalar her dakika güçlenir, bu yüzden en zoru son dakikalardır.",
   "tip.airfield":
     "Uçak, şebekeniz nerede olursa olsun, haritanın tamamındaki en kötü balçığa gider. Evde kalması için Hava Alanı'nı kapat.",
+  "tip.spring":
+    "Pınar yalnızca merhemi yokuş aşağı akıp balçığa ulaşabildiği yerde işe yarar. Onu kıyının yukarısına kur, içine değil.",
 
   "end.won": "Bacalar mühürlendi",
   "end.won.survive.title": "Dayandın",
@@ -283,7 +287,7 @@ export const trContent: Content = {
       blurb: "Paketleri Direk gibi iletir ve ilettiği her paket o andan sonra beşte bir daha hızlı gider. Hızlandırıcıların etkisi birikir, ama her biri bir paketi yalnızca bir kez hızlandırır. Çalışan her Hızlandırıcı ayrıca, nerede durursa dursun, bütün paketleri yüzde iki hızlandırır.",
     },
     tap: { name: "Sondaj", blurb: "Bir damardan sürekli enerji çeker. Yalnızca bir damara oturur." },
-    cell: { name: "Batarya", blurb: "Otuz enerji daha depolar." },
+    cell: { name: "Batarya", blurb: "Otuz enerji daha depolar. Her Batarya iniş aracının aynı anda bir paket daha göndermesini sağlar; depo neredeyse doluyken daha da fazlasını." },
     pump: {
       name: "Pompa",
       blurb: "Yakındaki sığ balçığı sıyırır ve onu biraz enerjiye çevirir.",
@@ -304,6 +308,7 @@ export const trContent: Content = {
       blurb: "Kuru bir bacayı inşa sürerken kapalı tutar, sonra onu kalıcı olarak mühürler.",
     },
     airfield: { name: "Hava Alanı", blurb: "Bir uçağa otuz enerji yükler. Dolunca uçak haritadaki en derin balçığa uçar, onu bombalar ve yeniden yüklenmek için döner." },
+    spring: { name: "Pınar", blurb: "Enerjiyi merheme çevirir; merhem, yokuş aşağı akan ve balçıkla buluştuğu yerde onu etkisiz kılan açık mavi bir sıvıdır. Onu balçığın üstüne kur, içine değil." },
   },
   levels: {
     c1: {
@@ -414,6 +419,15 @@ export const trContent: Content = {
         "Burada yüksek zemin settir: tepesindeki mızraklar hem dışarıdaki denize hem içerideki çanağa yukarıdan bakar.",
         "Setteki üç gedik denizle aynı yükseklikte. Bacaların eklediği her şey onlardan çanağa taşar. Greyderler onları yükseltebilir.",
         "Çanak gediklerden iniş aracına doğru dolar. İçeri gireni yayılmadan yak.",
+      ],
+    },
+    c15: {
+      name: "Yamaç",
+      brief: "Uzun bir yamacın tepesine yakın bir yere indin. Aşağıda geniş bir balçık denizi alçak araziyi bastı ve iniş aracına doğru tırmanıyor. Pınarlar, yokuş aşağı akan ve balçıkla karşılaştığı yerde onu etkisiz kılan merhem üretir. Onları yamaca kur, merhemin denize akmasına izin ver ve en alttaki bacaları kapat.",
+      hints: [
+        "Merhem balçık gibi akar. Kıyının hemen üstündeki bir Pınar onu doğrudan denize döker; bir çukurdaki Pınar yalnızca çukuru doldurur.",
+        "Oyuntular merhemi yamaçtan çaylar halinde indirir. Pınarları oyuntuların başına koy.",
+        "Merhem durduğunda söner. Pınarları çalışır tut ve bacalar kapatılacak kadar kuruyana dek kıyıyı yamaçtan aşağı it.",
       ],
     },
   },

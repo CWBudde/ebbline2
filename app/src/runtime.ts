@@ -152,6 +152,11 @@ export class Runtime {
         case "splash":
           this.sparkAt(e.x, e.y, { kind: "ring", radius: 3, color: 0xff3fa4, life: 700 });
           break;
+        case "gush":
+          // A spring pours: a small balm-blue ring that spreads, and a pale splash at its heart.
+          this.sparkAt(e.x, e.y, { kind: "ring", radius: 1.3, color: 0x9ad4ff, life: 650 });
+          this.sparkAt(e.x, e.y, { kind: "flash", radius: 0.6, color: 0xe6f6ff, life: 260 });
+          break;
         case "capped":
           this.sparkAt(e.x, e.y, { kind: "ring", radius: 5, color: 0xffffff, life: 1200 });
           break;

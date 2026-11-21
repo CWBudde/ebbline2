@@ -118,6 +118,7 @@ export const es: Record<Key, string> = {
   "key.slot11": "'",
   "key.slot12": "¡",
   "key.slot13": "ç",
+  "key.slot14": "´",
   "key.delete": "Supr",
 
   "status.offGrid": "Fuera de la red: necesita un Pilón terminado a seis casillas como máximo",
@@ -129,6 +130,7 @@ export const es: Record<Key, string> = {
   "status.inFlight": "Avión de camino al objetivo",
   "status.bombing": "Avión bombardeando",
   "status.returning": "Avión de regreso",
+  "status.waitingEnergy": "Esperando energía",
 
   "info.cost": "{cost} de energía",
   "info.range": "Alcance {range}",
@@ -204,6 +206,8 @@ export const es: Record<Key, string> = {
     "Gasta en defensa alrededor del módulo en lugar de expandirte: las fumarolas se refuerzan cada minuto y los últimos son los más duros.",
   "tip.airfield":
     "El avión siempre va a por el peor limo de todo el mapa, esté donde esté tu red. Apaga el Aeródromo para que se quede en casa.",
+  "tip.spring":
+    "Un Manantial solo ayuda donde su bálsamo puede correr cuesta abajo hacia el limo. Constrúyelo por encima de la orilla, no dentro de ella.",
 
   "end.won": "Fumarolas selladas",
   "end.won.survive.title": "Resistido",
@@ -282,7 +286,7 @@ export const esContent: Content = {
       blurb: "Retransmite paquetes como un Pilón, y cada paquete que pasa por él viaja después un quinto más rápido. Los Aceleradores se acumulan, pero el mismo Acelerador nunca acelera un paquete dos veces. Además, cada Acelerador en funcionamiento hace todos los paquetes un dos por ciento más rápidos, esté donde esté.",
     },
     tap: { name: "Extractor", blurb: "Extrae energía constante de una veta. Solo cabe en una veta." },
-    cell: { name: "Batería", blurb: "Almacena treinta de energía más." },
+    cell: { name: "Batería", blurb: "Almacena treinta de energía más. Cada Batería también permite al módulo enviar un paquete más a la vez, y aún más cuando la reserva está casi llena." },
     pump: {
       name: "Bomba",
       blurb: "Recoge el limo poco profundo cercano y lo convierte en un poco de energía.",
@@ -303,6 +307,7 @@ export const esContent: Content = {
       blurb: "Retiene una fumarola seca mientras se construye y después la sella para siempre.",
     },
     airfield: { name: "Aeródromo", blurb: "Carga un avión con treinta de energía. Cuando está lleno, el avión vuela hasta el limo más profundo del mapa, lo bombardea y vuelve para cargar de nuevo." },
+    spring: { name: "Manantial", blurb: "Convierte energía en bálsamo, un fluido azul claro que corre cuesta abajo y anula el limo donde ambos se encuentran. Constrúyelo por encima del limo, no en él." },
   },
   levels: {
     c1: {
@@ -415,6 +420,15 @@ export const esContent: Content = {
         "Aquí el terreno alto es el dique: las lanzas en su cresta dominan el mar de fuera y la cuenca de dentro.",
         "Tres brechas del dique están a la altura del mar. Todo lo que añaden las fumarolas se derrama por ellas hacia la cuenca. Las niveladoras pueden elevarlas.",
         "La cuenca se llena desde las brechas hacia tu módulo. Quema lo que entra antes de que se extienda.",
+      ],
+    },
+    c15: {
+      name: "Ladera",
+      brief: "Has bajado cerca de la cima de una larga ladera. Debajo de ti, un ancho mar de limo ha inundado las tierras bajas y sube hacia el módulo. Los Manantiales producen bálsamo, que corre cuesta abajo y anula el limo donde lo encuentra. Constrúyelos en la ladera, deja que el bálsamo corra hasta el mar y sella las fumarolas del fondo.",
+      hints: [
+        "El bálsamo fluye como el limo. Un Manantial justo encima de la orilla lo vierte directo al mar; uno en una hondonada solo llena la hondonada.",
+        "Las barrancas llevan el bálsamo ladera abajo en corrientes. Pon Manantiales en sus cabeceras.",
+        "El bálsamo se disipa cuando está quieto. Mantén los Manantiales en marcha y empuja la orilla ladera abajo hasta que las fumarolas estén lo bastante secas para sellarlas.",
       ],
     },
   },

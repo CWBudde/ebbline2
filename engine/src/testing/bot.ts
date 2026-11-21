@@ -3,9 +3,9 @@
 //
 // What it does, in order of urgency: give up cut-off structures and taps drowned too deep to pay for their
 // mending, cap vents as soon as they can take a cap, shoot down globs and guard the lander, put pumps by standing
-// silt where the map starts with a sea or a long flood, tap lodes, put pylons on flats for their harvest, then push
-// toward the nearest open vent with lances sited on high ground that overlooks the silt, backed by lobbers on deep
-// pools.
+// silt where the map starts with a sea or a long flood, tap lodes, put pylons on flats for their harvest, set springs
+// where their balm runs down into the silt, then push toward the nearest open vent with lances sited on high ground
+// that overlooks the silt, backed by lobbers on deep pools.
 //
 // When it only has to hold out, it digs in instead: graders raise a ring of ground round the lander to the top
 // height, lances and lobbers stand inside it or on its crest, and pumps on the crest skim the silt that rises
@@ -63,6 +63,13 @@ const STANDING_FLOOD = 90;
 
 /** A pump on the dike's crest has to have at least this many wet tiles in reach to be worth its cost. */
 const PUMP_WET = 5;
+
+/** Springs the bot keeps pouring at first; one more joins every minute, up to SPRINGS_MOST. */
+const SPRINGS = 2;
+const SPRINGS_MOST = 8;
+/** Steps balm may run downhill from a spring before it has to reach silt, for a new spring and a working one. */
+const SPRING_REACH = 6;
+const SPRING_KEEP = 10;
 
 /** Steps between two tiles. */
 function steps(a: Tile, b: Tile): number {
@@ -277,6 +284,37 @@ function pumpSite(game: Game, relaysOnGrid: readonly Structure[], least: number)
   return best;
 }
 
+/**
+ * Where balm poured at p runs: every tile it reaches by never going uphill, within `limit` steps. Gives the fewest
+ * steps to a tile with silt on it, how many tiles the balm spreads over on the way, how far it falls to the
+ * silt's surface there and that tile, or undefined when it reaches no silt, as from a hollow.
+ */
+function runoff(
+  game: Game,
+  p: Tile,
+  limit: number,
+): { steps: number; spread: number; drop: number; at: Tile } | undefined {
+  const start = p.y * game.w + p.x;
+  const seen = new Map<number, number>([[start, 0]]);
+  const queue = [start];
+  for (const i of queue) {
+    const d = seen.get(i) ?? 0;
+    if ((game.silt[i] ?? 0) >= DRY) {
+      const drop = (game.height[start] ?? 0) - (game.height[i] ?? 0) - (game.silt[i] ?? 0);
+      return { steps: d, spread: seen.size, drop, at: tileOf(game.w, i) };
+    }
+    if (d >= limit) continue;
+    const own = game.height[i] ?? 0;
+    within(game.w, game.h, i % game.w, Math.floor(i / game.w), 1, (j) => {
+      const ground = game.height[j] ?? ROCK;
+      if (seen.has(j) || ground === ROCK || ground > own) return;
+      seen.set(j, d + 1);
+      queue.push(j);
+    });
+  }
+  return undefined;
+}
+
 function order(structure: Kind, p: Tile): Command[] {
   return [{ kind: "place", structure, x: p.x, y: p.y }];
 }
@@ -463,6 +501,38 @@ export function think(game: Game): Command[] {
     if (move) return move;
   }
 
+  // 4b. Springs pour balm down the slope into the silt: just above the shore, where it runs into the silt within a
+  // few steps, falls steeply and spreads over few tiles on the way, as down a gully, and meets the silt near the
+  // vent the push goes for. A spring the shore has left far behind is given up for one closer to it.
+  const open = game.vents.filter((v) => !v.capped);
+  open.sort((a, b) => steps(a, closest(a) ?? a) - steps(b, closest(b) ?? b));
+  const target = open[0];
+  if (allowed("spring") && target) {
+    const springs = all.filter((s) => s.kind === "spring");
+    const idle = springs.find((s) => s.built && !runoff(game, s, SPRING_KEEP));
+    if (idle) return [{ kind: "dismantle", id: idle.id }];
+    const due = Math.min(SPRINGS_MOST, SPRINGS + Math.floor(game.tick / (60 * TICK_HZ)));
+    if (springs.length < due && game.energy >= KINDS.spring.cost) {
+      let best: Tile | undefined;
+      let bestScore = -Infinity;
+      for (const r of nodes) {
+        if (!r.built) continue;
+        within(game.w, game.h, r.x, r.y, LINK_RANGE, (_i, _d, x, y) => {
+          const p = { x, y };
+          if (springs.some((s) => steps(s, p) < 3) || !fits(game, "spring", p)) return;
+          const run = runoff(game, p, SPRING_REACH);
+          if (!run) return;
+          const score = -run.steps - run.spread * 0.05 + run.drop * 0.5 - steps(run.at, target) * 0.2;
+          if (score > bestScore) {
+            best = p;
+            bestScore = score;
+          }
+        });
+      }
+      if (best) return order("spring", best);
+    }
+  }
+
   // 5. Cover the densest cluster against globs with a second interceptor.
   if (hub && count("interceptor") < 10 && cover < 2 && game.energy >= 12) {
     const move = want(game, "interceptor", hub, 6, nearest(game, hub));
@@ -506,7 +576,9 @@ export function think(game: Game): Command[] {
   if (contested || gap <= LINK_RANGE + 2) {
     // The longer the push takes, the more firepower the bot commits.
     const flush = game.energy >= game.capacity * 0.8;
-    const wave = flush ? 99 : 4 + Math.floor(game.tick / (90 * TICK_HZ));
+    const base = 4 + Math.floor(game.tick / (90 * TICK_HZ));
+    // A full bank doubles the push rather than throwing everything at it, which starved the harvest.
+    const wave = flush ? 2 * base : base;
     if (near("lance", front, 7) < wave) {
       // Out ahead of the front toward the vent; where silt has drowned that, round the front along the shore.
       const score = (q: Tile): number => overlook(game, q) - steps(q, vent) * 0.6;

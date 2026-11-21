@@ -117,6 +117,7 @@ export const de: Record<Key, string> = {
   "key.slot11": "ß",
   "key.slot12": "´",
   "key.slot13": "#",
+  "key.slot14": "Ä",
   "key.delete": "Entf",
 
   "status.offGrid": "Nicht am Netz: braucht einen fertigen Pylon in höchstens sechs Feldern Entfernung",
@@ -128,6 +129,7 @@ export const de: Record<Key, string> = {
   "status.inFlight": "Flugzeug fliegt hinaus",
   "status.bombing": "Flugzeug bombardiert",
   "status.returning": "Flugzeug kehrt zurück",
+  "status.waitingEnergy": "Wartet auf Energie",
 
   "info.cost": "{cost} Energie",
   "info.range": "Reichweite {range}",
@@ -204,6 +206,8 @@ export const de: Record<Key, string> = {
     "Steck die Energie in die Verteidigung rund um den Lander statt in die Ausdehnung: Die Schlote werden jede Minute stärker, die letzten Minuten sind die härtesten.",
   "tip.airfield":
     "Das Flugzeug fliegt immer den schlimmsten Schlick der ganzen Karte an, egal wo dein Netz steht. Schalte das Flugfeld aus, um es zu Hause zu halten.",
+  "tip.spring":
+    "Eine Quelle hilft nur dort, wo ihr Balsam bergab in den Schlick fließen kann. Bau sie oberhalb des Ufers, nicht mittendrin.",
 
   "end.won": "Schlote versiegelt",
   "end.won.survive.title": "Durchgehalten",
@@ -282,7 +286,7 @@ export const deContent: Content = {
       blurb: "Leitet Pakete wie ein Pylon weiter, und jedes Paket, das ihn passiert, ist danach ein Fünftel schneller. Beschleuniger wirken zusammen, aber derselbe beschleunigt ein Paket nur einmal. Jeder arbeitende Beschleuniger macht außerdem alle Pakete um zwei Prozent schneller, egal wo er steht.",
     },
     tap: { name: "Zapfer", blurb: "Zieht stetig Energie aus einer Ader. Passt nur auf eine Ader." },
-    cell: { name: "Speicher", blurb: "Fasst dreißig Energie zusätzlich." },
+    cell: { name: "Speicher", blurb: "Fasst dreißig Energie zusätzlich. Mit jedem Speicher schickt der Lander ein Paket mehr auf einmal los, und noch mehr, wenn der Vorrat fast voll ist." },
     pump: {
       name: "Pumpe",
       blurb: "Schöpft flachen Schlick in der Nähe ab und gewinnt daraus etwas Energie.",
@@ -303,6 +307,7 @@ export const deContent: Content = {
       blurb: "Hält einen trockenen Schlot zu, solange sie gebaut wird, und versiegelt ihn dann endgültig.",
     },
     airfield: { name: "Flugfeld", blurb: "Lädt ein Flugzeug mit dreißig Energie. Ist es voll, fliegt das Flugzeug zum tiefsten Schlick der Karte, bombardiert ihn und kehrt zum erneuten Laden zurück." },
+    spring: { name: "Quelle", blurb: "Verwandelt Energie in Balsam, eine hellblaue Flüssigkeit, die bergab fließt und Schlick auslöscht, wo beide aufeinandertreffen. Bau sie über dem Schlick, nicht darin." },
   },
   levels: {
     c1: {
@@ -415,6 +420,15 @@ export const deContent: Content = {
         "Der Deich ist hier der hohe Grund: Lanzen auf seiner Krone blicken auf das Meer draußen und auf das Becken drinnen hinab.",
         "Drei Scharten im Deich liegen auf Höhe des Meeres. Was die Schlote nachliefern, läuft durch sie ins Becken. Planierer können sie erhöhen.",
         "Das Becken füllt sich von den Scharten her zum Lander hin. Brenn weg, was durchkommt, bevor es sich ausbreitet.",
+      ],
+    },
+    c15: {
+      name: "Hang",
+      brief: "Du bist nahe der Spitze eines langen Hangs gelandet. Unter dir hat ein weites Meer aus Schlick das tiefere Land überflutet und steigt auf den Lander zu. Quellen erzeugen Balsam, der bergab fließt und Schlick auslöscht, wo er ihn trifft. Bau sie am Hang, lass den Balsam ins Meer laufen und verschließ die Schlote ganz unten.",
+      hints: [
+        "Balsam fließt wie Schlick. Eine Quelle knapp oberhalb des Ufers gießt ihn direkt ins Meer; eine in einer Mulde füllt nur die Mulde.",
+        "Die Rinnen tragen den Balsam in Strömen den Hang hinab. Setz Quellen an ihre Köpfe.",
+        "Balsam verschwindet, wenn er stillsteht. Lass die Quellen laufen und drück das Ufer den Hang hinunter, bis die Schlote trocken genug zum Verschließen sind.",
       ],
     },
   },

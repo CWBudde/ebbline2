@@ -1,4 +1,4 @@
-// What built structures do each tick: lances, lobbers, pumps, baffles, interceptors, graders and airfields.
+// What built structures do each tick: lances, lobbers, pumps, baffles, interceptors, graders, airfields and springs.
 
 import { centre, distance, span, tileAtPoint, within, type Point } from "./hex.ts";
 import { updateHarvest } from "./harvest.ts";
@@ -49,6 +49,13 @@ export const AIRFIELD = {
   idle: 30,
   fuel: 1,
 } as const;
+
+/**
+ * A spring pours `amount` balm onto its own tile whenever its store is full, at most once every `every` ticks: 30
+ * balm for each energy, where a lance burns 20 silt (`LANCE.removes / LANCE.cost`). Balm cancels silt one for one,
+ * but it has to run there first and fades on the way, so about half of it does.
+ */
+export const SPRING = { every: 150, amount: 30 } as const;
 
 function take(game: Game, i: number, amount: number): number {
   const depth = game.silt[i] ?? 0;
@@ -251,6 +258,15 @@ function bomb(game: Game, plane: Plane, events: Event[]): void {
   events.push({ kind: "impact", x: at.x, y: at.y, radius: AIRFIELD.blast });
 }
 
+function spring(game: Game, s: Structure, events: Event[]): void {
+  if (s.cooldown > 0 || s.energy < KINDS.spring.store) return;
+  const i = s.y * game.w + s.x;
+  s.energy = 0;
+  s.cooldown = SPRING.every;
+  game.balm[i] = (game.balm[i] ?? 0) + SPRING.amount;
+  events.push({ kind: "gush", id: s.id, x: s.x, y: s.y });
+}
+
 function pump(game: Game, s: Structure): void {
   if (game.tick % FLOW_EVERY !== 0) return;
   let taken = 0;
@@ -375,6 +391,9 @@ export function stepWeapons(game: Game, events: Event[]): void {
         break;
       case "airfield":
         airfield(game, s, events);
+        break;
+      case "spring":
+        spring(game, s, events);
         break;
       default:
         break;

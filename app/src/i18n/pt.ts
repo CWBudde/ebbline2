@@ -120,6 +120,7 @@ export const pt: Record<Key, string> = {
   "key.slot11": "-",
   "key.slot12": "=",
   "key.slot13": "]",
+  "key.slot14": "~",
   "key.delete": "Del",
 
   "status.offGrid": "Fora da rede: precisa de uma torre concluída a até seis casas",
@@ -131,6 +132,7 @@ export const pt: Record<Key, string> = {
   "status.inFlight": "Avião a caminho do alvo",
   "status.bombing": "Avião bombardeando",
   "status.returning": "Avião voltando",
+  "status.waitingEnergy": "Aguardando energia",
 
   "info.cost": "{cost} de energia",
   "info.range": "Alcance {range}",
@@ -206,6 +208,8 @@ export const pt: Record<Key, string> = {
     "Gaste na defesa ao redor do módulo de pouso em vez de expandir: as fendas ficam mais fortes a cada minuto, e os últimos minutos são os mais duros.",
   "tip.airfield":
     "O avião sempre vai atrás do pior lodo de todo o mapa, onde quer que sua rede alcance. Desligue o aeródromo para mantê-lo em casa.",
+  "tip.spring":
+    "Uma nascente só ajuda onde o bálsamo dela pode correr morro abaixo até o lodo. Construa-a acima da margem, não dentro dela.",
 
   "end.won": "Fendas seladas",
   "end.won.survive.title": "Você resistiu",
@@ -284,7 +288,7 @@ export const ptContent: Content = {
       blurb: "Repassa pacotes como uma torre, e cada pacote que passa por ele segue depois um quinto mais rápido. Aceleradores se somam, mas o mesmo acelerador nunca acelera um pacote duas vezes. Além disso, cada acelerador em funcionamento deixa todos os pacotes dois por cento mais rápidos, onde quer que esteja.",
     },
     tap: { name: "Extrator", blurb: "Tira energia constante de um veio. Só cabe num veio." },
-    cell: { name: "Bateria", blurb: "Armazena trinta de energia a mais." },
+    cell: { name: "Bateria", blurb: "Armazena trinta de energia a mais. Cada bateria também permite que o módulo de pouso envie um pacote a mais de cada vez, e ainda mais quando a reserva está quase cheia." },
     pump: {
       name: "Bomba",
       blurb: "Suga o lodo raso por perto e o transforma em um pouco de energia.",
@@ -305,6 +309,7 @@ export const ptContent: Content = {
       blurb: "Segura uma fenda seca enquanto é construída e depois a sela para sempre.",
     },
     airfield: { name: "Aeródromo", blurb: "Carrega um avião com trinta de energia. Quando está cheio, o avião voa até o lodo mais profundo do mapa, bombardeia-o e volta para carregar de novo." },
+    spring: { name: "Nascente", blurb: "Transforma energia em bálsamo, um fluido azul-claro que corre morro abaixo e anula o lodo onde os dois se encontram. Construa-a acima do lodo, não dentro dele." },
   },
   levels: {
     c1: {
@@ -417,6 +422,15 @@ export const ptContent: Content = {
         "Aqui o terreno alto é o dique: lanças na sua crista dominam o mar lá fora e a bacia aqui dentro.",
         "Três brechas no dique ficam na altura do mar. Tudo o que as saídas acrescentam escorre por elas para a bacia. As niveladoras podem elevá-las.",
         "A bacia se enche a partir das brechas em direção ao seu módulo de pouso. Queime o que passar antes que se espalhe.",
+      ],
+    },
+    c15: {
+      name: "Encosta",
+      brief: "Você desceu perto do topo de uma longa encosta. Abaixo de você, um vasto mar de lodo inundou a terra baixa e sobe em direção ao módulo de pouso. As nascentes produzem bálsamo, que corre morro abaixo e anula o lodo onde o encontra. Construa-as na encosta, deixe o bálsamo correr para o mar e tampe as fendas lá embaixo.",
+      hints: [
+        "O bálsamo flui como o lodo. Uma nascente logo acima da margem o despeja direto no mar; uma numa depressão só enche a depressão.",
+        "As ravinas levam o bálsamo encosta abaixo em filetes. Ponha nascentes nas cabeceiras delas.",
+        "O bálsamo se dissipa quando fica parado. Mantenha as nascentes funcionando e empurre a margem encosta abaixo até as fendas ficarem secas o bastante para serem tampadas.",
       ],
     },
   },

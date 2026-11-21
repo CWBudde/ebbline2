@@ -8,9 +8,13 @@ on hexagonal tiles instead of squares. Ranges are counted in steps from tile to 
 
 - [x] Hex geometry, and the engine ported to hexagons (`engine/`).
 - [x] Hex drawing and picking in the app.
-- [x] Campaign of fourteen missions (`c1` to `c14`), replacing the fourteen square-grid ones; the
-      interface text of all thirteen languages covers them. c14 (Levee) holds a brim-full sea off a
-      low basin with a thin wall that spills over at its notches.
+- [x] Campaign of fifteen missions (`c1` to `c15`); the interface text of all thirteen languages
+      covers them. c14 (Levee) holds a brim-full sea off a low basin with a thin wall that spills over
+      at its notches. c15 (Hillside) floods the foot of a long slope with gullies (landform `slope`),
+      and the sea, already over three fifths of the map, climbs toward the lander at the top.
+- [x] Spring (introduced in c15): turns energy into balm, a second fluid (`game.balm`) that flows like
+      silt, cancels it on its own tile and the tiles next to it, and fades as it stands (`silt.ts`,
+      `SPRING` in `weapons.ts`). The bot pours it down the slope into the sea and cannot win c15 without it.
 - [x] Moving ground (`movingFloor.ts`): waves that roll out from the lander in c11, and shoals that
       rise and sink in turn in c12's bend, and the sinking island of c13 (Atlantis).
 - [x] Earthy brown ground.
@@ -37,4 +41,5 @@ on hexagonal tiles instead of squares. Ranges are counted in steps from tile to 
 - [ ] Balance: the scripted bot (`engine/src/testing/bot.ts`) never builds trunks, pumps, baffles or graders,
       so the balance of the missions that introduce them is unproven.
 - [ ] Balance of the Airfield: the bot never builds it, so its strength in c10 is unproven.
+- [ ] Generated art for the Spring (map sprite and briefing illustration), and drawing balm in the app.
 - [ ] Load time of large maps: about 430 ms for 80x80.

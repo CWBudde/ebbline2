@@ -148,6 +148,12 @@ export class Sound {
         this.tone({ f: 170, to: 55, type: "sine", gain: 0.1, decay: 0.24, cents: 50 });
         this.noise({ gain: 0.05, decay: 0.5, filter: { type: "bandpass", f: 500, to: 2200, q: 1.2 } });
         break;
+      case "gush":
+        // Soft and watery: a low gurgle of filtered noise under a gentle falling sine.
+        if (!this.due("gush", 0.3)) break;
+        this.noise({ gain: 0.035, attack: 0.03, decay: 0.35, filter: { type: "bandpass", f: 420, to: 900, q: 2.5 } });
+        this.tone({ f: 330, to: 220, type: "sine", gain: 0.03, attack: 0.02, decay: 0.25, reverb: 0.3, cents: 40 });
+        break;
       case "impact":
         if (!this.due("impact", 0.1)) break;
         this.noise({ gain: 0.16, decay: 0.4, filter: { type: "lowpass", f: 1400, to: 180 }, reverb: 0.3 });

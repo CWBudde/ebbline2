@@ -82,3 +82,11 @@ export function depth(game: Game, x: number, y: number): number {
 export function pour(game: Game, x: number, y: number, amount: number): void {
   game.silt[y * game.w + x] = amount;
 }
+
+export function balmAt(game: Game, x: number, y: number): number {
+  return game.balm[y * game.w + x] ?? 0;
+}
+
+export function wash(game: Game, x: number, y: number, amount: number): void {
+  game.balm[y * game.w + x] = amount;
+}

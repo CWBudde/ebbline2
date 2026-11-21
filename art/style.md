@@ -17,6 +17,7 @@ A full prompt is the **Preamble** block, a blank line, the block of one section 
 | Weapon orange | `#ff7a45` | lance, lobber, interceptor |
 | Utility lime | `#b6f36b` | baffle, grader |
 | Cap white | `#f4f7f8` | cap |
+| Balm blue | `#9ad4ff`, edge `#4f8fb8` | spring, balm |
 | Silt magenta | `#ff3fa4` | silt, vents, spitters |
 | Ground | `#1c1611` low, `#3d2c20`, `#7a5a3c`, `#c9a878` high | earthy brown height bands, tinted in the terrain bake |
 

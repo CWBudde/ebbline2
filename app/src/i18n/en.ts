@@ -103,6 +103,8 @@ export const en = {
   "key.slot12": "=",
   /** The key left of Enter (code Backslash), which picks the thirteenth slot. */
   "key.slot13": "\\",
+  /** The key left of that, right of the semicolon (code Quote), which picks the fourteenth slot. */
+  "key.slot14": "'",
   "key.delete": "Del",
 
   "status.offGrid": "Off the grid: needs a built Pylon within six tiles",
@@ -114,6 +116,7 @@ export const en = {
   "status.inFlight": "Plane on its way out",
   "status.bombing": "Plane bombing",
   "status.returning": "Plane returning",
+  "status.waitingEnergy": "Waiting for energy",
 
   "info.cost": "{cost} energy",
   "info.range": "Range {range}",
@@ -187,6 +190,8 @@ export const en = {
     "Spend on defence around the lander rather than on reach: the vents grow stronger every minute, so the last minutes are the hardest.",
   "tip.airfield":
     "The plane always goes for the worst silt on the whole map, wherever your grid stands. Switch the Airfield off to keep it at home.",
+  "tip.spring":
+    "A Spring only helps where its balm can run downhill into silt. Build it uphill of the shore, not down in it.",
 
   "end.won": "Vents sealed",
   "end.won.survive.title": "Held out",

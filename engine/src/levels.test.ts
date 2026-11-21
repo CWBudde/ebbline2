@@ -26,6 +26,7 @@ describe("introduced", () => {
       ["c12", { structures: [], ...none }],
       ["c13", { structures: [], ...none }],
       ["c14", { structures: [], ...none }],
+      ["c15", { structures: ["spring"], ...none }],
     ]);
   });
 
@@ -282,5 +283,79 @@ describe("the levee", () => {
     let inside = 0;
     within(game.w, game.h, home.x, home.y, 15, (i) => (inside += game.silt[i] ?? 0));
     expect(inside).toBeGreaterThan(0);
+  });
+});
+
+describe("the slope", () => {
+  const slope = CAMPAIGN.find((level) => level.id === "c15") as LevelDef;
+
+  it("rises from a sea along the south edge to the lander near the north edge", () => {
+    const game = generate(slope);
+    const home = lander(game);
+    const sea = slope.sea ?? 0;
+    expect(home.y).toBeLessThan(game.h * 0.2);
+    expect(game.height[home.y * game.w + home.x]).toBeGreaterThanOrEqual(8);
+    const rowMean = (y: number): number => {
+      let sum = 0;
+      let n = 0;
+      for (let x = 0; x < game.w; x++) {
+        const h = game.height[y * game.w + x] ?? ROCK;
+        if (h === ROCK) continue;
+        sum += h;
+        n += 1;
+      }
+      return sum / n;
+    };
+    // The ground climbs from the foot to the top, band by band.
+    const bands = [0, 1, 2, 3].map((b) => {
+      let sum = 0;
+      for (let y = Math.floor((b * game.h) / 4); y < Math.floor(((b + 1) * game.h) / 4); y++) sum += rowMean(y);
+      return sum;
+    });
+    expect(bands[0]).toBeGreaterThan(bands[1] as number);
+    expect(bands[1]).toBeGreaterThan(bands[2] as number);
+    expect(bands[2]).toBeGreaterThan(bands[3] as number);
+    // The sea covers most of the lower land, from half to three quarters of the map, and none of the top fifth.
+    let wet = 0;
+    for (let i = 0; i < game.silt.length; i++) {
+      if ((game.silt[i] ?? 0) <= 0) continue;
+      wet += 1;
+      expect(Math.floor(i / game.w)).toBeGreaterThan(game.h / 5);
+    }
+    expect(wet).toBeGreaterThan(game.w * game.h * 0.5);
+    expect(wet).toBeLessThan(game.w * game.h * 0.75);
+    // The vents stand deep in it near the foot; lodes and spitters on dry land above it.
+    for (const v of game.vents) {
+      expect(v.y).toBeGreaterThan(game.h * 0.7);
+      expect(game.silt[v.y * game.w + v.x]).toBeGreaterThanOrEqual(sea - 1);
+    }
+    for (let i = 0; i < game.lode.length; i++) {
+      if (game.lode[i] === 1) expect(game.height[i]).toBeGreaterThan(sea);
+    }
+    for (const s of game.spitters) expect(game.height[s.y * game.w + s.x]).toBeGreaterThan(sea);
+  });
+
+  it("has gullies running down it, two steps below the ground beside them", () => {
+    const game = generate(slope);
+    const at = (x: number, y: number): number => game.height[y * game.w + x] ?? ROCK;
+    for (const share of [0.35, 0.5, 0.65]) {
+      const y = Math.floor(game.h * share);
+      // Runs of tiles at least two steps below ground no more than four tiles to the west and to the east.
+      let runs = 0;
+      let inside = false;
+      for (let x = 0; x < game.w; x++) {
+        const h = at(x, y);
+        let west = -1;
+        let east = -1;
+        for (let d = 1; d <= 4; d++) {
+          if (x - d >= 0) west = Math.max(west, at(x - d, y));
+          if (x + d < game.w) east = Math.max(east, at(x + d, y));
+        }
+        const low = h !== ROCK && h <= west - 2 && h <= east - 2;
+        if (low && !inside) runs += 1;
+        inside = low;
+      }
+      expect(runs).toBeGreaterThanOrEqual(3);
+    }
   });
 });

@@ -1,4 +1,4 @@
-// Draws the map: baked ground, the silt texture, structure and feature sprites and a per-frame overlay.
+// Draws the map: baked ground, the silt and balm textures, structure and feature sprites and a per-frame overlay.
 
 import { CanvasSource, Container, Graphics, Sprite, Texture, type Application } from "pixi.js";
 import {
@@ -29,6 +29,7 @@ import {
   BAKE,
   SILT_SUB,
   bakeTerrain,
+  paintBalm,
   paintSilt,
   rebakeTile,
   repaintTerrain,
@@ -42,6 +43,12 @@ const at = (game: Game, i: number): { x: number; y: number } => {
   const t = tileOf(game.w, i);
   return tileToWorld(t.x, t.y);
 };
+
+/** Whether any tile holds enough balm to be drawn. */
+function hasBalm(balm: Float32Array): boolean {
+  for (const depth of balm) if (depth >= 0.02) return true;
+  return false;
+}
 
 /**
  * A delta wing pointing along `heading` (radians, y down), `size` pixels from nose to tail, centred on (x, y).
@@ -86,6 +93,8 @@ export class Renderer {
   readonly ready: Promise<void>;
   private readonly ground = new Sprite();
   private readonly silt = new Sprite();
+  /** The springs' balm, painted like the silt into its own image with the same layout. */
+  private readonly balm = new Sprite();
   private readonly lodes = new Container();
   private readonly features = new Graphics();
   private readonly vents = new Container();
@@ -108,6 +117,10 @@ export class Renderer {
   private siltCanvas: HTMLCanvasElement | undefined;
   private siltImage: ImageData | undefined;
   private siltLayout: SiltLayout | undefined;
+  private balmCanvas: HTMLCanvasElement | undefined;
+  private balmImage: ImageData | undefined;
+  /** Whether the balm image holds any balm; while it does not, it is only repainted once balm appears. */
+  private balmShown = false;
   private game: Game | undefined;
   private paintedTick = -1;
   private paintedAt = 0;
@@ -131,6 +144,7 @@ export class Renderer {
       this.features,
       this.harvest,
       this.silt,
+      this.balm,
       this.vents,
       this.under,
       this.sprites,
@@ -202,6 +216,15 @@ export class Renderer {
     this.silt.texture = Texture.from(this.siltCanvas);
     this.silt.texture.source.scaleMode = "linear";
     this.silt.scale.set(TILE / SILT_SUB);
+    this.balmCanvas = document.createElement("canvas");
+    this.balmCanvas.width = layout.width;
+    this.balmCanvas.height = layout.height;
+    this.balmImage = new ImageData(layout.width, layout.height);
+    this.balmShown = false;
+    this.balm.texture.destroy(true);
+    this.balm.texture = Texture.from(this.balmCanvas);
+    this.balm.texture.source.scaleMode = "linear";
+    this.balm.scale.set(TILE / SILT_SUB);
     this.features.clear();
     const lodeArt = this.textures.has("lode");
     for (let i = 0; i < game.lode.length; i++) {
@@ -298,6 +321,12 @@ export class Renderer {
       paintSilt(this.siltImage, game.silt, this.siltLayout, calm ? 0 : now / 700);
       this.siltCanvas.getContext("2d")?.putImageData(this.siltImage, 0, 0);
       this.silt.texture.source.update();
+      // The balm layer is painted the same way, but only while there is balm or once some appears.
+      if (this.balmCanvas && this.balmImage && (this.balmShown || hasBalm(game.balm))) {
+        this.balmShown = paintBalm(this.balmImage, game.balm, this.siltLayout, calm ? 0 : now / 700);
+        this.balmCanvas.getContext("2d")?.putImageData(this.balmImage, 0, 0);
+        this.balm.texture.source.update();
+      }
     }
     this.syncSprites(game);
 
