@@ -69,6 +69,10 @@ describe("terrain", () => {
           expect(vent.y).toBeGreaterThan(game.h / 2);
           expect(lander.y).toBeLessThan(game.h / 2);
           expect(d).toBeGreaterThanOrEqual(level.size * 0.35);
+        } else if (level.landform === "caldera") {
+          // The caldera puts its nearest vent in the lake by the island, the rest far out beyond the rim.
+          if (n === 0) expect(d).toBeLessThanOrEqual(10);
+          else expect(d).toBeGreaterThanOrEqual(level.size * 0.35);
         } else {
           // A horseshoe puts them across the spur from the lander, a little closer as the crow flies but much
           // further round the valley.
@@ -76,7 +80,9 @@ describe("terrain", () => {
         }
       });
       for (const spitter of game.spitters) {
-        expect(distance(spitter.x, spitter.y, lander.x, lander.y)).toBeGreaterThanOrEqual(level.size * 0.4);
+        // The caldera puts its spitters on the rim round the lake; elsewhere they stand far out.
+        const least = level.landform === "caldera" ? 14 : level.size * 0.4;
+        expect(distance(spitter.x, spitter.y, lander.x, lander.y)).toBeGreaterThanOrEqual(least);
       }
       // The lander's seven tiles are level ground, and no rock stands within three steps of it.
       const ground = game.height[lander.y * game.w + lander.x];

@@ -51,11 +51,11 @@ export const AIRFIELD = {
 } as const;
 
 /**
- * A spring pours `amount` balm onto its own tile whenever its store is full, at most once every `every` ticks: 30
+ * A spring pours `amount` balm onto its own tile whenever its store is full, at most once every `every` ticks: 12
  * balm for each energy, where a lance burns 20 silt (`LANCE.removes / LANCE.cost`). Balm cancels silt one for one,
  * but it has to run there first and fades on the way, so about half of it does.
  */
-export const SPRING = { every: 150, amount: 30 } as const;
+export const SPRING = { every: 150, amount: 12 } as const;
 
 function take(game: Game, i: number, amount: number): number {
   const depth = game.silt[i] ?? 0;

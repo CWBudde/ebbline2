@@ -430,6 +430,16 @@ export const itContent: Content = {
         "Il balsamo svanisce se resta fermo. Tieni le sorgenti in funzione e spingi la riva giù per il pendio finché gli sfiati non sono abbastanza asciutti da essere sigillati.",
       ],
     },
+    c16: {
+      name: "Caldera",
+      brief: "Sei atterrato su un'isola in un lago di cratere pieno di melma, e uno sfiato nel lago continua a riempirlo. Oltre l'orlo del cratere, altri quattro sfiati giacciono nelle pianure e si risvegliano uno dopo l'altro. Attraversa il lago, prendi l'orlo e tappa ogni sfiato.",
+      hints: [
+        "Lo sfiato del lago è proprio accanto all'isola. Respingi col fuoco la melma del lago attorno a lui prima che salga sulla riva.",
+        "I Piloni arrivano a sei caselle: attraversa il lago saltando di isolotto in isolotto. Due Dorsali, una per riva, lo superano in un colpo.",
+        "Tre varchi nell'orlo sono un livello sopra il lago. Quando la melma sale fuori, si riversa da lì. Le Livellatrici possono alzarli.",
+        "Gli sfiati di fuori all'inizio sono dormienti e si risvegliano uno dopo l'altro, il più lontano per ultimo e più forte.",
+      ],
+    },
   },
   skirmish: { name: "Schermaglia {seed}", brief: "Tappa ogni sfiato." },
 };

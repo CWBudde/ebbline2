@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest";
 import { apply } from "./commands.ts";
 import { DISPATCH_EVERY, SURGE_FROM, SURGE_PACKETS, dispatchSize } from "./packets.ts";
 import { BASE_CAPACITY } from "./terrain.ts";
-import { flat, lander, run } from "./testing/fixtures.ts";
+import { KINDS } from "./state.ts";
+import { build, flat, lander, run } from "./testing/fixtures.ts";
 
 /** A game with building sites around the lander that ask for more packets than a short run can send. */
 function sites(energy: number) {
@@ -82,5 +83,39 @@ describe("dispatch", () => {
       expect(s.pendingBuild).toBe(0);
       expect(s.built).toBe(true);
     }
+  });
+
+  it("mends a finished structure only once a whole point of health is missing", () => {
+    const game = flat();
+    const l = lander(game);
+    const cell = build(game, "cell", l.x + 3, l.y);
+    game.energy = 20;
+    const spent = game.stats.spent;
+    // A scratch is left alone: a packet for it would cost a whole energy.
+    cell.health = KINDS.cell.cost - 0.4;
+    run(game, 300);
+    expect(game.stats.spent).toBe(spent);
+    expect(cell.health).toBe(KINDS.cell.cost - 0.4);
+    // With more than a point gone, one packet mends one point and the rest waits.
+    cell.health = KINDS.cell.cost - 1.4;
+    run(game, 300);
+    expect(game.stats.spent).toBe(spent + 1);
+    expect(cell.health).toBeCloseTo(KINDS.cell.cost - 0.4);
+  });
+
+  it("builds an unfinished structure to full health even when wear left a fraction", () => {
+    const game = flat();
+    const l = lander(game);
+    game.energy = 20;
+    apply(game, { kind: "place", structure: "cell", x: l.x + 3, y: l.y });
+    const cell = game.structures.find((s) => s.kind === "cell");
+    if (!cell) throw new Error("no cell");
+    run(game, 14);
+    expect(cell.built).toBe(false);
+    expect(cell.health).toBeGreaterThanOrEqual(1);
+    cell.health -= 0.5;
+    run(game, 600);
+    expect(cell.built).toBe(true);
+    expect(cell.health).toBe(KINDS.cell.cost);
   });
 });

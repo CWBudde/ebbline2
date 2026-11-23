@@ -6,6 +6,7 @@ import {
   BUILDABLE,
   KINDS,
   ROW,
+  damaged,
   floorCanBeGraded,
   globAt,
   harvestPending,
@@ -445,9 +446,11 @@ export class Renderer {
         over.rect(x - width / 2, top, width, 3).fill({ color: 0x000000, alpha: 0.6 });
         over.rect(x - width / 2, top, width * Math.max(0, Math.min(1, share)), 3).fill(color);
       };
-      if (s.health < def.cost) bar(0, s.health / def.cost, s.built ? COLORS.bad : 0xffffff);
+      // An unfinished structure shows how far it is built, a finished one its health once a whole point is gone.
+      const health = !s.built || damaged(s);
+      if (health) bar(0, s.health / def.cost, s.built ? COLORS.bad : 0xffffff);
       if (s.built && def.store > 0 && s.energy < def.store * 0.75) {
-        bar(s.health < def.cost ? 1 : 0, s.energy / def.store, COLORS.economy);
+        bar(health ? 1 : 0, s.energy / def.store, COLORS.economy);
       }
       if (!Number.isFinite(s.dist) && pulse > 0.4) {
         over.circle(x + half - 4, y - low + 4, 4).fill(COLORS.bad);

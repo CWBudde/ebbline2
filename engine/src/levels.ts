@@ -38,7 +38,10 @@ const NO_SPITTERS = { count: 0, period: 0, amount: 0 } as const;
 // bend again, now through a channel of islands where two shoals rise and sink. In c13 the land you stand on sinks
 // into a deep sea, and the vents have to be capped before the sea closes over the lander. In c14 a thin levee holds a
 // brim-full sea off a wide, low basin, and the sea spills in where the levee is lowest. c15 brings the Spring: a sea
-// floods the foot of a long slope and climbs it, and balm poured down the slope cancels it.
+// floods the foot of a long slope and climbs it, and balm poured down the slope cancels it. c16, the final, asks
+// for all of it: a vent in a crater lake at the lander's door, a crossing by islets to the rim, spitters on the rim,
+// and four vents far out in the lowlands that wake one after the other, the later ones stronger, until their silt
+// climbs the outer slope and spills over the rim's notches into the lake.
 export const CAMPAIGN: readonly LevelDef[] = [
   {
     // A ridge above a long valley with the vent at its bottom, its pool already spreading. No lodes: the lander's
@@ -48,7 +51,7 @@ export const CAMPAIGN: readonly LevelDef[] = [
     brief: "One vent, fifteen tiles east and far below you, and its pool is already spreading. Walk the grid down to it, burn it dry and cap it.",
     seed: 131,
     size: 32,
-    vents: { count: 1, period: 60, amount: 14, ramp: 0.25 },
+    vents: { count: 1, period: 60, amount: 15, ramp: 0.25 },
     spitters: NO_SPITTERS,
     lodes: 0,
     flood: 60,
@@ -70,7 +73,7 @@ export const CAMPAIGN: readonly LevelDef[] = [
     brief: "Two vents, on opposite sides of your hill. Tap the lodes for energy and bank it for the Caps.",
     seed: 2145,
     size: 40,
-    vents: { count: 2, period: 60, amount: 11, ramp: 0.2, each: [{}, { amount: 1.5, delay: 30 }] },
+    vents: { count: 2, period: 60, amount: 19, ramp: 0.2, each: [{}, { amount: 1.5, delay: 30 }] },
     spitters: NO_SPITTERS,
     lodes: 6,
     landform: "terraces",
@@ -90,7 +93,7 @@ export const CAMPAIGN: readonly LevelDef[] = [
     brief: "Three vents gush in slow, heavy pulses, and the basin below fills deep. Lobbers reach the deep pools.",
     seed: 3161,
     size: 48,
-    vents: { count: 3, period: 150, amount: 35, ramp: 0.15 },
+    vents: { count: 3, period: 150, amount: 45, ramp: 0.15 },
     spitters: NO_SPITTERS,
     lodes: 6,
     landform: "basin",
@@ -111,7 +114,7 @@ export const CAMPAIGN: readonly LevelDef[] = [
     vents: {
       count: 3,
       period: 50,
-      amount: 9,
+      amount: 12,
       ramp: 0.25,
       each: [{ period: 30, amount: 0.7 }, {}, { period: 120, amount: 2.5 }],
     },
@@ -132,7 +135,7 @@ export const CAMPAIGN: readonly LevelDef[] = [
     brief: "Four vents ring your mesa, and there are only three lodes. Pumps skim shallow silt for energy.",
     seed: 5064,
     size: 48,
-    vents: { count: 4, period: 60, amount: 13, ramp: 0.18 },
+    vents: { count: 4, period: 60, amount: 15, ramp: 0.18 },
     spitters: NO_SPITTERS,
     lodes: 3,
     landform: "mesa",
@@ -151,7 +154,7 @@ export const CAMPAIGN: readonly LevelDef[] = [
     brief: "You came down low, on the bank of a river valley, with four vents around you and one of them close. Hold out for ten minutes.",
     seed: 6078,
     size: 56,
-    vents: { count: 4, period: 60, amount: 26, ramp: 0.2, near: 10, each: [{ amount: 0.5 }] },
+    vents: { count: 4, period: 60, amount: 48, ramp: 0.2, near: 10, each: [{ amount: 0.5 }] },
     spitters: NO_SPITTERS,
     lodes: 6,
     lowStart: true,
@@ -206,15 +209,15 @@ export const CAMPAIGN: readonly LevelDef[] = [
     // A wide valley bent into a U round a high spur. The vents sit at the head of the east arm; the floor falls
     // all the way round the bend to the end of the west arm, where the lander came down, so everything the vents
     // give ends up at the lander unless it is stopped. The vents have run for a minute and a half when you land:
-    // their arm stands deep, the bend is full and the stream reaches the lander about ninety seconds later. The
-    // scripted player holds it off with lances by the lander while it crosses the spur and burns down the vents' arm
-    // from the rim; a human can as well raise a dike across the arm below the lander.
+    // their arm stands deep, the bend is full and the stream reaches the lander about seventy-five seconds later.
+    // The scripted player holds it off with lances by the lander while it crosses the spur and burns down the vents'
+    // arm from the rim; a human can as well raise a dike across the arm below the lander.
     id: "c9",
     name: "Horseshoe",
     brief: "Three strong vents at the head of a valley that bends round a ridge and comes back down to you. Their silt is already on its way round. Keep it off the lander and cap the vents.",
     seed: 9001,
     size: 48,
-    vents: { count: 3, period: 60, amount: 14, ramp: 0.2 },
+    vents: { count: 3, period: 60, amount: 17, ramp: 0.2 },
     spitters: NO_SPITTERS,
     lodes: 8,
     landform: "horseshoe",
@@ -237,7 +240,7 @@ export const CAMPAIGN: readonly LevelDef[] = [
     brief: "You came down on an island in a sea of silt, and four vents on its floor keep it rising. Hop the grid from island to island, burn the sea back from each vent and cap it.",
     seed: 10017,
     size: 64,
-    vents: { count: 4, period: 60, amount: 9.4, ramp: 0.15 },
+    vents: { count: 4, period: 60, amount: 10.25, ramp: 0.15 },
     spitters: { count: 2, period: 840, amount: 10 },
     lodes: 9,
     landform: "archipelago",
@@ -261,7 +264,7 @@ export const CAMPAIGN: readonly LevelDef[] = [
     brief: "The floor rises in terraces around your landing site, sending silt down different slopes as it moves. Use the steady ring near the lander to stage your push and cap the vents.",
     seed: 11017,
     size: 48,
-    vents: { count: 3, period: 60, amount: 12.65, ramp: 0.15, near: 10 },
+    vents: { count: 3, period: 60, amount: 14.5, ramp: 0.15, near: 10 },
     spitters: { count: 2, period: 600, amount: 10 },
     lodes: 8,
     movingFloor: true,
@@ -283,7 +286,7 @@ export const CAMPAIGN: readonly LevelDef[] = [
     brief: "Silt is already moving around the bend toward your headland. Extend the grid across the islands and cap the vents upstream.",
     seed: 12017,
     size: 48,
-    vents: { count: 3, period: 60, amount: 14.5, ramp: 0.2 },
+    vents: { count: 3, period: 60, amount: 20, ramp: 0.2 },
     spitters: { count: 1, period: 840, amount: 5 },
     lodes: 9,
     landform: "shoal-bend",
@@ -301,14 +304,14 @@ export const CAMPAIGN: readonly LevelDef[] = [
     // One great island in a sea four deep, its crown at the top height and its shore a step above the sea; four
     // small islets lie far out, and two spitters on the high ground. Every eight seconds an eighth of the land goes
     // down a step, the drop running round the island like a clock hand, so the whole island sinks a step every 64
-    // seconds and the shore goes under first; the sea reaches the lander after about four minutes. The vents lie on
-    // the sea floor round it.
+    // seconds and the shore goes under first; the sea reaches the lander after about three and a half minutes. The
+    // vents lie on the sea floor round it.
     id: "c13",
     name: "Atlantis",
     brief: "You came down on the crown of a great island, and the island is going under. Four vents on the sea floor keep the sea rising while the land sinks. Cap them before the silt closes over your lander.",
     seed: 13017,
     size: 56,
-    vents: { count: 4, period: 60, amount: 14, ramp: 0.15 },
+    vents: { count: 4, period: 60, amount: 18, ramp: 0.15 },
     spitters: { count: 2, period: 840, amount: 8 },
     lodes: 9,
     landform: "atlantis",
@@ -334,7 +337,7 @@ export const CAMPAIGN: readonly LevelDef[] = [
     brief: "You came down in a wide, low basin. A thin levee holds back a sea of silt filled to the brim, and the four vents outside keep it rising. Where the levee is lowest it already spills over. Hold the wall and cap the vents beyond it.",
     seed: 14017,
     size: 56,
-    vents: { count: 4, period: 60, amount: 9, ramp: 0.15 },
+    vents: { count: 4, period: 60, amount: 12.75, ramp: 0.15 },
     spitters: { count: 2, period: 840, amount: 8 },
     lodes: 9,
     landform: "levee",
@@ -359,7 +362,7 @@ export const CAMPAIGN: readonly LevelDef[] = [
     brief: "You came down near the top of a long slope. Below you, a wide sea of silt has flooded the lower land and is climbing toward the lander. Springs make balm, which runs downhill and cancels silt where it meets it. Build them on the slope, let the balm run into the sea, and cap the vents at the bottom.",
     seed: 15017,
     size: 56,
-    vents: { count: 3, period: 60, amount: 20, ramp: 0.15 },
+    vents: { count: 3, period: 60, amount: 29, ramp: 0.15 },
     spitters: { count: 1, period: 840, amount: 8 },
     lodes: 9,
     landform: "slope",
@@ -372,6 +375,42 @@ export const CAMPAIGN: readonly LevelDef[] = [
       "Balm flows like silt. A Spring just above the shore pours it straight into the sea; one in a hollow only fills the hollow.",
       "The gullies carry balm down the slope in streams. Put Springs at their heads.",
       "Balm fades when it stands still. Keep the Springs running and push the shore down the slope until the vents are dry enough to cap.",
+    ],
+  },
+  {
+    // An island in a crater lake of silt two deep and filled to the brim, with a weak vent in the lake nine steps
+    // from the lander and three islets a pylon's hop apart. Left alone, the lake vent's silt reaches the lander after
+    // about two minutes. The rim round the lake stands three or four steps above it, with three notches one step
+    // above it; outside, the land falls away to lowlands with four vents that wake within the first minute, the
+    // nearest after fifteen seconds and the furthest, the strongest, after thirty-five. Left alone, their silt climbs to the
+    // notches and spills into the lake after about eight and a half minutes. Spitters sit on the rim's crest. The
+    // vents wake before the scripted player can reach them: when it could cap a strong one still asleep, whether it
+    // won turned on luck.
+    id: "c16",
+    name: "Caldera",
+    brief: "You came down on an island in a crater lake of silt, and a vent in the lake is filling it. Beyond the crater rim, four more vents lie in the lowlands and wake one after the other. Cross the lake, take the rim and cap every vent.",
+    seed: 16017,
+    size: 72,
+    vents: {
+      count: 5,
+      period: 60,
+      amount: 13.5,
+      ramp: 0.15,
+      each: [{ amount: 0.78 }, { delay: 15 }, { delay: 24 }, { amount: 1.2, delay: 32 }, { amount: 1.4, delay: 35 }],
+    },
+    spitters: { count: 2, period: 840, amount: 8 },
+    lodes: 10,
+    landform: "caldera",
+    rock: 0.02,
+    sea: 5,
+    ground: "ash",
+    allowed: EVERYTHING,
+    objective: { kind: "cap" },
+    hints: [
+      "The lake vent lies right by the island. Burn back the lake round it before it climbs onto the shore.",
+      "Pylons reach six tiles, so hop across the lake by the islets. Two Trunks, one on each shore, span it at once.",
+      "Three notches in the rim stand one step above the lake. Silt rising outside spills in through them. Graders can raise them.",
+      "The vents outside lie dormant at first and wake one after the other, the furthest last and strongest.",
     ],
   },
 ];

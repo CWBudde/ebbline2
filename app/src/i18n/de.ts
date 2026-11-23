@@ -431,6 +431,16 @@ export const deContent: Content = {
         "Balsam verschwindet, wenn er stillsteht. Lass die Quellen laufen und drück das Ufer den Hang hinunter, bis die Schlote trocken genug zum Verschließen sind.",
       ],
     },
+    c16: {
+      name: "Caldera",
+      brief: "Du bist auf einer Insel in einem Kratersee aus Schlick gelandet, und ein Schlot im See füllt ihn weiter. Jenseits des Kraterrands liegen vier weitere Schlote im Tiefland und erwachen einer nach dem anderen. Überquere den See, nimm den Rand ein und verschließ jeden Schlot.",
+      hints: [
+        "Der Seeschlot liegt direkt an der Insel. Brenn den See um ihn zurück, bevor er aufs Ufer steigt.",
+        "Pylone reichen sechs Felder weit, also spring von Inselchen zu Inselchen über den See. Zwei Trassen, eine an jedem Ufer, überbrücken ihn in einem Zug.",
+        "Drei Scharten im Rand liegen eine Stufe über dem See. Steigt draußen der Schlick, läuft er durch sie herein. Planierer können sie erhöhen.",
+        "Die Schlote draußen ruhen anfangs und erwachen einer nach dem anderen, der fernste zuletzt und am stärksten.",
+      ],
+    },
   },
   skirmish: { name: "Gefecht {seed}", brief: "Verschließ jeden Schlot." },
 };

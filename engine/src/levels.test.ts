@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { distance, tileAtPoint, within } from "./hex.ts";
+import { distance, span, tileAtPoint, within } from "./hex.ts";
 import { CAMPAIGN, introduced, skirmish } from "./levels.ts";
 import { floorCanBeGraded, rotateBend, sinkSector } from "./movingFloor.ts";
 import { load, save } from "./save.ts";
 import { step } from "./step.ts";
-import { BUILDABLE, MAX_HEIGHT, ROCK, TICK_HZ, type Game, type LevelDef } from "./state.ts";
+import { BUILDABLE, LINK_RANGE, MAX_HEIGHT, ROCK, TICK_HZ, type Game, type LevelDef } from "./state.ts";
 import { generate } from "./terrain.ts";
 import { lander } from "./testing/fixtures.ts";
 
@@ -27,6 +27,7 @@ describe("introduced", () => {
       ["c13", { structures: [], ...none }],
       ["c14", { structures: [], ...none }],
       ["c15", { structures: ["spring"], ...none }],
+      ["c16", { structures: [], ...none }],
     ]);
   });
 
@@ -147,9 +148,10 @@ describe("moving ground", () => {
       const tile = tileAtPoint(p.x, p.y);
       return tile.y * game.w + tile.x;
     });
+    // The islands stand out of the flood; the one nearest the vents, six steps from one, wears a thin film of it.
     for (const i of islandTops) {
       expect(game.height[i]).toBeGreaterThanOrEqual(7);
-      expect(game.silt[i]).toBe(0);
+      expect(game.silt[i]).toBeLessThan(1);
     }
     expect(game.silt.some((depth) => depth > 0)).toBe(true);
     const raised = (): number[] =>
@@ -283,6 +285,98 @@ describe("the levee", () => {
     let inside = 0;
     within(game.w, game.h, home.x, home.y, 15, (i) => (inside += game.silt[i] ?? 0));
     expect(inside).toBeGreaterThan(0);
+  });
+});
+
+describe("the caldera", () => {
+  const caldera = CAMPAIGN.find((level) => level.id === "c16") as LevelDef;
+  const sea = caldera.sea ?? 0;
+  const game = generate(caldera);
+  const home = lander(game);
+  const at = (i: number): { x: number; y: number } => ({ x: i % game.w, y: Math.floor(i / game.w) });
+  const steps = (i: number): number => distance(at(i).x, at(i).y, home.x, home.y);
+  /** How far out from the lander a tile lies, in tile units. */
+  const out = (i: number): number => span(at(i).x, at(i).y, home.x, home.y);
+  /** Every tile reachable from `start` over tiles that pass `ok`, one step at a time. */
+  const reach = (start: readonly number[], ok: (i: number) => boolean): Set<number> => {
+    const seen = new Set(start);
+    for (const i of seen) {
+      within(game.w, game.h, at(i).x, at(i).y, 1, (j) => {
+        if (!seen.has(j) && game.height[j] !== ROCK && ok(j)) seen.add(j);
+      });
+    }
+    return seen;
+  };
+  const lake = Array.from(game.silt.keys()).filter((i) => (game.silt[i] ?? 0) > 0);
+  const island = reach([home.y * game.w + home.x], (j) => (game.height[j] ?? 0) > sea);
+
+  it("sets the lander on a small island in a crater lake filled to the brim, the only silt on the map", () => {
+    expect(game.height[home.y * game.w + home.x]).toBe(sea + 2);
+    expect(lake.length).toBeGreaterThan(300);
+    expect(lake.length).toBeLessThan(600);
+    for (const i of lake) {
+      expect(out(i)).toBeLessThan(14.5);
+      expect((game.height[i] ?? 0) + (game.silt[i] ?? 0)).toBeCloseTo(sea);
+      expect(game.height[i]).toBeLessThanOrEqual(sea - 2);
+    }
+    expect(island.size).toBeLessThan(100);
+    for (const i of island) expect(out(i)).toBeLessThan(6);
+  });
+
+  it("carries the grid from the island to the rim's crest by islets a pylon's hop apart", () => {
+    // Tiles a pylon can stand on: above the lake and with no silt next to them.
+    const dry: number[] = [];
+    for (let i = 0; i < game.height.length; i++) {
+      if ((game.height[i] ?? 0) <= sea || out(i) > 18) continue;
+      const around: number[] = [];
+      within(game.w, game.h, at(i).x, at(i).y, 1, (j) => around.push(j));
+      if (around.every((j) => (game.silt[j] ?? 0) <= 0)) dry.push(i);
+    }
+    const hop = (a: number, b: number): number => distance(at(a).x, at(a).y, at(b).x, at(b).y);
+    const grid = new Set([home.y * game.w + home.x]);
+    for (const i of grid) for (const j of dry) if (!grid.has(j) && hop(i, j) <= LINK_RANGE) grid.add(j);
+    expect([...grid].some((i) => (game.height[i] ?? 0) >= sea + 3)).toBe(true);
+    // Without the islets the lake is too wide for a pylon's hop.
+    const shore = dry.filter((i) => out(i) >= 11.8);
+    const ashore = dry.filter((i) => island.has(i));
+    expect(ashore.every((i) => shore.every((j) => hop(i, j) > LINK_RANGE))).toBe(true);
+  });
+
+  it("rings the lake with a rim that silt crosses only at notches one step above the lake", () => {
+    const low = reach(lake, (j) => (game.height[j] ?? 0) <= sea);
+    for (const i of low) expect(out(i)).toBeLessThan(14.5);
+    const notched = reach(lake, (j) => (game.height[j] ?? 0) <= sea + 1);
+    expect([...notched].some((i) => out(i) >= 22)).toBe(true);
+    // The rim's crest stands three or four steps above the lake.
+    const crest = Array.from(game.height.keys()).filter((i) => out(i) >= 15.6 && out(i) <= 16);
+    const high = crest.filter((i) => (game.height[i] ?? 0) >= sea + 3);
+    expect(high.length).toBeGreaterThan(crest.length * 0.6);
+  });
+
+  it("puts a vent in the lake by the island, the others far out on dry low ground, and spitters on the crest", () => {
+    const vents = [...game.vents].sort((a, b) => distance(a.x, a.y, home.x, home.y) - distance(b.x, b.y, home.x, home.y));
+    const [near, ...far] = vents;
+    expect(near && distance(near.x, near.y, home.x, home.y)).toBeLessThanOrEqual(10);
+    expect(near && game.silt[near.y * game.w + near.x]).toBeGreaterThan(1);
+    expect(far).toHaveLength(4);
+    for (const v of far) {
+      expect(distance(v.x, v.y, home.x, home.y)).toBeGreaterThanOrEqual(30);
+      expect(game.height[v.y * game.w + v.x]).toBeLessThanOrEqual(1);
+      expect(game.silt[v.y * game.w + v.x]).toBe(0);
+      for (const o of far) if (o !== v) expect(distance(v.x, v.y, o.x, o.y)).toBeGreaterThanOrEqual(20);
+    }
+    // The nearest of the outer vents wakes first and the furthest last.
+    const waking = far.map((v) => v.timer);
+    expect(waking).toEqual([...waking].sort((a, b) => a - b));
+    expect(game.spitters.length).toBe(caldera.spitters.count);
+    for (const s of game.spitters) expect(game.height[s.y * game.w + s.x]).toBeGreaterThanOrEqual(sea + 3);
+    // Two lodes on the island, the rest beyond the lake.
+    const lodes = Array.from(game.lode.keys()).filter((i) => game.lode[i] === 1);
+    expect(lodes.filter((i) => steps(i) <= 5)).toHaveLength(2);
+    for (const i of lodes) {
+      expect(game.silt[i]).toBe(0);
+      if (steps(i) > 5) expect(steps(i)).toBeGreaterThanOrEqual(12);
+    }
   });
 });
 

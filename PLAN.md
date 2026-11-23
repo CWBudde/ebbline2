@@ -8,13 +8,16 @@ on hexagonal tiles instead of squares. Ranges are counted in steps from tile to 
 
 - [x] Hex geometry, and the engine ported to hexagons (`engine/`).
 - [x] Hex drawing and picking in the app.
-- [x] Campaign of fifteen missions (`c1` to `c15`); the interface text of all thirteen languages
+- [x] Campaign of sixteen missions (`c1` to `c16`); the interface text of all thirteen languages
       covers them. c14 (Levee) holds a brim-full sea off a low basin with a thin wall that spills over
       at its notches. c15 (Hillside) floods the foot of a long slope with gullies (landform `slope`),
-      and the sea, already over three fifths of the map, climbs toward the lander at the top.
+      and the sea, already over three fifths of the map, climbs toward the lander at the top. c16
+      (Caldera), the final, sets the lander on an island in a crater lake with a vent at its door
+      (landform `caldera`); islets carry the grid across to the rim, and four vents in the lowlands
+      outside wake one after the other until their silt climbs to the rim's notches and spills in.
 - [x] Spring (introduced in c15): turns energy into balm, a second fluid (`game.balm`) that flows like
       silt, cancels it on its own tile and the tiles next to it, and fades as it stands (`silt.ts`,
-      `SPRING` in `weapons.ts`). The bot pours it down the slope into the sea and cannot win c15 without it.
+      `SPRING` in `weapons.ts`). It costs 100 and pours 12 balm for each energy.
 - [x] Moving ground (`movingFloor.ts`): waves that roll out from the lander in c11, and shoals that
       rise and sink in turn in c12's bend, and the sinking island of c13 (Atlantis).
 - [x] Earthy brown ground.
@@ -36,10 +39,11 @@ on hexagonal tiles instead of squares. Ranges are counted in steps from tile to 
 - [ ] More missions.
 - [ ] Title sky: it is still the painted one (`title-bg.jpg`), with a higher horizon than the first
       Ebbline title. The sea bands are also softer than that title's painted rivers.
-- [ ] Engine: a structure standing in silt requests a full energy packet for each tiny repair, which
-      can drain 2 to 4 energy per second. Look at batching or scaling the request.
-- [ ] Balance: the scripted bot (`engine/src/testing/bot.ts`) never builds trunks, pumps, baffles or graders,
-      so the balance of the missions that introduce them is unproven.
-- [ ] Balance of the Airfield: the bot never builds it, so its strength in c10 is unproven.
+- [ ] Balance of the Trunk: the scripted bot (`engine/src/testing/bot/`) does not build it. Measured, it wins
+      c4 a quarter faster but loses c7 and c8 margin, because a trunk takes the place of a pylon that harvests.
+- [ ] Balance of the Baffle: the bot does not build it. One by the lander lost c6, c10, c11 and c13: its drain
+      is what three firing lances burn, and they remove far more silt than the field holds back.
+- [ ] Balance of the Spring: at 12 balm for each energy about half of which arrives, it cancels less silt than
+      a lobber burns, so the bot builds none and wins c15, the mission that introduces it, without it.
 - [ ] Generated art for the Spring (map sprite and briefing illustration), and drawing balm in the app.
 - [ ] Load time of large maps: about 430 ms for 80x80.

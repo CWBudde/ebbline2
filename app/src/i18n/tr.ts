@@ -430,6 +430,16 @@ export const trContent: Content = {
         "Merhem durduğunda söner. Pınarları çalışır tut ve bacalar kapatılacak kadar kuruyana dek kıyıyı yamaçtan aşağı it.",
       ],
     },
+    c16: {
+      name: "Kaldera",
+      brief: "Balçıkla dolu bir krater gölünün ortasındaki bir adaya indin ve göldeki bir baca onu doldurmayı sürdürüyor. Krater kenarının ötesinde, ovalarda dört baca daha yatıyor ve birbiri ardına uyanıyor. Gölü geç, kenarı ele geçir ve her bacayı kapat.",
+      hints: [
+        "Göl bacası adanın hemen yanında. Balçık kıyıya tırmanmadan önce çevresindeki gölü yakarak geri püskürt.",
+        "Direkler altı karo öteye uzanır; gölü adacıklardan atlayarak geç. Her kıyıda birer tane olmak üzere iki Ana Hat onu tek seferde aşar.",
+        "Kenardaki üç gedik gölden bir basamak yüksekte. Dışarıda balçık yükselince onlardan içeri taşar. Greyderler onları yükseltebilir.",
+        "Dışarıdaki bacalar önce uyur ve birbiri ardına uyanır; en uzaktaki en son ve en güçlü olanıdır.",
+      ],
+    },
   },
   skirmish: { name: "Çatışma {seed}", brief: "Her bacayı kapat." },
 };

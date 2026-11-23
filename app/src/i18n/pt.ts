@@ -433,6 +433,16 @@ export const ptContent: Content = {
         "O bálsamo se dissipa quando fica parado. Mantenha as nascentes funcionando e empurre a margem encosta abaixo até as fendas ficarem secas o bastante para serem tampadas.",
       ],
     },
+    c16: {
+      name: "Caldeira",
+      brief: "Você pousou numa ilha no meio de um lago de cratera cheio de lodo, e uma fenda no lago continua a enchê-lo. Além da borda da cratera, outras quatro fendas jazem nas terras baixas e despertam uma após a outra. Atravesse o lago, tome a borda e tampe cada fenda.",
+      hints: [
+        "A fenda do lago fica bem ao lado da ilha. Faça o lago recuar a fogo em volta dela antes que ele suba para a margem.",
+        "As Torres alcançam seis casas: atravesse o lago de ilhota em ilhota. Dois Troncos, um em cada margem, o vencem de uma vez.",
+        "Três brechas na borda ficam um nível acima do lago. Quando o lodo sobe lá fora, escorre por elas. As Niveladoras podem elevá-las.",
+        "As fendas lá fora ficam adormecidas no início e despertam uma após a outra, a mais distante por último e mais forte.",
+      ],
+    },
   },
   skirmish: { name: "Escaramuça {seed}", brief: "Tampe todas as fendas." },
 };

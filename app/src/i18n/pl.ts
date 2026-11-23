@@ -429,6 +429,16 @@ export const plContent: Content = {
         "Balsam zanika, gdy stoi w miejscu. Utrzymuj źródła w ruchu i spychaj brzeg w dół zbocza, aż ujścia będą dość suche, by je zamknąć.",
       ],
     },
+    c16: {
+      name: "Kaldera",
+      brief: "Wylądowałeś na wyspie pośród kraterowego jeziora mułu, a komin w jeziorze wciąż je napełnia. Za krawędzią krateru, na nizinach, leżą jeszcze cztery kominy i budzą się jeden po drugim. Przepraw się przez jezioro, zajmij krawędź i zamknij każdy komin.",
+      hints: [
+        "Komin w jeziorze leży tuż przy wyspie. Wypalaj jezioro wokół niego, zanim muł wejdzie na brzeg.",
+        "Pylony sięgają sześć pól, więc przeskakuj przez jezioro po wysepkach. Dwie Magistrale, po jednej na każdym brzegu, przekraczają je od razu.",
+        "Trzy wyrwy w krawędzi leżą stopień nad jeziorem. Gdy muł na zewnątrz się podnosi, przelewa się nimi do środka. Równiarki mogą je podnieść.",
+        "Kominy na zewnątrz najpierw śpią i budzą się jeden po drugim, najdalszy na końcu i najsilniejszy.",
+      ],
+    },
   },
   skirmish: { name: "Potyczka {seed}", brief: "Zamknij każdy komin." },
 };

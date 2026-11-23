@@ -461,6 +461,163 @@ function slope(rng: RngState, relief: Float32Array, stone: Float32Array, size: n
   return tileAtPoint(width / 2, 5 * ROW);
 }
 
+/**
+ * Where a landform that draws the whole map puts the lander and, if it says so, the sea, the vents, the spitters and
+ * the lodes.
+ */
+interface Layout {
+  readonly lander: Tile;
+  /** 1 on the tiles the sea starts from instead of the map's edge; it still covers only open ground below it. */
+  readonly lake?: Uint8Array;
+  /** Per vent, the tile round which it takes the lowest ground within VENT_REACH steps. */
+  readonly vents?: readonly Tile[];
+  /** Where a spitter may stand, instead of far from the lander. */
+  readonly spitter?: (p: Tile) => boolean;
+  /** Where a lode beyond the two by the lander may lie, on top of the usual distance from the lander. */
+  readonly lode?: (p: Tile) => boolean;
+}
+
+/** Steps round a vent tile given by the layout within which the vent takes the lowest ground. */
+const VENT_REACH = 3;
+
+// The caldera, in tile units from the middle of the map: the island the lander stands on, the lake round it, the
+// islets in the lake that carry the grid across, and the rim's inner foot, crest and outer edge.
+const CALDERA_ISLAND = 4.6;
+const CALDERA_TOP = 3.2;
+const CALDERA_LAKE = 12.6;
+const CALDERA_ISLETS = 3;
+const CALDERA_ISLET_OUT = 8.6;
+const CALDERA_ISLET_RADIUS = 2;
+const CALDERA_CREST_IN = 14.6;
+const CALDERA_CREST_OUT = 17;
+/** Steps the outer slope falls per tile unit outward from the crest, down to the lowlands. */
+const CALDERA_FALL = 0.62;
+/** Notches in the rim, one step above the lake, and their half width in tiles. */
+const CALDERA_NOTCHES = 3;
+const CALDERA_NOTCH_HALF = 1.4;
+/** Gullies running down the outer slope from just below the crest, their half width in tiles and depth. */
+const CALDERA_GULLIES = 5;
+const CALDERA_GULLY_HALF = 1.8;
+const CALDERA_GULLY_DEPTH = 2;
+/** Vents beyond the rim, in the lowlands toward the map's edges. */
+const CALDERA_VENTS = 4;
+/** Where the lake vent lies, from the middle, in tile units. */
+const CALDERA_LAKE_VENT = 7.2;
+/** How far beyond the outer edge of the crest lodes may lie, in tile units. */
+const CALDERA_LODES = 6;
+
+/**
+ * A caldera: an island in the middle of the map, its top two steps above `sea` and its shore one, in a crater lake
+ * two to three deep that is filled to the brim, with a few islets in it, each a pylon's hop from the island and from
+ * the shore. A rim rings the lake, its crest three or four steps above the lake and its inner slope steep, with a
+ * few notches cut through it one step above the lake, where silt rising outside spills in and the lake spills out.
+ * Outside, the land falls away down a slope with shallow gullies in it to lowlands at the map's edges, where the
+ * vents lie, one more in the lake by the island. Rewrites `relief` as atlantis does and clears `stone` everywhere
+ * but on the rim and the outer slope, and there too on the notches and in the gullies. Returns the layout: the
+ * lander in the middle, the lake for the sea, the vents' spots, the crest for the spitters and the rim and the upper
+ * outer slope for the lodes.
+ */
+function caldera(rng: RngState, relief: Float32Array, stone: Float32Array, size: number, sea: number): Layout {
+  const wobble = fractal(rng, size, Math.round(size / 6));
+  const crest = fractal(rng, size, Math.round(size / 4));
+  const { width, height } = extent(size, size);
+  const mid = { x: width / 2, y: height / 2 };
+  const first = next(rng) * 2 * Math.PI;
+  const turn = (2 * Math.PI) / CALDERA_ISLETS;
+  const islets = Array.from({ length: CALDERA_ISLETS }, (_, n) => {
+    const angle = first + (n + (next(rng) - 0.5) * 0.2) * turn;
+    return { x: mid.x + Math.cos(angle) * CALDERA_ISLET_OUT, y: mid.y + Math.sin(angle) * CALDERA_ISLET_OUT };
+  });
+  // The notches lie between the islets, so the hops to the shore stay dry.
+  const notches = Array.from(
+    { length: CALDERA_NOTCHES },
+    (_, n) => first + turn / 2 + (n + (next(rng) - 0.5) * 0.25) * ((2 * Math.PI) / CALDERA_NOTCHES),
+  );
+  const gullies = Array.from(
+    { length: CALDERA_GULLIES },
+    (_, n) => first + (n + 0.5 + (next(rng) - 0.5) * 0.5) * ((2 * Math.PI) / CALDERA_GULLIES),
+  );
+  // How far round from a direction a point at distance d lies, in tile units along the circle.
+  const off = (angle: number, a: number, d: number): number =>
+    Math.abs(((angle - a + 3 * Math.PI) % (2 * Math.PI)) - Math.PI) * d;
+  const lake = new Uint8Array(size * size);
+  const crestTiles = new Uint8Array(size * size);
+  const notched = new Uint8Array(size * size);
+  for (let i = 0; i < relief.length; i++) {
+    const r = relief[i] as number;
+    const p = centre(i % size, Math.floor(i / size));
+    const bend = ((wobble[i] as number) - 0.5) * 1.6;
+    const out = Math.hypot(p.x - mid.x, p.y - mid.y);
+    const d = out + bend;
+    // The island's shore wanders less, so the water between it and the islets stays open.
+    const core = out + bend * 0.3;
+    const angle = Math.atan2(p.y - mid.y, p.x - mid.x);
+    const top = sea + 3 + Math.floor((crest[i] as number) * 1.99);
+    let h: number;
+    let keep = false;
+    if (core < CALDERA_TOP) {
+      h = sea + 2;
+    } else if (core < CALDERA_ISLAND) {
+      h = sea + 1;
+    } else if (d < CALDERA_LAKE) {
+      h = sea - 2 - (r > 0.55 ? 1 : 0);
+    } else if (d < CALDERA_CREST_IN) {
+      // The inner slope climbs from the shore to the crest in two tiles.
+      h = Math.min(top, sea + 1 + Math.floor(((d - CALDERA_LAKE) / (CALDERA_CREST_IN - CALDERA_LAKE)) * (top - sea)));
+      keep = true;
+    } else if (d < CALDERA_CREST_OUT) {
+      h = top;
+      keep = true;
+      crestTiles[i] = 1;
+    } else {
+      const base = top - (d - CALDERA_CREST_OUT) * CALDERA_FALL + (r - 0.5) * 1.2;
+      let cut = 0;
+      for (const g of gullies) {
+        const inside = smooth(Math.max(0, Math.min(1, (CALDERA_GULLY_HALF + 0.5 - off(angle, g, d)) / 1.5)));
+        const head = smooth(Math.max(0, Math.min(1, (d - CALDERA_CREST_OUT) / 2)));
+        cut = Math.max(cut, CALDERA_GULLY_DEPTH * inside * head);
+      }
+      h = Math.max(0, Math.floor(base - cut));
+      keep = cut < 0.5;
+    }
+    if (d >= CALDERA_LAKE - 1 && notches.some((a) => off(angle, a, d) < CALDERA_NOTCH_HALF) && h > sea + 1) {
+      h = sea + 1;
+      notched[i] = 1;
+      keep = false;
+    }
+    for (const c of islets) {
+      if (Math.hypot(p.x - c.x, p.y - c.y) / CALDERA_ISLET_RADIUS + bend * 0.15 < 1) h = Math.max(h, sea + 1);
+    }
+    if (d < CALDERA_CREST_IN) lake[i] = 1;
+    if (!keep) stone[i] = 0;
+    relief[i] = (Math.min(MAX_HEIGHT, h) + 0.5) / 10;
+  }
+  const spot = (angle: number, out: number): Tile => {
+    const margin = VENT_REACH + 3;
+    const x = Math.max(margin, Math.min(width - margin, mid.x + Math.cos(angle) * out));
+    const y = Math.max(margin * ROW, Math.min(height - margin * ROW, mid.y + Math.sin(angle) * out));
+    return tileAtPoint(x, y);
+  };
+  // The lake vent lies off the island in front of a notch, between two islets; the others far out, between the
+  // notches and the islets' directions, toward the corners and edges of the map, at different distances.
+  const vents = [spot(notches[0] as number, CALDERA_LAKE_VENT)];
+  for (let n = 0; n < CALDERA_VENTS; n++) {
+    const angle = first + turn / 4 + (n + (next(rng) - 0.5) * 0.3) * ((2 * Math.PI) / CALDERA_VENTS);
+    vents.push(spot(angle, width));
+  }
+  const from = (q: Tile): number => {
+    const c = centre(q.x, q.y);
+    return Math.hypot(c.x - mid.x, c.y - mid.y);
+  };
+  return {
+    lander: tileAtPoint(mid.x, mid.y),
+    lake,
+    vents,
+    spitter: (q) => crestTiles[q.y * size + q.x] === 1 && notched[q.y * size + q.x] === 0,
+    lode: (q) => from(q) >= CALDERA_LAKE && from(q) <= CALDERA_CREST_OUT + CALDERA_LODES,
+  };
+}
+
 /** The noise level above which `share` of the values lie. */
 function quantile(values: Float32Array, share: number): number {
   const sorted = Float32Array.from(values).sort();
@@ -483,12 +640,14 @@ export function generate(level: LevelDef): Game {
   // An archipelago draws its islands over the noise that shape() left alone.
   const isles = level.landform === "archipelago" ? archipelago(rng, relief, stone, size) : undefined;
   if (level.landform === "atlantis") atlantis(rng, relief, stone, size);
-  const basin =
+  const layout: Layout | undefined =
     level.landform === "levee"
-      ? levee(rng, relief, stone, size, level.sea ?? 6)
+      ? { lander: levee(rng, relief, stone, size, level.sea ?? 6) }
       : level.landform === "slope"
-        ? slope(rng, relief, stone, size, level.sea ?? 4)
-        : undefined;
+        ? { lander: slope(rng, relief, stone, size, level.sea ?? 4) }
+        : level.landform === "caldera"
+          ? caldera(rng, relief, stone, size, level.sea ?? 5)
+          : undefined;
   const rockAbove = level.rock === undefined ? 0.82 : quantile(stone, level.rock);
   for (let i = 0; i < height.length; i++) {
     height[i] =
@@ -501,7 +660,7 @@ export function generate(level: LevelDef): Game {
   // The lander takes the spot its landform gives it, or else one of the highest spots away from the edge, or
   // middling ground near the centre.
   const spots: Tile[] = [];
-  const home = ends?.lander ?? basin;
+  const home = ends?.lander ?? layout?.lander;
   if (home) {
     within(size, size, home.x, home.y, 2, (i, _steps, x, y) => {
       if (height[i] !== ROCK) spots.push({ x, y });
@@ -582,6 +741,17 @@ export function generate(level: LevelDef): Game {
     }
     if (first) vents.push({ x: first.x, y: first.y });
   }
+  // Where the landform says where they go, each takes the lowest ground round its own spot.
+  for (const s of layout?.vents ?? []) {
+    if (vents.length >= level.vents.count) break;
+    const around: (Tile & { key: number })[] = [];
+    within(size, size, s.x, s.y, VENT_REACH, (i, _steps, x, y) => {
+      if (height[i] === ROCK || x < 3 || y < 3 || x >= size - 3 || y >= size - 3 || !far({ x, y }, vents, 1)) return;
+      around.push({ x, y, key: (height[i] as number) + next(rng) * 0.99 });
+    });
+    const best = around.reduce<(Tile & { key: number }) | undefined>((a, b) => (!a || b.key < a.key ? b : a), undefined);
+    if (best) vents.push({ x: best.x, y: best.y });
+  }
   for (let spread = ends ? ends.reach : size * 0.25; vents.length < level.vents.count; spread /= 2) {
     for (const p of low) {
       if (vents.length >= level.vents.count) break;
@@ -596,7 +766,7 @@ export function generate(level: LevelDef): Game {
 
   const taken: Tile[] = [lander, ...vents];
   // With a sea on the map, lodes and spitters stand on land above it, or in a dry basin below it.
-  const wet = seaCover(height, size, level.sea);
+  const wet = seaCover(height, size, level.sea, layout?.lake);
   const ashore = (p: Tile): boolean =>
     level.sea === undefined || at(p.x, p.y) > level.sea || (at(p.x, p.y) < level.sea && wet[p.y * size + p.x] === 0);
   const pick = (ok: (p: Tile) => boolean, gap: number): Tile | undefined => {
@@ -612,17 +782,18 @@ export function generate(level: LevelDef): Game {
 
   const spitters: Tile[] = [];
   for (let n = 0; n < level.spitters.count; n++) {
-    const p = pick((q) => fromLander(q) >= size * 0.4, 6);
+    const p = pick(layout?.spitter ?? ((q) => fromLander(q) >= size * 0.4), 6);
     if (p) spitters.push(p);
   }
 
-  // Two lodes within reach of the lander, the rest further out.
+  // Two lodes within reach of the lander, the rest further out, where the landform allows.
   const lode = new Uint8Array(size * size);
+  const lodeOk = layout?.lode ?? (() => true);
   for (let n = 0; n < level.lodes; n++) {
     const p =
       n < 2
         ? pick((q) => fromLander(q) >= 3 && fromLander(q) <= 5, 3)
-        : pick((q) => fromLander(q) >= 7 && fromLander(q) <= size * 0.6, 6);
+        : pick((q) => fromLander(q) >= 7 && fromLander(q) <= size * 0.6 && lodeOk(q), 6);
     if (p) lode[p.y * size + p.x] = 1;
   }
 
@@ -723,9 +894,10 @@ export function generate(level: LevelDef): Game {
 
 /**
  * The tiles a sea of the given height covers: open ground below its surface that it reaches from the map's edge,
- * so a basin behind a wall above the surface stays dry. All 0 without a sea.
+ * or from the tiles marked in `from` (a crater lake), so a basin behind a wall above the surface stays dry. All 0
+ * without a sea.
  */
-function seaCover(height: Int8Array, size: number, sea: number | undefined): Uint8Array {
+function seaCover(height: Int8Array, size: number, sea: number | undefined, from?: Uint8Array): Uint8Array {
   const wet = new Uint8Array(size * size);
   if (sea === undefined) return wet;
   const open = (i: number): boolean => height[i] !== ROCK && (height[i] as number) < sea;
@@ -733,7 +905,8 @@ function seaCover(height: Int8Array, size: number, sea: number | undefined): Uin
   for (let i = 0; i < wet.length; i++) {
     const x = i % size;
     const y = Math.floor(i / size);
-    if ((x === 0 || y === 0 || x === size - 1 || y === size - 1) && open(i)) {
+    const start = from ? from[i] === 1 : x === 0 || y === 0 || x === size - 1 || y === size - 1;
+    if (start && open(i)) {
       wet[i] = 1;
       queue.push(i);
     }

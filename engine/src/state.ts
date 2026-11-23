@@ -103,7 +103,7 @@ export const KINDS: Readonly<Record<Kind, KindDef>> = {
   },
   pump: {
     name: "Pump",
-    cost: 12,
+    cost: 15,
     store: 0,
     range: 2,
     minRange: 0,
@@ -148,7 +148,7 @@ export const KINDS: Readonly<Record<Kind, KindDef>> = {
   },
   grader: {
     name: "Grader",
-    cost: 20,
+    cost: 30,
     store: 6,
     range: 8,
     minRange: 0,
@@ -175,7 +175,7 @@ export const KINDS: Readonly<Record<Kind, KindDef>> = {
   },
   spring: {
     name: "Spring",
-    cost: 60,
+    cost: 100,
     store: 1,
     range: 0,
     minRange: 0,
@@ -333,7 +333,8 @@ export type Objective =
  * crown in the middle of a low sea floor, and a few small islets far out round it; "levee" sets the lander in a
  * wide, low basin behind a thin ring wall, with the sea standing outside it up to a few low notches in the wall;
  * "slope" tilts the whole map from a high north edge, where the lander stands, down to a low south edge, with
- * shallow gullies running down it.
+ * shallow gullies running down it; "caldera" sets the lander on an island in a crater lake, the only place the sea
+ * stands, ringed by a rim with a few low notches, outside which the land falls away to lowlands at the map's edges.
  */
 export type Landform =
   | "hills"
@@ -347,7 +348,8 @@ export type Landform =
   | "shoal-bend"
   | "atlantis"
   | "levee"
-  | "slope";
+  | "slope"
+  | "caldera";
 
 /** The colour scheme of the ground. Only the renderer reads it. */
 export type Ground = "earth" | "slate" | "sand" | "ash";
@@ -589,6 +591,14 @@ export function footprint(game: Game, kind: Kind, x: number, y: number): number[
     if (inBounds(game, t.x, t.y)) tiles.push(tileIndex(game, t.x, t.y));
   }
   return tiles;
+}
+
+/**
+ * Whether a finished structure has lost at least one whole point of health. A packet mends one point, so less than
+ * that is not mended, and not shown as damage either.
+ */
+export function damaged(s: Structure): boolean {
+  return s.built && KINDS[s.kind].cost - s.health >= 1;
 }
 
 /** The structure standing on a tile, if any. */

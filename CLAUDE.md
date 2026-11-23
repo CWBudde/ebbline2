@@ -18,6 +18,7 @@ pnpm run test        # vitest, engine and app unit tests
 pnpm run build       # production build into build/site
 pnpm run check       # typecheck + lint + test + build; what CI runs
 pnpm run e2e         # Playwright against build/site (run `pnpm run build` first)
+pnpm run bench       # the scripted bot on the campaign and 90 skirmish maps; flags at the top of bench.ts
 ```
 
 Single tests:
@@ -70,8 +71,10 @@ TypeScript source through the workspace link. Something the app needs must be ex
 - Derived state (`harvest`, the grid's `dist`/`parent`/`links`) is recomputed, not trusted: set
   `game.gridDirty` when the grid's shape changes and call `updateHarvest` when pylons change.
 - `testing/fixtures.ts` gives rule tests a flat map with the lander at 12,12 and helpers that build
-  structures without packets. `testing/bot.ts` is a scripted player; the campaign numbers are tuned so it only
-  just wins, which is what `balance.test.ts` asserts (and that doing nothing loses).
+  structures without packets. `testing/bot.ts` is a scripted player (`think` runs the ordered phases in
+  `testing/bot/phases.ts` over the state derived in `view.ts`, with the tile helpers in `sites.ts`); the campaign
+  numbers are tuned so it only just wins, which is what `balance.test.ts` asserts (and that doing nothing loses,
+  and that it wins a fixed set of skirmish games). `testing/bench.ts` measures it.
 
 ### App (`app/src`)
 

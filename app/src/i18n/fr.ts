@@ -432,6 +432,16 @@ export const frContent: Content = {
         "Le baume s’évanouit quand il stagne. Garde les Sources en marche et repousse le rivage le long du versant jusqu’à ce que les évents soient assez secs pour être coiffés.",
       ],
     },
+    c16: {
+      name: "Caldeira",
+      brief: "Tu t'es posé sur une île au milieu d'un lac de cratère plein de vase, et un évent dans le lac le remplit encore. Au-delà du rebord du cratère, quatre autres évents dorment dans les basses terres et se réveillent l'un après l'autre. Traverse le lac, prends le rebord et bouche chaque évent.",
+      hints: [
+        "L'évent du lac est juste à côté de l'île. Repousse au feu la vase du lac autour de lui avant qu'elle ne monte sur la rive.",
+        "Les Pylônes portent à six cases : traverse le lac en sautant d'îlot en îlot. Deux Artères, une sur chaque rive, le franchissent d'un coup.",
+        "Trois brèches du rebord sont un niveau au-dessus du lac. Quand la vase monte au-dehors, elle s'y déverse. Les Niveleuses peuvent les rehausser.",
+        "Les évents du dehors dorment d'abord et se réveillent l'un après l'autre, le plus lointain en dernier et le plus fort.",
+      ],
+    },
   },
   skirmish: { name: "Escarmouche {seed}", brief: "Bouche chaque évent." },
 };

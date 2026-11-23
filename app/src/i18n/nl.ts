@@ -429,6 +429,16 @@ export const nlContent: Content = {
         "Balsem vervaagt als hij stilstaat. Houd de fonteinen draaiende en duw de oever de helling af tot de bronnen droog genoeg zijn om af te sluiten.",
       ],
     },
+    c16: {
+      name: "Caldera",
+      brief: "Je bent geland op een eiland in een kratermeer van slib, en een bron in het meer blijft het vullen. Voorbij de kraterrand liggen nog vier bronnen in het laagland, die een voor een ontwaken. Steek het meer over, neem de rand in en doe op elke bron een dop.",
+      hints: [
+        "De meerbron ligt vlak bij het eiland. Brand het meer eromheen terug voordat het op de oever klimt.",
+        "Pylonen reiken zes vakken ver, dus spring via de eilandjes over het meer. Twee Hoofdlijnen, een op elke oever, overbruggen het in één keer.",
+        "Drie bressen in de rand liggen een trede boven het meer. Stijgt het slib buiten, dan loopt het daardoor naar binnen. Egaliseerders kunnen ze ophogen.",
+        "De bronnen buiten slapen eerst en ontwaken een voor een, de verste het laatst en het sterkst.",
+      ],
+    },
   },
   skirmish: { name: "Gevecht {seed}", brief: "Dop elke bron af." },
 };

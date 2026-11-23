@@ -431,6 +431,16 @@ export const esContent: Content = {
         "El bálsamo se disipa cuando está quieto. Mantén los Manantiales en marcha y empuja la orilla ladera abajo hasta que las fumarolas estén lo bastante secas para sellarlas.",
       ],
     },
+    c16: {
+      name: "Caldera",
+      brief: "Has aterrizado en una isla en medio de un lago de cráter lleno de limo, y una fumarola en el lago lo sigue llenando. Más allá del borde del cráter, otras cuatro fumarolas yacen en las tierras bajas y despiertan una tras otra. Cruza el lago, toma el borde y tapona cada fumarola.",
+      hints: [
+        "La fumarola del lago está justo junto a la isla. Haz retroceder el lago a fuego a su alrededor antes de que suba a la orilla.",
+        "Los Pilones alcanzan seis casillas: cruza el lago saltando de islote en islote. Dos Troncales, una en cada orilla, lo cruzan de una vez.",
+        "Tres brechas del borde están un nivel por encima del lago. Cuando el limo sube fuera, se derrama por ellas. Las Niveladoras pueden elevarlas.",
+        "Las fumarolas de fuera duermen al principio y despiertan una tras otra; la más lejana, la última y la más fuerte.",
+      ],
+    },
   },
   skirmish: { name: "Escaramuza {seed}", brief: "Tapona cada fumarola." },
 };

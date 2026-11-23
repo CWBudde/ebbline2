@@ -87,8 +87,11 @@ function wants(game: Game, s: Structure): Packet["kind"] | undefined {
     return undefined;
   }
   const def = KINDS[s.kind];
-  // Wear leaves fractions, so anything short of full health asks for a packet.
-  if (s.health + s.pendingBuild < def.cost) return "build";
+  // A packet mends one point of health and costs one energy. Wear leaves fractions, so a finished structure asks
+  // only once a whole point is missing: a packet for every scratch would cost many times what the wear took. An
+  // unfinished one needs its full health to be completed, so it asks for anything short of it.
+  const missing = def.cost - s.health - s.pendingBuild;
+  if (s.built ? missing >= 1 : missing > 0) return "build";
   if (s.built && def.store > 0 && s.energy + s.pendingEnergy <= def.store - 1) {
     // An airfield loads its plane on the ground; while the plane is up there is nothing to load.
     if (s.kind === "airfield" && game.planes.some((p) => p.base === s.id)) return undefined;

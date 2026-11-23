@@ -189,7 +189,8 @@ describe("the spring", () => {
     expect(game.stats.removed).toBeGreaterThan(0.9);
   });
 
-  it("cancels more silt per energy than a lance burns when its balm runs down into a pool", () => {
+  // A spring is no bargain: its worth is that balm runs to silt no lance can aim at.
+  it("cancels less silt per energy than a lance burns, but a good share of it, when its balm runs down into a pool", () => {
     const game = flat(32, 0);
     const l = lander(game);
     // A ramp from the lander's height eastward down into a wide pool of silt.
@@ -204,7 +205,10 @@ describe("the spring", () => {
       run(game, 1);
     }
     expect(spring.built).toBe(true);
-    expect(game.stats.removed / game.stats.spent).toBeGreaterThan(LANCE.removes / LANCE.cost);
+    const perEnergy = game.stats.removed / game.stats.spent;
+    const lance = LANCE.removes / LANCE.cost;
+    expect(perEnergy).toBeLessThan(lance);
+    expect(perEnergy).toBeGreaterThan(lance * 0.4);
   });
 
   it("keeps its balm in a save, which plays on exactly like the game it was taken from", () => {

@@ -6,6 +6,7 @@ import {
   BUILDABLE,
   KINDS,
   TICK_HZ,
+  damaged,
   find,
   footprint,
   hasMovingGround,
@@ -151,7 +152,7 @@ function status(game: Game, s: Structure): { text: string; tone: "good" | "warn"
   if (!Number.isFinite(s.dist)) return { text: t("status.offGrid"), tone: "bad" };
   if (!s.built) return { text: t("status.building"), tone: "warn" };
   if (!s.active) return { text: t("status.off"), tone: "" };
-  if (s.health < KINDS[s.kind].cost) return { text: t("status.damaged"), tone: "warn" };
+  if (damaged(s)) return { text: t("status.damaged"), tone: "warn" };
   if (s.kind === "airfield") {
     // An airfield is working when its plane is: in the air, or on the ground being loaded.
     const plane = planeOf(game, s.id);
